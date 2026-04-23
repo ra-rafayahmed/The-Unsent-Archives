@@ -1,0 +1,702 @@
+# The Unsent Archives — Backend API Implementation Plan
+
+## 1. Current State Audit
+
+### What exists
+
+| Layer | Status | Details |
+|---|---|---|
+| **Project skeleton** | ✅ Scaffolded | `backend/` with `controllers/`, `models/`, `routes/` dirs (mostly empty `.gitkeep` files) |
+| **DB connection** | ✅ Done | [connection.js](file:///d:/University/Projects/ADBMS/The%20Unsent%20Archives/backend/models/connection.js) — Pool-tuned Mongoose Atlas connection with graceful shutdown |
+| **Models barrel** | ✅ Done | [models/index.js](file:///d:/University/Projects/ADBMS/The%20Unsent%20Archives/backend/models/index.js) — Re-exports all 8 models |
+| **Post model** | ✅ Done | [Post.js](file:///d:/University/Projects/ADBMS/The%20Unsent%20Archives/backend/models/Post.js) — Full schema with embedded comments, media, style, tags, denorm counters |
+| **Follow model** | ✅ Done | [Follow.js](file:///d:/University/Projects/ADBMS/The%20Unsent%20Archives/backend/models/Follow.js) |
+| **Reaction model** | ✅ Done | [Reaction.js](file:///d:/University/Projects/ADBMS/The%20Unsent%20Archives/backend/models/Reaction.js) |
+| **Collection model** | ✅ Done | [Collection.js](file:///d:/University/Projects/ADBMS/The%20Unsent%20Archives/backend/models/Collection.js) |
+| **Tag model** | ✅ Done | [Tag.js](file:///d:/University/Projects/ADBMS/The%20Unsent%20Archives/backend/models/Tag.js) |
+| **AnalyticsEvent model** | ✅ Done | [AnalyticsEvent.js](file:///d:/University/Projects/ADBMS/The%20Unsent%20Archives/backend/models/AnalyticsEvent.js) — TTL auto-delete after 90 days |
+| **SearchIndex model** | ✅ Done | [SearchIndex.js](file:///d:/University/Projects/ADBMS/The%20Unsent%20Archives/backend/models/SearchIndex.js) — Weighted text search |
+
+> [!CAUTION]
+> **The `User.js` model is missing!** `models/index.js` imports `require("./User")` but the file doesn't exist. This will crash on startup. Creating it is the very first task.
+
+### What needs to be built
+
+| Layer | Status |
+|---|---|
+| `User.js` model | ❌ Missing (referenced but not created) |
+| `server.js` / `app.js` entry point | ❌ Not created |
+| `package.json` + dependencies | ❌ Not created |
+| `.env` / `.env.example` | ❌ Not created |
+| All controllers | ❌ Empty directory |
+| All routes | ❌ Empty directory |
+| Middleware (auth, validation, error handling) | ❌ Not created |
+| Config / utils | ❌ Not created |
+
+---
+
+## 2. Complete API Endpoint Inventory
+
+Below is every endpoint the backend needs to serve, grouped by resource. Each row shows the HTTP method, path, auth requirement, and what it does.
+
+### 2.1 Auth Endpoints — `/api/auth`
+
+| # | Method | Path | Auth | Description |
+|---|--------|------|------|-------------|
+| 1 | `POST` | `/api/auth/register` | Public | Create account (username, email, password) |
+| 2 | `POST` | `/api/auth/login` | Public | Authenticate → return JWT |
+| 3 | `POST` | `/api/auth/logout` | 🔒 | Blacklist the current token (optional, client-side delete is simpler) |
+| 4 | `GET` | `/api/auth/me` | 🔒 | Return the currently authenticated user's profile |
+
+### 2.2 User / Profile Endpoints — `/api/users`
+
+| # | Method | Path | Auth | Description |
+|---|--------|------|------|-------------|
+| 5 | `GET` | `/api/users/:id` | Public | Get a user's public profile |
+| 6 | `PUT` | `/api/users/:id` | 🔒 Owner | Update profile (bio, avatar, tagInterests) |
+| 7 | `GET` | `/api/users/:id/posts` | Public | List a user's public posts (+ private if owner) |
+| 8 | `GET` | `/api/users/:id/collections` | Public | List a user's public collections (+ private if owner) |
+
+### 2.3 Follow Endpoints — `/api/follows`
+
+| # | Method | Path | Auth | Description |
+|---|--------|------|------|-------------|
+| 9 | `POST` | `/api/users/:id/follow` | 🔒 | Follow a user |
+| 10 | `DELETE` | `/api/users/:id/follow` | 🔒 | Unfollow a user |
+| 11 | `GET` | `/api/users/:id/followers` | Public | List followers of a user (paginated) |
+| 12 | `GET` | `/api/users/:id/following` | Public | List who a user follows (paginated) |
+
+### 2.4 Post Endpoints — `/api/posts`
+
+| # | Method | Path | Auth | Description |
+|---|--------|------|------|-------------|
+| 13 | `POST` | `/api/posts` | 🔒 | Create a new post (text, style, media, tags, visibility, isAnonymous) |
+| 14 | `GET` | `/api/posts/:id` | Mixed | Get single post (public → open, private → owner-only) |
+| 15 | `PUT` | `/api/posts/:id` | 🔒 Author | Edit a post |
+| 16 | `DELETE` | `/api/posts/:id` | 🔒 Author | Delete a post (cascade: reactions, analytics, search_index, collection refs) |
+| 17 | `POST` | `/api/posts/:id/repost` | 🔒 | Repost (creates new Post doc with `repostOf` pointing to original) |
+| 18 | `POST` | `/api/posts/:id/comments` | 🔒 | Add a comment (embedded in post) |
+| 19 | `DELETE` | `/api/posts/:id/comments/:commentId` | 🔒 Author/Comment-owner | Delete a comment |
+
+### 2.5 Reaction Endpoints — `/api/reactions`
+
+| # | Method | Path | Auth | Description |
+|---|--------|------|------|-------------|
+| 20 | `POST` | `/api/posts/:id/reactions` | 🔒 | React to a post (like, love, etc.) — also `$inc` Post.reactionCount |
+| 21 | `DELETE` | `/api/posts/:id/reactions` | 🔒 | Remove reaction — also `$inc` Post.reactionCount by -1 |
+| 22 | `GET` | `/api/posts/:id/reactions` | Public | Get reaction summary for a post (aggregated counts by type) |
+
+### 2.6 Collection Endpoints — `/api/collections`
+
+| # | Method | Path | Auth | Description |
+|---|--------|------|------|-------------|
+| 23 | `POST` | `/api/collections` | 🔒 | Create a new collection |
+| 24 | `GET` | `/api/collections/:id` | Mixed | Get collection details + populated posts |
+| 25 | `PUT` | `/api/collections/:id` | 🔒 Owner | Update collection (name, description, visibility) |
+| 26 | `DELETE` | `/api/collections/:id` | 🔒 Owner | Delete a collection |
+| 27 | `POST` | `/api/collections/:id/posts` | 🔒 Owner | Save a post into a collection — `$inc` Post.saveCount |
+| 28 | `DELETE` | `/api/collections/:id/posts/:postId` | 🔒 Owner | Remove a post from collection — `$inc` Post.saveCount by -1 |
+
+### 2.7 Tag & Discovery Endpoints — `/api/tags`, `/api/feed`
+
+| # | Method | Path | Auth | Description |
+|---|--------|------|------|-------------|
+| 29 | `GET` | `/api/tags` | Public | List all tags (with optional `?category=` filter) |
+| 30 | `GET` | `/api/tags/trending` | Public | Top tags by `usageCount` |
+| 31 | `GET` | `/api/tags/:slug/posts` | Public | Posts tagged with a specific slug (paginated) |
+| 32 | `GET` | `/api/feed` | Public | Global explore feed (public + anonymous, sorted by recency/popularity) |
+| 33 | `GET` | `/api/feed/following` | 🔒 | Personalized feed from followed users |
+| 34 | `GET` | `/api/feed/trending` | Public | Top posts by reactionCount + saveCount in last 7 days |
+
+### 2.8 Search Endpoint — `/api/search`
+
+| # | Method | Path | Auth | Description |
+|---|--------|------|------|-------------|
+| 35 | `GET` | `/api/search` | Public | Full-text search across posts (`?q=`, `?tag=`, `?type=`, `?user=`) — hits SearchIndex |
+
+### 2.9 Analytics Endpoints — `/api/analytics`
+
+| # | Method | Path | Auth | Description |
+|---|--------|------|------|-------------|
+| 36 | `POST` | `/api/analytics/events` | Mixed | Log an analytics event (view, click, share, save, report) |
+| 37 | `GET` | `/api/posts/:id/analytics` | 🔒 Author | Get analytics summary for a post (views, saves, reactions, reach) |
+| 38 | `GET` | `/api/users/:id/analytics` | 🔒 Owner | Get aggregate analytics across all of a user's posts |
+
+---
+
+## 3. Backend Project Structure
+
+```
+backend/
+├── server.js                  ← Express app entry point
+├── app.js                     ← Express app factory (separates app from listen)
+├── package.json
+├── .env.example               ← Template for required env vars
+│
+├── config/
+│   └── index.js               ← Centralised config (PORT, JWT_SECRET, etc.)
+│
+├── middleware/
+│   ├── auth.js                ← JWT verification → req.user
+│   ├── optionalAuth.js        ← Try to decode JWT but don't block if absent
+│   ├── validate.js            ← Joi schema validation factory
+│   ├── errorHandler.js        ← Global async error handler
+│   ├── rateLimiter.js         ← express-rate-limit per-IP
+│   └── requestLogger.js       ← Morgan or custom request logging
+│
+├── models/                    ← [EXISTING — mostly done]
+│   ├── index.js               ← Barrel export (existing)
+│   ├── connection.js          ← Mongoose connect (existing)
+│   ├── User.js                ← ❌ NEEDS CREATION
+│   ├── Post.js                ← ✅ existing
+│   ├── Follow.js              ← ✅ existing
+│   ├── Reaction.js            ← ✅ existing
+│   ├── Collection.js          ← ✅ existing
+│   ├── Tag.js                 ← ✅ existing
+│   ├── AnalyticsEvent.js      ← ✅ existing
+│   └── SearchIndex.js         ← ✅ existing
+│
+├── controllers/
+│   ├── authController.js
+│   ├── userController.js
+│   ├── postController.js
+│   ├── followController.js
+│   ├── reactionController.js
+│   ├── collectionController.js
+│   ├── tagController.js
+│   ├── feedController.js
+│   ├── searchController.js
+│   └── analyticsController.js
+│
+├── routes/
+│   ├── index.js               ← Mounts all sub-routers on /api
+│   ├── authRoutes.js
+│   ├── userRoutes.js
+│   ├── postRoutes.js
+│   ├── followRoutes.js
+│   ├── reactionRoutes.js
+│   ├── collectionRoutes.js
+│   ├── tagRoutes.js
+│   ├── feedRoutes.js
+│   ├── searchRoutes.js
+│   └── analyticsRoutes.js
+│
+├── validators/
+│   ├── authValidator.js       ← Joi schemas for register/login body
+│   ├── postValidator.js       ← Joi schemas for create/update post
+│   ├── collectionValidator.js
+│   └── commonValidator.js     ← Reusable: objectId param, pagination query
+│
+└── utils/
+    ├── asyncHandler.js        ← try/catch wrapper for async route handlers
+    ├── ApiError.js            ← Custom error class (statusCode + message)
+    └── pagination.js          ← Standard pagination helper (page, limit, skip)
+```
+
+---
+
+## 4. Model Definitions
+
+### 4.1 `User.js` — **New file (missing)**
+
+This is the most critical gap. The schema should align with the ERD:
+
+```js
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
+
+const userSchema = new mongoose.Schema(
+  {
+    username:     { type: String, required: true, unique: true, trim: true,
+                    minlength: 3, maxlength: 30, match: /^[a-zA-Z0-9_]+$/ },
+    email:        { type: String, required: true, unique: true, lowercase: true,
+                    match: /^\S+@\S+\.\S+$/ },
+    passwordHash: { type: String, required: true, select: false },
+    avatarUrl:    { type: String, default: "" },
+    bio:          { type: String, maxlength: 300, default: "" },
+    isActive:     { type: Boolean, default: true },
+    profile: {
+      displayName: { type: String, maxlength: 50 },
+      location:    { type: String, maxlength: 100 },
+      website:     { type: String, maxlength: 200 },
+    },
+    tagInterests: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tag" }],
+  },
+  { timestamps: true }
+);
+
+// Pre-save hook: hash password
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("passwordHash")) return next();
+  this.passwordHash = await bcrypt.hash(this.passwordHash, 12);
+  next();
+});
+
+// Instance method: compare password
+userSchema.methods.comparePassword = async function (candidate) {
+  return bcrypt.compare(candidate, this.passwordHash);
+};
+
+userSchema.index({ username: "text", email: 1 });
+
+module.exports = mongoose.model("User", userSchema);
+```
+
+### 4.2 Existing Models — No changes needed
+
+All other models ([Post.js](file:///d:/University/Projects/ADBMS/The%20Unsent%20Archives/backend/models/Post.js), [Follow.js](file:///d:/University/Projects/ADBMS/The%20Unsent%20Archives/backend/models/Follow.js), [Reaction.js](file:///d:/University/Projects/ADBMS/The%20Unsent%20Archives/backend/models/Reaction.js), [Collection.js](file:///d:/University/Projects/ADBMS/The%20Unsent%20Archives/backend/models/Collection.js), [Tag.js](file:///d:/University/Projects/ADBMS/The%20Unsent%20Archives/backend/models/Tag.js), [AnalyticsEvent.js](file:///d:/University/Projects/ADBMS/The%20Unsent%20Archives/backend/models/AnalyticsEvent.js), [SearchIndex.js](file:///d:/University/Projects/ADBMS/The%20Unsent%20Archives/backend/models/SearchIndex.js)) are already complete with indexes and match the ERD. No modifications needed.
+
+---
+
+## 5. Controller Logic — What Each File Does
+
+Each controller exports pure async functions that receive `(req, res, next)`. Business logic lives here; no route definitions.
+
+### 5.1 `authController.js`
+
+| Function | Logic |
+|----------|-------|
+| `register` | Validate body → check duplicate email/username → create User (password auto-hashed by pre-save hook) → generate JWT → return `{ token, user }` |
+| `login` | Find user by email (with `+passwordHash` select) → `comparePassword` → generate JWT → return `{ token, user }` |
+| `getMe` | `req.user.id` → findById → return user profile |
+
+### 5.2 `userController.js`
+
+| Function | Logic |
+|----------|-------|
+| `getProfile` | Find User by `:id` → strip private fields → attach follower/following counts (aggregate from Follow) → return |
+| `updateProfile` | Verify `req.user.id === :id` → update allowed fields (bio, avatarUrl, profile, tagInterests) → return updated user |
+| `getUserPosts` | Find posts by `authorId = :id` → if owner: all posts; if public viewer: only `visibility: public` or anonymous → paginate |
+| `getUserCollections` | Same ownership logic → return collections paginated |
+
+### 5.3 `postController.js`
+
+| Function | Logic |
+|----------|-------|
+| `createPost` | Validate body → resolve tag names to tagIds + tagSlugs (create new Tags if needed, `$inc usageCount`) → create Post → upsert SearchIndex → return post |
+| `getPost` | Find by `:id` → if private, check author === req.user → if anonymous, strip `authorId` from response → log analytics "view" event → return |
+| `updatePost` | Verify author → update allowed fields → sync SearchIndex → return |
+| `deletePost` | Verify author → delete Post → delete related Reactions → delete AnalyticsEvents → delete SearchIndex → `$pull` from all Collections that contained it → `$inc Tag.usageCount(-1)` for each tag |
+| `repost` | Create new Post doc with `repostOf = :id`, copy content fields → return |
+| `addComment` | Push embedded comment into Post.comments → check 500-comment cap → return updated post |
+| `deleteComment` | Verify comment ownership or post ownership → `$pull` comment by `_id` → return |
+
+### 5.4 `followController.js`
+
+| Function | Logic |
+|----------|-------|
+| `followUser` | Prevent self-follow → create Follow doc → return `201` |
+| `unfollowUser` | Delete Follow doc matching `followerId + followeeId` → return `200` |
+| `getFollowers` | Find Follow docs where `followeeId = :id` → populate `followerId` with username + avatar → paginate |
+| `getFollowing` | Find Follow docs where `followerId = :id` → populate `followeeId` → paginate |
+
+### 5.5 `reactionController.js`
+
+| Function | Logic |
+|----------|-------|
+| `addReaction` | Upsert Reaction doc → on insert: `$inc Post.reactionCount +1` → return |
+| `removeReaction` | Delete Reaction doc → if deleted: `$inc Post.reactionCount -1` → return |
+| `getReactions` | Aggregate Reactions for `:postId` grouped by `type` → return `{ like: 12, love: 5, ... }` |
+
+### 5.6 `collectionController.js`
+
+| Function | Logic |
+|----------|-------|
+| `createCollection` | Create collection with `ownerId = req.user.id` → return |
+| `getCollection` | Find by `:id` → if private, verify owner → populate `postIds` with post previews → paginate posts → return |
+| `updateCollection` | Verify owner → update name, description, visibility → return |
+| `deleteCollection` | Verify owner → delete (do NOT decrement `Post.saveCount` — counts reflect total saves across all collections) |
+| `addPost` | Verify owner → `$addToSet postIds` → `$inc postCount +1` → `$inc Post.saveCount +1` → log analytics "save" event → return |
+| `removePost` | Verify owner → `$pull postId` → `$inc postCount -1` → `$inc Post.saveCount -1` → return |
+
+### 5.7 `tagController.js`
+
+| Function | Logic |
+|----------|-------|
+| `listTags` | Optional `?category=` filter → find Tags → sort by name → paginate → return |
+| `getTrending` | Find Tags sorted by `usageCount desc` → limit 20 → return |
+| `getPostsByTag` | Find Posts where `tagSlugs` contains `:slug` → paginate → return |
+
+### 5.8 `feedController.js`
+
+| Function | Logic |
+|----------|-------|
+| `getExplore` | Find Posts with `visibility: public` (including anonymous) → sort by `createdAt desc` or `reactionCount desc` based on `?sort=` → paginate → strip authorId from anonymous posts |
+| `getFollowingFeed` | Find Follow docs where `followerId = req.user.id` → bulk lookup Posts by those `followeeIds` with `visibility: public` or `followers` → sort by `createdAt desc` → paginate |
+| `getTrending` | Aggregate Posts from last 7 days → score by `reactionCount + saveCount + viewCount` → sort desc → limit → return |
+
+### 5.9 `searchController.js`
+
+| Function | Logic |
+|----------|-------|
+| `search` | Parse `?q=`, `?tag=`, `?user=` → build `$text` query on SearchIndex → filter by `visibility: public` → join back to Post for full data → paginate → return scored results |
+
+### 5.10 `analyticsController.js`
+
+| Function | Logic |
+|----------|-------|
+| `logEvent` | Create AnalyticsEvent doc (optionally with hashed IP and user agent) → if eventType is "view", `$inc Post.viewCount` → return |
+| `getPostAnalytics` | Verify post author === req.user → aggregate AnalyticsEvents by `eventType` for `:postId` → return `{ views, saves, shares, reactions }` |
+| `getUserAnalytics` | Find all Posts by user → aggregate AnalyticsEvents for those postIds → sum across all posts → return |
+
+---
+
+## 6. Route Wiring
+
+Each route file creates an `express.Router()`, applies the relevant middleware, and maps HTTP verbs to controller functions.
+
+### Pattern:
+
+```js
+// routes/postRoutes.js
+const router = require("express").Router();
+const { auth } = require("../middleware/auth");
+const { optionalAuth } = require("../middleware/optionalAuth");
+const validate = require("../middleware/validate");
+const { createPostSchema, updatePostSchema } = require("../validators/postValidator");
+const ctrl = require("../controllers/postController");
+
+router.post("/",           auth, validate(createPostSchema), ctrl.createPost);
+router.get("/:id",         optionalAuth,                     ctrl.getPost);
+router.put("/:id",         auth, validate(updatePostSchema), ctrl.updatePost);
+router.delete("/:id",      auth,                             ctrl.deletePost);
+router.post("/:id/repost", auth,                             ctrl.repost);
+
+// Comments (nested under posts)
+router.post("/:id/comments",              auth, ctrl.addComment);
+router.delete("/:id/comments/:commentId", auth, ctrl.deleteComment);
+
+// Reactions (nested under posts)
+router.post("/:id/reactions",   auth, ctrl.addReaction);
+router.delete("/:id/reactions", auth, ctrl.removeReaction);
+router.get("/:id/reactions",              ctrl.getReactions);
+
+module.exports = router;
+```
+
+### Mount Point — `routes/index.js`:
+
+```js
+const router = require("express").Router();
+
+router.use("/auth",        require("./authRoutes"));
+router.use("/users",       require("./userRoutes"));
+router.use("/posts",       require("./postRoutes"));
+router.use("/collections", require("./collectionRoutes"));
+router.use("/tags",        require("./tagRoutes"));
+router.use("/feed",        require("./feedRoutes"));
+router.use("/search",      require("./searchRoutes"));
+router.use("/analytics",   require("./analyticsRoutes"));
+
+module.exports = router;
+```
+
+### Mount in `app.js`:
+
+```js
+app.use("/api", require("./routes"));
+```
+
+---
+
+## 7. Middleware Stack
+
+### 7.1 `auth.js` — JWT Authentication
+
+```
+Authorization: Bearer <JWT>
+→ Decode with jsonwebtoken.verify()
+→ Attach decoded payload to req.user = { id, username, email }
+→ If invalid/expired → 401 Unauthorized
+```
+
+### 7.2 `optionalAuth.js` — Soft Auth
+
+Same as `auth.js` but if no token is present, `req.user = null` and the request proceeds. Used on endpoints where authenticated users get extra data (e.g., seeing their own private posts in a feed).
+
+### 7.3 `validate.js` — Joi Validation Factory
+
+```js
+const validate = (schema) => (req, res, next) => {
+  const { error } = schema.validate(req.body, { abortEarly: false });
+  if (error) return res.status(400).json({
+    message: "Validation failed",
+    details: error.details.map(d => d.message),
+  });
+  next();
+};
+```
+
+### 7.4 `errorHandler.js` — Global Error Handler
+
+Catches all unhandled errors from `asyncHandler`. Returns structured JSON:
+
+```json
+{
+  "status": "error",
+  "statusCode": 404,
+  "message": "Post not found"
+}
+```
+
+In development, includes `stack` trace. In production, hides stack.
+
+### 7.5 `rateLimiter.js`
+
+Uses `express-rate-limit`:
+- Global: 100 requests / 15 min per IP
+- Auth endpoints: 10 requests / 15 min per IP (brute-force protection)
+
+### 7.6 `requestLogger.js`
+
+Uses `morgan` in `dev` format during development, `combined` format in production. Logs method, path, status, and response time.
+
+---
+
+## 8. Dependencies
+
+```json
+{
+  "dependencies": {
+    "express":            "^4.21",
+    "mongoose":           "^8.x",
+    "dotenv":             "^16.x",
+    "bcryptjs":           "^2.4",
+    "jsonwebtoken":       "^9.x",
+    "joi":                "^17.x",
+    "morgan":             "^1.10",
+    "cors":               "^2.8",
+    "helmet":             "^8.x",
+    "express-rate-limit": "^7.x"
+  },
+  "devDependencies": {
+    "nodemon": "^3.x"
+  }
+}
+```
+
+---
+
+## 9. Environment Variables (`.env.example`)
+
+```env
+# Server
+PORT=5000
+NODE_ENV=development
+
+# MongoDB Atlas
+MONGODB_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/unsent-archives?retryWrites=true&w=majority
+
+# JWT
+JWT_SECRET=your-super-secret-key-here
+JWT_EXPIRES_IN=7d
+```
+
+---
+
+## 10. Phased Implementation Timeline
+
+### Phase 1 — Foundation (Day 1)
+- [x] ~~Models (already done, except User)~~
+- [ ] Create `User.js` model
+- [ ] Create `package.json` + install dependencies
+- [ ] Create `.env.example`
+- [ ] Create `config/index.js`
+- [ ] Create `app.js` + `server.js`
+- [ ] Create utility files (`asyncHandler`, `ApiError`, `pagination`)
+- [ ] Create all middleware (`auth`, `optionalAuth`, `validate`, `errorHandler`, `rateLimiter`, `requestLogger`)
+- [ ] Verify server starts and connects to MongoDB
+
+### Phase 2 — Auth & Users (Day 2)
+- [ ] `authController.js` — register, login, getMe
+- [ ] `authValidator.js` — Joi schemas
+- [ ] `authRoutes.js`
+- [ ] `userController.js` — getProfile, updateProfile, getUserPosts, getUserCollections
+- [ ] `userRoutes.js`
+- [ ] Test with Postman: register → login → get profile → update profile
+
+### Phase 3 — Core Content (Day 3)
+- [ ] `postController.js` — all 7 functions
+- [ ] `postValidator.js`
+- [ ] `postRoutes.js`
+- [ ] `followController.js` — follow, unfollow, getFollowers, getFollowing
+- [ ] `followRoutes.js`  (nested under `/api/users`)
+- [ ] `reactionController.js` — add, remove, get summary
+- [ ] `reactionRoutes.js` (nested under `/api/posts`)
+- [ ] Test: create post → react → follow → comment → repost
+
+### Phase 4 — Collections, Tags & Feed (Day 4)
+- [ ] `collectionController.js` — create, get, update, delete, addPost, removePost
+- [ ] `collectionValidator.js`
+- [ ] `collectionRoutes.js`
+- [ ] `tagController.js` — list, trending, posts by tag
+- [ ] `tagRoutes.js`
+- [ ] `feedController.js` — explore, following, trending
+- [ ] `feedRoutes.js`
+- [ ] Test: create collection → save post → explore feed → following feed → trending
+
+### Phase 5 — Search, Analytics & Polish (Day 5)
+- [ ] `searchController.js` — full-text search with filters
+- [ ] `searchRoutes.js`
+- [ ] `analyticsController.js` — logEvent, getPostAnalytics, getUserAnalytics
+- [ ] `analyticsRoutes.js`
+- [ ] End-to-end Postman testing (all 38 endpoints)
+- [ ] Error handling edge cases
+- [ ] Final code review
+
+---
+
+## 11. Postman Testing Checklist
+
+Each group should be tested in order, as later groups depend on data from earlier ones.
+
+### Group 1 — Auth
+| Test | Expected |
+|------|----------|
+| Register with valid data | `201` + token + user object |
+| Register with duplicate email | `409 Conflict` |
+| Login with correct credentials | `200` + token |
+| Login with wrong password | `401 Unauthorized` |
+| `GET /me` with valid token | `200` + user |
+| `GET /me` without token | `401` |
+
+### Group 2 — Users
+| Test | Expected |
+|------|----------|
+| Get profile by ID | `200` + public profile data |
+| Update own profile | `200` + updated fields |
+| Update someone else's profile | `403 Forbidden` |
+| Get user's posts (as visitor) | Only public posts |
+| Get user's posts (as owner) | All visibility levels |
+
+### Group 3 — Posts
+| Test | Expected |
+|------|----------|
+| Create post (public) | `201` + post object |
+| Create post (anonymous) | `201` + `isAnonymous: true` |
+| Get anonymous post as visitor | `authorId` stripped |
+| Edit own post | `200` + updated content |
+| Delete own post | `200` + cascaded deletes verified |
+| Add comment | `200` + comment appears in post.comments |
+| Repost | `201` + new post with `repostOf` set |
+
+### Group 4 — Follows & Reactions
+| Test | Expected |
+|------|----------|
+| Follow a user | `201` |
+| Follow same user again | `409` (duplicate) |
+| Unfollow | `200` |
+| Self-follow | `400 Bad Request` |
+| React to post | `201` + Post.reactionCount incremented |
+| Remove reaction | `200` + counters decremented |
+| Get reaction summary | `200` + `{ like: n, love: n, ... }` |
+
+### Group 5 — Collections
+| Test | Expected |
+|------|----------|
+| Create collection | `201` |
+| Save post to collection | `200` + Post.saveCount incremented |
+| Remove post from collection | `200` + counters decremented |
+| Get private collection as non-owner | `403` |
+| Delete collection | `200` |
+
+### Group 6 — Feed, Tags & Search
+| Test | Expected |
+|------|----------|
+| Explore feed | `200` + paginated public posts |
+| Following feed (authenticated) | `200` + posts only from followed users |
+| Trending feed | `200` + sorted by engagement score |
+| List tags | `200` + tag array |
+| Trending tags | `200` + sorted by usageCount |
+| Search `?q=love` | `200` + matching posts |
+| Search `?tag=nostalgia` | `200` + filtered results |
+
+### Group 7 — Analytics
+| Test | Expected |
+|------|----------|
+| Log view event | `201` + Post.viewCount incremented |
+| Get post analytics (as author) | `200` + `{ views, saves, reactions }` |
+| Get post analytics (as non-author) | `403` |
+| Get user analytics (as owner) | `200` + aggregated stats |
+
+---
+
+## 12. File Creation Manifest
+
+> [!IMPORTANT]
+> Summary of every file that needs to be **created** or **modified**:
+
+### New Files (27 files)
+
+| File | Purpose |
+|------|---------|
+| `backend/package.json` | Dependencies & scripts |
+| `backend/.env.example` | Environment variable template |
+| `backend/server.js` | Entry point — connect DB + start listening |
+| `backend/app.js` | Express app factory — middleware + routes |
+| `backend/config/index.js` | Centralized config from env vars |
+| `backend/models/User.js` | **Missing model — critical** |
+| `backend/middleware/auth.js` | JWT verification |
+| `backend/middleware/optionalAuth.js` | Soft JWT (public-friendly endpoints) |
+| `backend/middleware/validate.js` | Joi validation factory |
+| `backend/middleware/errorHandler.js` | Global error handler |
+| `backend/middleware/rateLimiter.js` | Rate limiting |
+| `backend/middleware/requestLogger.js` | HTTP request logging |
+| `backend/controllers/authController.js` | Auth logic |
+| `backend/controllers/userController.js` | User/profile logic |
+| `backend/controllers/postController.js` | Post CRUD + comments |
+| `backend/controllers/followController.js` | Follow/unfollow logic |
+| `backend/controllers/reactionController.js` | Reaction CRUD |
+| `backend/controllers/collectionController.js` | Collection CRUD + save/remove posts |
+| `backend/controllers/tagController.js` | Tag listing + trending |
+| `backend/controllers/feedController.js` | Feed generation logic |
+| `backend/controllers/searchController.js` | Full-text search |
+| `backend/controllers/analyticsController.js` | Analytics logging + retrieval |
+| `backend/routes/index.js` | Master router mount |
+| `backend/routes/authRoutes.js` | Auth routes |
+| `backend/routes/userRoutes.js` | User + follow routes |
+| `backend/routes/postRoutes.js` | Post + comment + reaction routes |
+| `backend/routes/collectionRoutes.js` | Collection routes |
+| `backend/routes/tagRoutes.js` | Tag routes |
+| `backend/routes/feedRoutes.js` | Feed routes |
+| `backend/routes/searchRoutes.js` | Search routes |
+| `backend/routes/analyticsRoutes.js` | Analytics routes |
+| `backend/validators/authValidator.js` | Auth Joi schemas |
+| `backend/validators/postValidator.js` | Post Joi schemas |
+| `backend/validators/collectionValidator.js` | Collection Joi schemas |
+| `backend/validators/commonValidator.js` | Shared schemas |
+| `backend/utils/asyncHandler.js` | Async error wrapper |
+| `backend/utils/ApiError.js` | Custom error class |
+| `backend/utils/pagination.js` | Pagination helper |
+
+### Modified Files (0 files)
+
+All existing models are well-written and need no changes.
+
+---
+
+## Open Questions
+
+> [!IMPORTANT]
+> **File upload strategy:** The Post model supports media attachments (`media.url`). Do you want to:
+> - (a) Handle file uploads in this backend (using `multer` + local storage or Cloudinary/S3)?
+> - (b) Have the frontend upload directly to a cloud service and just send the URL to the API?
+> - (c) Skip media uploads for now and only support text posts initially?
+
+> [!IMPORTANT]
+> **Anonymous post identity for comments:** Should anonymous posts allow comments from other users? The current Post model supports it, but we need to decide the UX rule — should the anonymous author be able to reply to comments without revealing their identity?
+
+---
+
+## Verification Plan
+
+### Automated Tests
+1. **Server boot test**: `npm run dev` starts without errors, connects to MongoDB
+2. **Postman collection**: Execute all 38 endpoints following the testing checklist in Section 11
+3. **Edge case scripts**: Test duplicate registration, invalid tokens, missing fields, unauthorized access
+
+### Manual Verification
+1. Run all Postman tests and verify response status codes and body shapes
+2. Check MongoDB Atlas to confirm documents are created/updated/deleted correctly
+3. Verify cascade deletes (e.g., deleting a post removes its reactions, analytics, search index entries)
+4. Verify denormalized counters stay in sync (reactionCount, saveCount, viewCount)

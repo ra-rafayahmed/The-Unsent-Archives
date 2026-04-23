@@ -14,7 +14,7 @@ const tagSchema = new mongoose.Schema({
   usageCount: { type: Number, default: 0 },
 });
 
-tagSchema.index({ slug: 1 });
+// tagSchema.index({ slug: 1 }); // Removed to fix duplicate index warning
 tagSchema.index({ category: 1 });
 tagSchema.index({ usageCount: -1 });
 tagSchema.index({ name: "text", slug: "text" });

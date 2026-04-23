@@ -1,0 +1,233 @@
+
+<style>
+:root {
+  --bg-primary: #f5f5f5;
+  --bg-secondary: #ffffff;
+  --text-primary: #1a1a1a;
+  --text-secondary: #333333;
+  --border-color: #e0e0e0;
+}
+
+html.dark-mode {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --text-primary: #f5f5f5;
+  --text-secondary: #d0d0d0;
+  --border-color: #404040;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  margin: 0;
+  padding: 1rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.theme-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  z-index: 1000;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.theme-toggle:hover {
+  background-color: var(--border-color);
+}
+
+#erd {
+  padding: 1rem 0;
+}
+
+#erd svg {
+  width: 100%;
+}
+
+#erd svg text {
+  fill: var(--text-primary);
+}
+</style>
+<button class="theme-toggle" id="themeToggle">🌙 Dark Mode</button>
+<div id="erd"></div>
+<script type="module">
+import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+
+// Theme initialization
+const savedTheme = localStorage.getItem('theme');
+const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;
+const dark = savedTheme ? savedTheme === 'dark' : prefersDark;
+
+if (dark) {
+  document.documentElement.classList.add('dark-mode');
+}
+
+// Theme toggle and re-render
+async function renderDiagram() {
+  const isDark = document.documentElement.classList.contains('dark-mode');
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: 'base',
+    fontFamily: '"Anthropic Sans", sans-serif',
+    themeVariables: {
+      darkMode: isDark,
+      fontSize: '13px',
+      fontFamily: '"Anthropic Sans", sans-serif',
+      lineColor: isDark ? '#9c9a92' : '#73726c',
+      textColor: isDark ? '#c2c0b6' : '#3d3d3a',
+      primaryColor: isDark ? '#2a2a28' : '#f8f7f3',
+      primaryBorderColor: isDark ? '#5f5e5a' : '#b4b2a9',
+      attributeBackgroundColorEven: isDark ? '#222220' : '#f1efe8',
+      attributeBackgroundColorOdd: isDark ? '#1a1a18' : '#faf9f6',
+    },
+  });
+
+  const diagram = `erDiagram
+  users {
+    ObjectId _id PK
+    string username
+    string email
+    string passwordHash
+    string avatarUrl
+    string bio
+    boolean isActive
+    Date createdAt
+    object profile
+    array tagInterests
+  }
+
+  follows {
+    ObjectId _id PK
+    ObjectId followerId FK
+    ObjectId followeeId FK
+    Date followedAt
+  }
+
+  posts {
+    ObjectId _id PK
+    ObjectId authorId FK
+    string content
+    string visibility
+    boolean isAnonymous
+    ObjectId repostOf FK
+    object style
+    array media
+    array tagIds
+    array tagSlugs
+    number viewCount
+    number saveCount
+    number reactionCount
+    array comments
+    Date createdAt
+  }
+
+  tags {
+    ObjectId _id PK
+    string name
+    string slug
+    string category
+    number usageCount
+  }
+
+  collections {
+    ObjectId _id PK
+    ObjectId ownerId FK
+    string name
+    string visibility
+    array postIds
+    number postCount
+    Date createdAt
+  }
+
+  reactions {
+    ObjectId _id PK
+    ObjectId postId FK
+    ObjectId userId FK
+    string type
+    Date reactedAt
+  }
+
+  analytics_events {
+    ObjectId _id PK
+    ObjectId postId FK
+    ObjectId actorId FK
+    string eventType
+    string ipHash
+    Date occurredAt
+  }
+
+  search_index {
+    ObjectId _id PK
+    ObjectId postId FK
+    string contentTokens
+    array tagSlugs
+    string authorUsername
+    string visibility
+  }
+
+  users ||--o{ follows : "follower"
+  users ||--o{ follows : "followee"
+  users ||--o{ posts : "authors"
+  users ||--o{ collections : "owns"
+  users ||--o{ reactions : "makes"
+  users ||--o{ analytics_events : "actor"
+  posts ||--o{ reactions : "receives"
+  posts ||--o{ analytics_events : "tracked"
+  posts }o--o| search_index : "indexed"
+  posts }o--o| posts : "repost of"
+  tags ||--o{ posts : "applied to"
+  collections }o--o{ posts : "contains"
+`;
+
+  const { svg } = await mermaid.render('erd-svg', diagram);
+  document.getElementById('erd').innerHTML = svg;
+
+  document.querySelectorAll('#erd svg .node').forEach(node => {
+    const firstPath = node.querySelector('path[d]');
+    if (!firstPath) return;
+    const d = firstPath.getAttribute('d');
+    const nums = d.match(/-?[\d.]+/g)?.map(Number);
+    if (!nums || nums.length < 8) return;
+    const xs = [nums[0],nums[2],nums[4],nums[6]];
+    const ys = [nums[1],nums[3],nums[5],nums[7]];
+    const x = Math.min(...xs), y = Math.min(...ys);
+    const w = Math.max(...xs)-x, h = Math.max(...ys)-y;
+    const rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    rect.setAttribute('x',x); rect.setAttribute('y',y);
+    rect.setAttribute('width',w); rect.setAttribute('height',h);
+    rect.setAttribute('rx','8');
+    for(const a of['fill','stroke','stroke-width','class','style']){
+      if(firstPath.hasAttribute(a)) rect.setAttribute(a,firstPath.getAttribute(a));
+    }
+    firstPath.replaceWith(rect);
+  });
+
+  document.querySelectorAll('#erd svg .row-rect-odd path, #erd svg .row-rect-even path').forEach(p=>{
+    p.setAttribute('stroke','none');
+  });
+}
+
+document.getElementById('themeToggle').addEventListener('click', () => {
+  const isDark = document.documentElement.classList.toggle('dark-mode');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  updateThemeButton();
+  renderDiagram();
+});
+
+function updateThemeButton() {
+  const isDark = document.documentElement.classList.contains('dark-mode');
+  document.getElementById('themeToggle').textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+}
+
+updateThemeButton();
+await document.fonts.ready;
+await renderDiagram();
+</script>
