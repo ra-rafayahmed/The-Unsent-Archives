@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Clara Whitmore | The Unsent Archives</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;family=Work+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed": "#1a1c1c",
+                        "surface-container-low": "#f6f3ef",
+                        "on-primary-container": "#5c1c00",
+                        "on-secondary-container": "#67645d",
+                        "inverse-surface": "#31302e",
+                        "on-primary-fixed-variant": "#802a00",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "primary-container": "#ff6b2b",
+                        "surface": "#fcf9f5",
+                        "surface-variant": "#e5e2de",
+                        "on-secondary-fixed-variant": "#494640",
+                        "on-background": "#1c1c1a",
+                        "secondary-container": "#e7e2d9",
+                        "surface-dim": "#dcdad6",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#c6c6c7",
+                        "outline-variant": "#e2bfb3",
+                        "on-secondary": "#ffffff",
+                        "tertiary": "#5d5f5f",
+                        "surface-container": "#f0edea",
+                        "on-error-container": "#93000a",
+                        "outline": "#8d7167",
+                        "inverse-primary": "#ffb59a",
+                        "on-tertiary-fixed-variant": "#454747",
+                        "surface-bright": "#fcf9f5",
+                        "on-primary-fixed": "#380d00",
+                        "secondary": "#615e57",
+                        "on-secondary-fixed": "#1d1b16",
+                        "surface-container-highest": "#e5e2de",
+                        "on-surface-variant": "#594138",
+                        "background": "#fcf9f5",
+                        "secondary-fixed": "#e7e2d9",
+                        "surface-tint": "#a83900",
+                        "primary": "#a83900",
+                        "error": "#ba1a1a",
+                        "primary-fixed": "#ffdbce",
+                        "surface-container-high": "#ebe8e4",
+                        "secondary-fixed-dim": "#cbc6bd",
+                        "on-surface": "#1c1c1a",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed": "#e2e2e2",
+                        "on-error": "#ffffff",
+                        "tertiary-container": "#989999",
+                        "inverse-on-surface": "#f3f0ec",
+                        "on-tertiary-container": "#2f3132",
+                        "primary-fixed-dim": "#ffb59a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-lg": "48px",
+                        "base": "8px",
+                        "stack-md": "24px",
+                        "stack-sm": "12px",
+                        "margin-mobile": "20px",
+                        "gutter": "24px",
+                        "margin-desktop": "64px",
+                        "container-max": "1120px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Newsreader"],
+                        "body-lg": ["Work Sans"],
+                        "headline-md": ["Newsreader"],
+                        "body-md": ["Work Sans"],
+                        "label-caps": ["Work Sans"],
+                        "ui-button": ["Work Sans"],
+                        "quote-text": ["Newsreader"],
+                        "display-serif": ["Newsreader"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "600"}],
+                        "ui-button": ["14px", {"lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "quote-text": ["20px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "display-serif": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #F5EFE6;
+            color: #1c1c1a;
+        }
+        .masonry-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        .card-shadow {
+            box-shadow: 0px 4px 20px rgba(26, 26, 24, 0.06);
+        }
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0px 8px 30px rgba(26, 26, 24, 0.1);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+<!-- Top Navigation -->
+<header class="bg-[#F5EFE6] dark:bg-stone-900 border-b border-stone-200 dark:border-stone-800 shadow-sm fixed top-0 z-50 w-full">
+<div class="flex justify-between items-center px-8 h-16 w-full max-w-screen-2xl mx-auto">
+<div class="text-2xl font-bold text-[#FF6B2B] dark:text-orange-500 italic font-['Newsreader'] tracking-tight">
+                The Unsent Archives
+            </div>
+<div class="flex-1 max-w-md mx-12">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-stone-400">search</span>
+<input class="w-full bg-white/50 border border-stone-200 rounded-full py-2 pl-10 pr-4 text-body-md focus:ring-1 focus:ring-[#FF6B2B] focus:border-[#FF6B2B] outline-none" placeholder="Search the attic..." type="text"/>
+</div>
+</div>
+<nav class="flex items-center space-x-8">
+<a class="text-stone-600 dark:text-stone-400 hover:text-[#FF6B2B] transition-colors font-['Newsreader']" href="#">Explore</a>
+<button class="relative hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined text-stone-600">notifications</span>
+</button>
+<img class="w-8 h-8 rounded-full object-cover" data-alt="Portrait of a young woman with a thoughtful expression, soft natural lighting, artistic film photography style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGMK--Mogjuo7wA3ZrO8TZkmhDv1VtwxZr9sTWPaz-p2clwZz-P-PwL75brnuPcr62y3iFQdw2D2FU506fJ5o6Lqs41-neSlcolxw8L0VRRGkWKMuUyk9rUTtn8foVAxl4Ri6ucdC8oK8J_7sdRZMww47v2RWRqlOLYEHSuXNgmlYFzBIn7STSRdNPeGtssDS7oZl2ypStMYQdG-3-1EhnqgXxlkADLw43Vkwq29A0p-Ni_5DWJi0JhupFYi-qJcOfI__1JtvzkLg"/>
+</nav>
+</div>
+</header>
+<main class="pt-32 pb-20 px-margin-desktop max-w-[1400px] mx-auto">
+<div class="grid grid-cols-12 gap-10">
+<!-- Main Content Area -->
+<div class="col-span-8">
+<!-- Profile Header Card -->
+<div class="bg-white rounded-xl card-shadow border border-[#EDE8E3] p-8 mb-8">
+<div class="flex items-start">
+<div class="relative">
+<div class="w-[94px] h-[94px] rounded-full border-2 border-[#FF6B2B] p-[3px] flex items-center justify-center">
+<img class="w-full h-full rounded-full object-cover" data-alt="Close up portrait of Clara Whitmore, warm cinematic lighting, cream background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUgeLa9-BwHmJlBDRPPfDscgYWIBph-fw2bANmGJaFVjCpgsQjC9nq34warXMB90jfprkbE0dIuJfEvUCRF6_i26xYHcrR5PBI_pDG1L8sYVV_iz-7SofgCUaHe04KPiyOd5jujzMcErIo4jxtBaHKQWYVj4tORBQAOuD6t5x1TD-sBftGF-qKx9vnXDk3nGiFGoOb8UkvH2vpr2AoBz9CiqCK3_FQnehvdkmPk_vrArNfIwFPLu6H6DiSVYXGtGR3Qk2dCS1EZR8"/>
+</div>
+</div>
+<div class="ml-8 flex-1">
+<div class="flex justify-between items-start">
+<div>
+<h1 class="font-headline-md text-[22px] text-on-surface">Clara Whitmore</h1>
+<p class="font-body-md text-stone-500 mb-4">@clara_writes</p>
+<p class="font-body-md text-stone-700 max-w-md italic">"writing things i was too afraid to say out loud..."</p>
+</div>
+<div class="flex space-x-3">
+<button class="bg-[#FF6B2B] text-white px-8 py-2.5 rounded-full font-ui-button text-ui-button hover:opacity-90 transition-all">Follow</button>
+<button class="border border-[#FF6B2B] text-[#FF6B2B] px-6 py-2.5 rounded-full font-ui-button text-ui-button hover:bg-orange-50 transition-all">Message</button>
+</div>
+</div>
+<div class="flex space-x-10 mt-8">
+<div class="text-center">
+<span class="block font-bold text-lg">214</span>
+<span class="text-stone-500 font-label-caps text-[10px]">NOTES</span>
+</div>
+<div class="text-center">
+<span class="block font-bold text-lg">4.1k</span>
+<span class="text-stone-500 font-label-caps text-[10px]">FOLLOWERS</span>
+</div>
+<div class="text-center">
+<span class="block font-bold text-lg">312</span>
+<span class="text-stone-500 font-label-caps text-[10px]">FOLLOWING</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Tab Navigation -->
+<div class="flex space-x-12 mb-8 px-4">
+<button class="font-headline-md text-lg text-[#FF6B2B] border-b-2 border-[#FF6B2B] pb-4">Notes</button>
+<button class="font-headline-md text-lg text-stone-400 hover:text-stone-600 pb-4">Collections</button>
+<button class="font-headline-md text-lg text-stone-400 hover:text-stone-600 pb-4">Saved</button>
+</div>
+<!-- Pinned Banner -->
+<div class="bg-white rounded-lg border border-[#EDE8E3] p-6 mb-8 flex items-center space-x-4 shadow-sm">
+<span class="material-symbols-outlined text-[#FF6B2B]">push_pin</span>
+<p class="font-quote-text text-stone-800 text-[18px]">I started this account because I needed somewhere to put the words that had nowhere else to go.</p>
+</div>
+<!-- Masonry Grid -->
+<div class="masonry-grid">
+<!-- Card A -->
+<div class="bg-white p-8 rounded-xl card-shadow border border-[#EDE8E3] hover-lift transition-all">
+<div class="flex justify-between items-start mb-6">
+<span class="text-stone-300 material-symbols-outlined" style="font-variation-settings: 'opsz' 32;">ink_pen</span>
+<div class="w-8 h-8 rounded-full border border-stone-100 flex items-center justify-center opacity-40">
+<span class="material-symbols-outlined text-[12px]">more_horiz</span>
+</div>
+</div>
+<p class="font-quote-text text-stone-800 italic leading-relaxed">
+                            "I keep waiting for the version of me that knows how to let go, but I think she's still stuck in that summer we didn't say goodbye."
+                        </p>
+<div class="mt-8 pt-6 border-t border-stone-50 flex items-center justify-between">
+<span class="text-[11px] font-label-caps text-stone-400 uppercase">Oct 24 • Venice</span>
+</div>
+</div>
+<!-- Card B -->
+<div class="relative bg-white rounded-xl card-shadow overflow-hidden group hover-lift transition-all h-[320px]">
+<img class="absolute inset-0 w-full h-full object-cover" data-alt="Dreamy warm bokeh background with soft golden light orbs and ethereal dust particles" src="https://lh3.googleusercontent.com/aida-public/AB6AXuClz49fDP_7Px1xZRvno58Rwq4qV1phLkY-7nKS05ONnhk6P1zOA7v5EMqS9MGKqhzgcuuAktb6qmA_hagOHJXmmc8tFzktzOEbYF8dDSx-DAyv4NFFHO3E0iHOhFCLIsMnYJDEDNhfp2wBRGQGj1pS1oBU9BwvaFxEMBT8-pEDZ8P53cH4bSs9lwz9fkvN1DdtUABCayiAwK7dl4ef2lCZ4flNWFt04LLXhYIUXefo8nPNKmEhEwYnnxPtt-LXRJluTuFlyopNVfM"/>
+<div class="absolute inset-0 bg-stone-900/40"></div>
+<div class="relative h-full p-8 flex flex-col justify-center">
+<p class="font-quote-text text-white text-center leading-relaxed">
+                                "Missing someone is a strange hobby to keep for five years."
+                            </p>
+</div>
+</div>
+<!-- Card C -->
+<div class="bg-[#F9F7F5] p-8 rounded-xl border border-dashed border-stone-300 card-shadow hover-lift transition-all">
+<div class="flex items-center space-x-2 mb-6">
+<span class="material-symbols-outlined text-stone-400 text-sm">lock</span>
+<span class="text-stone-400 font-label-caps text-[10px]">PRIVATE ARCHIVE</span>
+</div>
+<p class="font-body-md text-stone-600 mb-4">
+                            I wrote three pages today about the coffee shop we used to sit in. The owner still asks about you. I lie every time.
+                        </p>
+<div class="mt-6">
+<span class="bg-[#EAE2D5] px-3 py-1 rounded-full font-label-caps text-[10px] text-stone-600">UNREQUITED</span>
+</div>
+</div>
+<!-- Card D -->
+<div class="bg-white p-12 rounded-xl card-shadow border border-[#EDE8E3] hover-lift transition-all flex flex-col items-center justify-center text-center">
+<p class="font-headline-md text-stone-800 italic text-xl">
+                            you left in April<br/>
+                            and I am still<br/>
+                            waiting for spring
+                        </p>
+</div>
+<!-- Card E -->
+<div class="bg-white p-8 rounded-xl card-shadow border border-[#EDE8E3] hover-lift transition-all">
+<div class="mb-4">
+<span class="material-symbols-outlined text-stone-400">music_note</span>
+</div>
+<p class="font-mono text-stone-600 text-sm leading-relaxed tracking-tight">
+                            rainy days make poets of us all, but mostly they just remind me of the way you used to drive too fast on the highway...
+                        </p>
+<div class="mt-8 flex items-center">
+<div class="w-10 h-10 rounded-full border border-stone-100 flex items-center justify-center">
+<span class="material-symbols-outlined text-stone-300">history</span>
+</div>
+<span class="ml-3 text-[10px] font-label-caps text-stone-400">DRAFT NO. 42</span>
+</div>
+</div>
+<!-- Card F -->
+<div class="bg-white p-8 rounded-xl card-shadow border border-[#EDE8E3] hover-lift transition-all relative overflow-hidden">
+<div class="flex items-center space-x-2 mb-6 text-orange-400/60">
+<span class="material-symbols-outlined">mist</span>
+<span class="font-label-caps text-[10px]">POSTED ANONYMOUSLY</span>
+</div>
+<p class="font-quote-text text-stone-800 italic">
+                            "some apologies arrive too late to be anything but more salt in the wound."
+                        </p>
+</div>
+</div>
+</div>
+<!-- Sidebar -->
+<aside class="col-span-4 space-y-8">
+<!-- About This Writer -->
+<div class="bg-white rounded-xl card-shadow border border-[#EDE8E3] p-8">
+<h3 class="font-headline-md text-lg mb-6">About this writer</h3>
+<div class="space-y-6">
+<div>
+<p class="font-label-caps text-[10px] text-stone-400 mb-2 uppercase">Core Themes</p>
+<div class="flex flex-wrap gap-2">
+<span class="bg-[#EAE2D5] px-4 py-1.5 rounded-full font-label-caps text-[11px] text-stone-700">#unsent</span>
+<span class="bg-[#EAE2D5] px-4 py-1.5 rounded-full font-label-caps text-[11px] text-stone-700">#letters</span>
+<span class="bg-[#EAE2D5] px-4 py-1.5 rounded-full font-label-caps text-[11px] text-stone-700">#longing</span>
+</div>
+</div>
+<div>
+<p class="font-label-caps text-[10px] text-stone-400 mb-3 uppercase">Reading now</p>
+<div class="flex items-center space-x-4">
+<div class="w-12 h-16 bg-stone-100 rounded-sm overflow-hidden flex-shrink-0 shadow-sm border border-stone-200">
+<img class="w-full h-full object-cover" data-alt="Cover of a vintage poetry book with minimalist typography" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC64aj0p75pP01aSeZCvuEqnZJfau9ScuPajUHxfzH3JRVrfDEwdd8SRIQHECFM7yXa12kPs31KSeAQnj76viuW88E2C0KmjqmZIfzAr4i7w7bRQGDT5lH0N_4Lmo6Ohwh-y_rXSKqttiZ5qgLyQ01WDFbZJ9vE8hwLr_C_LIzEbSyZ_cH8mNco1O12itdjLJwlDJFAg68t1P6aDksxQjNhrA53k0TCWjhnVArkG70Y4woRoc6oi1qWWwGyKWIIdhRBiSxgNUDTE5s"/>
+</div>
+<div>
+<p class="font-body-md text-sm font-semibold">The Year of Magical Thinking</p>
+<p class="text-stone-500 text-xs">Joan Didion</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Writers Like Clara -->
+<div class="bg-white rounded-xl card-shadow border border-[#EDE8E3] p-8">
+<h3 class="font-headline-md text-lg mb-6">Writers like Clara</h3>
+<div class="space-y-6">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-4">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Headshot of a man with spectacles, literary aesthetic, soft indoor lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1ZsNwBtvhVRxmzGkqkeaHBE8kaCFDAeHu21L3-UJvWAIEJLWZ7c3PBUBIxru_a6y0kXS0hP2uw7vKKyDQ_hCXZrXQE7IWrT0IT_T1fHF4M-g9gxKI52wIZ04eC-EQlILAn94Dh6h78BOndMSbJIMn73xAbyr07IdraeBzRhft-HdAw_MbjDeMnftwRyODra-fSEUpI5GuYmCcR4c7Oec3QEwdzSQ470AS52VYeStF5urcQR4NNPlL826uyqNE6A4F26MYTWE7wD8"/>
+<div>
+<p class="text-sm font-semibold">Julian Vance</p>
+<p class="text-xs text-stone-400">@the_morning_paper</p>
+</div>
+</div>
+<button class="text-[#FF6B2B] text-xs font-semibold hover:underline">Follow</button>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-4">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Portrait of a young woman with curly hair, natural film grain look" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAykDNX9iLru9WnY4mZ5i9J8QSupSfazN-dK8cEyzfLuk1O-jNnlFs-CsjpjeHLLIeLsjUGS8Rs-F9SUFxW-95SIBELXtKsgCAR2FoBXCwXrrx4BUkOZx7Rp6e2ph0tYKdo5B369s-LHO_2WhMyeFNlXnjTbJ9gqrYc-9HeCENGzNKgMa5K8wPvRkl5XfGPKuFiNiicWmQfd5mUrBf5BMuJQ2wpXX2Zqeb66TNbAwIx3yt4Tt38ZVC1CUpcDEx3qvPVY7P44t8c5ig"/>
+<div>
+<p class="text-sm font-semibold">Elara Finch</p>
+<p class="text-xs text-stone-400">@midnight_ink</p>
+</div>
+</div>
+<button class="text-[#FF6B2B] text-xs font-semibold hover:underline">Follow</button>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-4">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Profile of a writer at a desk with a warm desk lamp, cinematic atmosphere" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4PAc3yF464jmjIbhNVW4xKeot4LfLiPU8wNpeyQZJ29MPmnyt8hplju5XvFnDcO8EwIMQitX3E_KIsH1CcFho6S7z4N-mqfTJ2oHyVIBXtKt6gOkRymWh94hA5P3TqZQCkzdH2jWUlMxJ-i2PLRqIj583XoAv_p9lnKFQACaaqkLB_KLFIfNLs93Qh-6yNV9mnOi77jRwW85t1obeoZbhh14MRihj32-xAZHr1ZRHmvJitJzqU3gEFxHjEQK_JB5E3jb9QEZvzFI"/>
+<div>
+<p class="text-sm font-semibold">Theo Marks</p>
+<p class="text-xs text-stone-400">@unsent_london</p>
+</div>
+</div>
+<button class="text-[#FF6B2B] text-xs font-semibold hover:underline">Follow</button>
+</div>
+</div>
+<button class="w-full mt-8 text-center text-stone-400 text-xs font-semibold hover:text-stone-600 transition-colors uppercase tracking-widest">See More Authors</button>
+</div>
+</aside>
+</div>
+</main>
+<!-- Postmark Badge Example -->
+<div class="fixed bottom-8 right-8 z-40 group">
+<div class="bg-white p-4 rounded-full card-shadow border border-[#EDE8E3] flex items-center justify-center w-16 h-16 cursor-pointer hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[#FF6B2B]" data-weight="fill">add</span>
+</div>
+<div class="absolute bottom-20 right-0 opacity-0 group-hover:opacity-100 transition-opacity bg-stone-800 text-white text-[10px] px-3 py-1 rounded whitespace-nowrap">
+            COMPOSE NEW ARCHIVE
+        </div>
+</div>
+</body></html>

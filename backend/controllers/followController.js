@@ -3,11 +3,21 @@ const asyncHandler = require("../utils/asyncHandler");
 const ApiError = require("../utils/ApiError");
 const { getPagination } = require("../utils/pagination");
 
+const requireFolloweeId = (req, next) => {
+  const followeeId = req.params.id || (req.body && req.body.followeeId);
+  if (!followeeId) {
+    next(new ApiError(400, "followeeId is required"));
+    return null;
+  }
+  return followeeId;
+};
+
 // @desc    Follow a user
 // @route   POST /api/users/:id/follow
 // @access  Private
 const followUser = asyncHandler(async (req, res, next) => {
-  const followeeId = req.params.id;
+  const followeeId = requireFolloweeId(req, next);
+  if (!followeeId) return;
   const followerId = req.user.id;
 
   if (followeeId === followerId) {
@@ -38,7 +48,8 @@ const followUser = asyncHandler(async (req, res, next) => {
 // @route   DELETE /api/users/:id/follow
 // @access  Private
 const unfollowUser = asyncHandler(async (req, res, next) => {
-  const followeeId = req.params.id;
+  const followeeId = requireFolloweeId(req, next);
+  if (!followeeId) return;
   const followerId = req.user.id;
 
   const result = await Follow.deleteOne({ followerId, followeeId });
@@ -115,8 +126,20 @@ const getFollowing = asyncHandler(async (req, res, next) => {
 });
 
 module.exports = {
+  // Existing nested routes
   followUser,
   unfollowUser,
   getFollowers,
   getFollowing,
+  // Frontend-compatible global routes
+  followUserGlobal: followUser,
+  unfollowUserGlobal: unfollowUser,
+  getFollowersGlobal: asyncHandler(async (req, res, next) => {
+    req.params.id = req.query.userId || req.user.id;
+    return getFollowers(req, res, next);
+  }),
+  getFollowingGlobal: asyncHandler(async (req, res, next) => {
+    req.params.id = req.query.userId || req.user.id;
+    return getFollowing(req, res, next);
+  }),
 };

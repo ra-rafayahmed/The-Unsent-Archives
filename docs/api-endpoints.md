@@ -25,6 +25,9 @@ Endpoints for the core text-content creation system.
 * **POST `/api/posts/:id/repost`** - Share or repost an existing post to your own feed.
 * **POST `/api/posts/:id/comments`** - Add a comment to a post.
 * **DELETE `/api/posts/:id/comments/:commentId`** - Delete a specific comment.
+* **POST `/api/posts/:id/reactions`** - Add a reaction (like, love, sad, etc.) to a post.
+* **DELETE `/api/posts/:id/reactions`** - Remove your reaction from a post.
+* **GET `/api/posts/:id/reactions`** - Fetch the total reaction summary metrics for a post.
 
 ## 4. Collections
 Endpoints for the Pinterest-style "boards" where users group saved notes.
@@ -54,12 +57,9 @@ Endpoints for the private reporting dashboards for authors.
 * **GET `/api/posts/:id/analytics`** - Get view/reach metrics for a specific post.
 * **GET `/api/users/:id/analytics`** - Get aggregate interaction metrics for the user account wrapper.
 
-## 8. Social Interaction (Follows & Reactions)
-*(Note: These specific modules exist in the codebase but may be mapped uniquely under posts or users)*
-* **POST `/follow`** - Follow a target user.
-* **DELETE `/follow`** - Unfollow a target user.
-* **GET `/followers`** - List users following an account.
-* **GET `/following`** - List users an account is following.
-* **POST `/reaction`** - Cast a like/favorite on a post.
-* **DELETE `/reaction`** - Remove a like/favorite from a post.
-* **GET `/reaction`** - Fetch the list of reactions for an entity.
+## 8. Social Interaction (Follows)
+
+* **POST `/api/follows`** - Follow a target user (if mapped globally).
+* **DELETE `/api/follows`** - Unfollow a target user.
+* **GET `/api/follows/followers`** - List users following an account.
+* **GET `/api/follows/following`** - List users an account is following.

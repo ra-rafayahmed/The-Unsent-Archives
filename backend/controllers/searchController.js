@@ -1,4 +1,4 @@
-const { SearchIndex, Post } = require("../models");
+const { SearchIndex, Post, User, Tag } = require("../models");
 const asyncHandler = require("../utils/asyncHandler");
 const { getPagination } = require("../utils/pagination");
 
@@ -10,7 +10,7 @@ const search = asyncHandler(async (req, res, next) => {
   const { page, limit, skip } = getPagination(req.query.page, req.query.limit);
 
   if (!q && !tag && !user) {
-    return res.status(200).json({ status: "success", results: 0, posts: [] });
+    return res.status(200).json({ status: "success", results: 0, posts: [], users: [], tags: [] });
   }
 
   const query = { visibility: "public" }; // Only search public posts
@@ -45,29 +45,66 @@ const search = asyncHandler(async (req, res, next) => {
     SearchIndex.countDocuments(query)
   ]);
 
-  // If no hits, return empty
-  if (indexHits.length === 0) {
-    return res.status(200).json({ status: "success", results: 0, total: 0, page, posts: [] });
-  }
-
-  // Extract post IDs
   const postIds = indexHits.map(hit => hit.postId);
 
-  // Fetch full posts
-  const posts = await Post.find({ _id: { $in: postIds } })
-    .populate("authorId", "username avatarUrl")
-    .populate("tagIds", "name slug");
+  const posts = postIds.length
+    ? await Post.find({ _id: { $in: postIds } })
+        .populate("authorId", "username avatarUrl")
+        .populate("tagIds", "name slug")
+    : [];
 
-  // Re-sort posts according to the indexHits order (since $in doesn't preserve order)
-  const orderedPosts = postIds.map(id => posts.find(p => p._id.toString() === id.toString())).filter(Boolean);
+  const orderedPosts = postIds
+    .map(id => posts.find(p => p._id.toString() === id.toString()))
+    .filter(Boolean);
+
+  const cleanedPosts = orderedPosts.map((post) => {
+    const postObj = post.toObject();
+    const isOwner = req.user && postObj.authorId && req.user.id === postObj.authorId._id.toString();
+
+    if (postObj.isAnonymous && !isOwner) {
+      postObj.authorId = null;
+    }
+
+    return postObj;
+  });
+
+  const userQuery = {};
+  const userSearchTerm = user || q;
+  if (userSearchTerm) {
+    const escaped = userSearchTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    userQuery.$or = [
+      { username: { $regex: escaped, $options: "i" } },
+      { "profile.displayName": { $regex: escaped, $options: "i" } },
+    ];
+  }
+
+  const users = userSearchTerm
+    ? await User.find(userQuery)
+        .select("username avatarUrl bio profile.displayName")
+        .limit(10)
+    : [];
+
+  const tagSearchTerm = tag || q;
+  const tags = tagSearchTerm
+    ? await Tag.find({
+        $or: [
+          { slug: { $regex: tagSearchTerm, $options: "i" } },
+          { name: { $regex: tagSearchTerm, $options: "i" } },
+        ],
+      })
+        .sort({ usageCount: -1 })
+        .limit(10)
+    : [];
 
   res.status(200).json({
     status: "success",
-    results: orderedPosts.length,
+    results: cleanedPosts.length,
     total,
     page,
     pages: Math.ceil(total / limit),
-    posts: orderedPosts
+    posts: cleanedPosts,
+    users,
+    tags,
   });
 });
 

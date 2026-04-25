@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;family=Work+Sans:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed": "#e2e2e2",
+                        "surface-tint": "#a83900",
+                        "surface-container-high": "#ebe8e4",
+                        "on-secondary-fixed-variant": "#494640",
+                        "tertiary-container": "#989999",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#f6f3ef",
+                        "surface-variant": "#e5e2de",
+                        "error": "#ba1a1a",
+                        "secondary": "#615e57",
+                        "on-secondary-container": "#67645d",
+                        "on-background": "#1c1c1a",
+                        "secondary-fixed": "#e7e2d9",
+                        "on-secondary": "#ffffff",
+                        "on-primary-container": "#5c1c00",
+                        "outline": "#8d7167",
+                        "on-error": "#ffffff",
+                        "surface-dim": "#dcdad6",
+                        "tertiary": "#5d5f5f",
+                        "primary": "#a83900",
+                        "on-tertiary-fixed-variant": "#454747",
+                        "surface-container": "#f0edea",
+                        "primary-fixed-dim": "#ffb59a",
+                        "on-tertiary-fixed": "#1a1c1c",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#ffdbce",
+                        "surface": "#fcf9f5",
+                        "secondary-container": "#e7e2d9",
+                        "on-surface-variant": "#594138",
+                        "background": "#fcf9f5",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed-dim": "#cbc6bd",
+                        "inverse-surface": "#31302e",
+                        "on-primary-fixed-variant": "#802a00",
+                        "on-surface": "#1c1c1a",
+                        "inverse-on-surface": "#f3f0ec",
+                        "outline-variant": "#e2bfb3",
+                        "on-secondary-fixed": "#1d1b16",
+                        "error-container": "#ffdad6",
+                        "primary-container": "#ff6b2b",
+                        "on-tertiary-container": "#2f3132",
+                        "on-primary-fixed": "#380d00",
+                        "tertiary-fixed-dim": "#c6c6c7",
+                        "surface-container-highest": "#e5e2de",
+                        "surface-bright": "#fcf9f5",
+                        "on-tertiary": "#ffffff",
+                        "inverse-primary": "#ffb59a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "stack-sm": "12px",
+                        "margin-desktop": "64px",
+                        "base": "8px",
+                        "stack-lg": "48px",
+                        "margin-mobile": "20px",
+                        "stack-md": "24px",
+                        "container-max": "1120px"
+                    },
+                    "fontFamily": {
+                        "quote-text": ["Newsreader"],
+                        "body-lg": ["Work Sans"],
+                        "headline-md": ["Newsreader"],
+                        "ui-button": ["Work Sans"],
+                        "display-serif": ["Newsreader"],
+                        "body-md": ["Work Sans"],
+                        "label-caps": ["Work Sans"],
+                        "headline-lg": ["Newsreader"]
+                    },
+                    "fontSize": {
+                        "quote-text": ["20px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                        "ui-button": ["14px", {"lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "display-serif": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "500"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #F5EFE6;
+            color: #1A1A18;
+            font-family: 'Work Sans', sans-serif;
+        }
+        .serif-text { font-family: 'Newsreader', serif; }
+        .text-mosaic-mask {
+            mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+        }
+        .grain-texture {
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.05;
+        }
+        .floating-action-button {
+            box-shadow: 0 8px 30px rgba(255, 107, 43, 0.4);
+        }
+    </style>
+</head>
+<body class="antialiased">
+<!-- TopNavBar -->
+<header class="bg-[#F5EFE6] dark:bg-stone-950 border-b border-stone-200/60 dark:border-stone-800 shadow-[0px_4px_20px_rgba(26,26,24,0.06)] fixed top-0 w-full z-50">
+<div class="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto">
+<div class="text-2xl font-newsreader font-semibold tracking-tighter text-stone-900 dark:text-stone-50">
+                The Unsent Archives
+            </div>
+<nav class="hidden md:flex items-center gap-8 font-serif font-newsreader leading-relaxed antialiased">
+<a class="text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 transition-all duration-300 ease-out hover:opacity-80" href="#">Home</a>
+<a class="text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 transition-all duration-300 ease-out hover:opacity-80" href="#">Explore</a>
+<a class="text-[#FF6B2B] dark:text-orange-400 border-b-2 border-[#FF6B2B] pb-1 font-medium transition-all duration-300 ease-out hover:opacity-80" href="#">Archives</a>
+</nav>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-stone-600 cursor-pointer" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-stone-600 cursor-pointer" data-icon="mail">mail</span>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-stone-200">
+<img alt="User's profile avatar" class="w-full h-full object-cover" data-alt="Close up portrait of a young woman with a calm expression in warm natural sunlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWQlFXjKxnWkLcPsAP_ckehpZDhD5EUJ4Na8bvMSbfT2bPnidpAImFxLJiUwQUPe0_-C-pCs-DSEu187mxxdRHF6Uhk8u7eQX0nzmMhNOUBfmstrWVbGqebhLJL69QSC5Ma6HUXhWiD6isJcQGMLwLszuyAiPAF87Xzty4NmiBS5Nq9R9ZkOixjwZpp-K308mwOygzmDRHUeHtuWy3F2BQXau0LZLEQM12WAjByWV-LwJlxxX5HArbidzYQ6QP_EYISgFqpxMmc7c"/>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-6 pt-32 pb-24 flex flex-col md:flex-row gap-12">
+<!-- Left Content Area -->
+<div class="flex-1">
+<!-- Header Section -->
+<div class="mb-10 flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+<div>
+<h1 class="font-headline-md text-[#1A1A18] font-serif mb-1">My Collections</h1>
+<p class="font-quote-text italic text-[#9A8F87] text-sm opacity-80">Curate the words that stayed with you.</p>
+</div>
+<button class="bg-primary-container text-on-primary font-ui-button px-6 py-3 rounded-full transition-all duration-300 hover:scale-105 active:scale-95 shadow-md">
+                    + New Collection
+                </button>
+</div>
+<!-- Tabs -->
+<div class="flex gap-4 mb-8">
+<button class="bg-[#FF6B2B] text-white px-5 py-2 rounded-full font-ui-button text-sm">My Collections</button>
+<button class="bg-white border border-[#C8BFB8] text-[#9A8F87] px-5 py-2 rounded-full font-ui-button text-sm hover:bg-stone-50 transition-colors">Saved by Others</button>
+</div>
+<!-- Collection Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Card 1 -->
+<div class="bg-white rounded-xl shadow-[0px_4px_20px_rgba(26,26,24,0.06)] overflow-hidden h-[340px] flex flex-col group cursor-pointer transition-all duration-300 hover:-translate-y-2">
+<div class="h-[60%] bg-[#FDFBF7] relative overflow-hidden flex items-center justify-center p-4">
+<div class="grain-texture absolute inset-0"></div>
+<div class="absolute inset-0 flex flex-wrap gap-2 p-6 opacity-30 select-none pointer-events-none">
+<span class="text-xs font-serif italic rotate-3">"the truth about us..."</span>
+<span class="text-sm font-serif -rotate-6">"never really left"</span>
+<span class="text-xs font-serif rotate-12">"midnight rain"</span>
+<span class="text-lg font-serif -rotate-12 opacity-40">"I wish I told you"</span>
+</div>
+<span class="material-symbols-outlined text-[#1A1A18]/20 text-6xl" data-icon="auto_stories">auto_stories</span>
+</div>
+<div class="p-5 flex-1 flex flex-col justify-between">
+<div>
+<h3 class="font-headline-md text-lg text-[#1A1A18]">Letters I Never Sent</h3>
+<div class="flex items-center gap-2 mt-2">
+<span class="material-symbols-outlined text-xs text-[#9A8F87]" data-icon="public">public</span>
+<span class="font-label-caps text-[10px] text-[#9A8F87]">Public Archive</span>
+</div>
+</div>
+<div class="text-[#9A8F87] text-xs font-label-caps uppercase tracking-widest">42 Notes</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-white rounded-xl shadow-[0px_4px_20px_rgba(26,26,24,0.06)] overflow-hidden h-[340px] flex flex-col group cursor-pointer transition-all duration-300 hover:-translate-y-2">
+<div class="h-[60%] bg-[#1A1A18] relative overflow-hidden flex items-center justify-center p-4">
+<div class="absolute inset-0 flex flex-col gap-4 p-8 opacity-20 text-white font-serif italic select-none">
+<span class="text-xl rotate-1">Quiet...</span>
+<span class="text-sm self-end -rotate-3">Thinking of you.</span>
+</div>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-white/40" data-icon="lock" data-weight="fill" style="font-variation-settings: 'FILL' 1;">lock</span>
+<span class="material-symbols-outlined text-white/40" data-icon="music_note">music_note</span>
+</div>
+</div>
+<div class="p-5 flex-1 flex flex-col justify-between">
+<div>
+<h3 class="font-headline-md text-lg text-[#1A1A18]">3am Thoughts</h3>
+<div class="flex items-center gap-2 mt-2">
+<span class="material-symbols-outlined text-xs text-[#9A8F87]" data-icon="lock">lock</span>
+<span class="font-label-caps text-[10px] text-[#9A8F87]">Private Collection</span>
+</div>
+</div>
+<div class="text-[#9A8F87] text-xs font-label-caps uppercase tracking-widest">128 Notes</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-white rounded-xl shadow-[0px_4px_20px_rgba(26,26,24,0.06)] overflow-hidden h-[340px] flex flex-col group cursor-pointer transition-all duration-300 hover:-translate-y-2">
+<div class="h-[60%] bg-[#FFEBEA] relative overflow-hidden flex items-center justify-center p-4">
+<div class="absolute inset-0 flex items-center justify-center opacity-10">
+<span class="text-6xl font-serif">Gratitude</span>
+</div>
+<div class="flex -space-x-2">
+<img alt="Collaborator" class="w-10 h-10 rounded-full border-2 border-white object-cover" data-alt="Portrait of a young man with glasses and creative aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_iZbIkKtHqp6K4Wp680XMjgDg6PAFI5BzVv_SYauQDK5bcIylKOzbtVtYFU8GhhDSi-suQzIo8ZboQEkyhTprWh0nmablJ-2STv4XBfcnch4CqQlhulEH6VGaWjidG0G7YFPDjFG8rzFYGNm8z2CFP3_Nc0IUzOG29ACqiucCeDJ8yVHjyxzSI7zvJge2wQm2H8pdZ3jSHSuT52Wd1N2UlcXcXkbg8pxUr4uHKOiYQ8Wx0Kkufk6Hj6FH1jPt_RjrfwVtg72LGCQ"/>
+<img alt="Collaborator" class="w-10 h-10 rounded-full border-2 border-white object-cover" data-alt="Portrait of a woman smiling warmly in soft outdoor lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA07ItK01SvvCe1AlFTZtTSOVAFVUgvYcuI3DRSnRPJWg2kLcX9DRsX9atwSsxrBdLQt4DjWPvD0dtr1FVjElc7hsCp2icM_6vcDDbBNB7eMDi8nNuC1vcxRnEzh5MfmpPz_jbA77L0d_50NU0uV3FnzUFcBpqVROcK_k4yuNcbCiC5fGRov6BIc4641LH6dLrqQOluN1Ky1cwE0tC2bZaxg26ZX7zUCOWeaIwFrZprxkTUv_F4zo6FFhV9HXh1gu9p8Xfoz7Rbnew"/>
+<img alt="Collaborator" class="w-10 h-10 rounded-full border-2 border-white object-cover" data-alt="Close up of a man with expressive eyes and artistic style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEL4ui_nOwn5fOqb-Bd7RQywO7TCDP_ayHXOU6BxNZHP3r3ruVm0leWYCri1jb9iU1Lex_DJdG31s3M0NmrH96VOzmnepgaB6bhH2j0dHqSu975vd2ak7QQmz0n69vSkE7RnKBqkSipOXEV0ncnIRJJlElpzGueyVgVeaAa6nwT4kmpgtJWleK9BVR4WoOBlQBZJsSNie13V5k59Ht6kwKBP5VmgTLw1i3aTjmKrJf_a-vjDstEe4Pm3xMX8xALIUfnXpIKwl48ys"/>
+</div>
+</div>
+<div class="p-5 flex-1 flex flex-col justify-between">
+<div>
+<h3 class="font-headline-md text-lg text-[#1A1A18]">On Grief and Gratitude</h3>
+<div class="flex items-center gap-2 mt-2">
+<span class="material-symbols-outlined text-xs text-[#9A8F87]" data-icon="groups">groups</span>
+<span class="font-label-caps text-[10px] text-[#9A8F87]">Collaborative</span>
+</div>
+</div>
+<div class="text-[#9A8F87] text-xs font-label-caps uppercase tracking-widest">56 Notes</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-white rounded-xl shadow-[0px_4px_20px_rgba(26,26,24,0.06)] overflow-hidden h-[340px] flex flex-col group cursor-pointer transition-all duration-300 hover:-translate-y-2">
+<div class="h-[60%] bg-[#E8F1E9] relative overflow-hidden flex items-center justify-center p-4">
+<div class="absolute top-4 right-4 bg-primary-container text-white text-[10px] font-label-caps px-2 py-1 rounded">TRENDING</div>
+<span class="material-symbols-outlined text-[#4A5D4C]/30 text-6xl" data-icon="ink_pen">ink_pen</span>
+</div>
+<div class="p-5 flex-1 flex flex-col justify-between">
+<div>
+<h3 class="font-headline-md text-lg text-[#1A1A18]">Micro-Poetry</h3>
+<div class="flex items-center gap-2 mt-2">
+<span class="material-symbols-outlined text-xs text-[#9A8F87]" data-icon="trending_up">trending_up</span>
+<span class="font-label-caps text-[10px] text-[#9A8F87]">High Engagement</span>
+</div>
+</div>
+<div class="text-[#9A8F87] text-xs font-label-caps uppercase tracking-widest">312 Notes</div>
+</div>
+</div>
+<!-- Card 5 (Placeholder) -->
+<div class="bg-transparent border-2 border-dashed border-[#EDE8E3] rounded-xl h-[340px] flex flex-col items-center justify-center group cursor-pointer transition-all duration-300 hover:border-primary-container hover:bg-white">
+<div class="w-12 h-12 rounded-full bg-[#EDE8E3] group-hover:bg-primary-fixed flex items-center justify-center transition-colors mb-4">
+<span class="material-symbols-outlined text-stone-500 group-hover:text-primary" data-icon="add">add</span>
+</div>
+<span class="font-ui-button text-[#9A8F87] group-hover:text-primary transition-colors">Create New Collection</span>
+</div>
+<!-- Card 6 -->
+<div class="bg-white rounded-xl shadow-[0px_4px_20px_rgba(26,26,24,0.06)] overflow-hidden h-[340px] flex flex-col group cursor-pointer transition-all duration-300 hover:-translate-y-2">
+<div class="h-[60%] bg-white relative overflow-hidden flex items-center justify-center">
+<div class="grain-texture absolute inset-0 opacity-10"></div>
+<div class="absolute top-4 right-4 flex -space-x-1 scale-75 origin-top-right">
+<div class="w-8 h-8 rounded-full bg-stone-200 border border-white"></div>
+<div class="w-8 h-8 rounded-full bg-stone-300 border border-white"></div>
+<div class="w-8 h-8 rounded-full bg-stone-400 border border-white"></div>
+</div>
+<span class="material-symbols-outlined text-[#1A1A18]/10 text-7xl" data-icon="bookmark">bookmark</span>
+</div>
+<div class="p-5 flex-1 flex flex-col justify-between">
+<div>
+<h3 class="font-headline-md text-lg text-[#1A1A18]">Saved From Others</h3>
+<div class="flex items-center gap-2 mt-2">
+<span class="material-symbols-outlined text-xs text-[#9A8F87]" data-icon="folder_shared">folder_shared</span>
+<span class="font-label-caps text-[10px] text-[#9A8F87]">External Curation</span>
+</div>
+</div>
+<div class="text-[#9A8F87] text-xs font-label-caps uppercase tracking-widest">88 Notes</div>
+</div>
+</div>
+</div>
+<!-- Scrollable section -->
+<section class="mt-20">
+<h2 class="font-headline-md text-xl mb-6">Collections you might like</h2>
+<div class="flex gap-6 overflow-x-auto pb-6 scrollbar-hide no-scrollbar">
+<div class="min-w-[200px] h-24 bg-white rounded-lg shadow-sm flex items-center p-3 gap-3 border border-[#EDE8E3] hover:shadow-md transition-shadow cursor-pointer shrink-0">
+<div class="w-12 h-12 bg-stone-100 rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-stone-400" data-icon="history_edu">history_edu</span>
+</div>
+<div>
+<p class="font-ui-button text-xs font-bold">Unfinished</p>
+<p class="text-[10px] text-[#9A8F87]">By Clara M.</p>
+</div>
+</div>
+<div class="min-w-[200px] h-24 bg-white rounded-lg shadow-sm flex items-center p-3 gap-3 border border-[#EDE8E3] hover:shadow-md transition-shadow cursor-pointer shrink-0">
+<div class="w-12 h-12 bg-orange-50 rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-orange-200" data-icon="favorite">favorite</span>
+</div>
+<div>
+<p class="font-ui-button text-xs font-bold">Summer Echoes</p>
+<p class="text-[10px] text-[#9A8F87]">By Julian K.</p>
+</div>
+</div>
+<div class="min-w-[200px] h-24 bg-white rounded-lg shadow-sm flex items-center p-3 gap-3 border border-[#EDE8E3] hover:shadow-md transition-shadow cursor-pointer shrink-0">
+<div class="w-12 h-12 bg-stone-800 rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-white/30" data-icon="dark_mode">dark_mode</span>
+</div>
+<div>
+<p class="font-ui-button text-xs font-bold">Night Letters</p>
+<p class="text-[10px] text-[#9A8F87]">By The Ghost</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Sidebar -->
+<aside class="w-full md:w-[260px] flex flex-col gap-8">
+<!-- Stats Card -->
+<div class="bg-white p-6 rounded-xl shadow-[0px_4px_20px_rgba(26,26,24,0.06)] border border-[#EDE8E3]">
+<h4 class="font-label-caps text-xs text-[#9A8F87] mb-6 tracking-widest">COLLECTION STATS</h4>
+<div class="space-y-4">
+<div class="flex justify-between items-center">
+<span class="text-sm font-ui-button">Total Notes</span>
+<span class="font-headline-md text-lg">341</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-sm font-ui-button">Collections</span>
+<span class="font-headline-md text-lg">6</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-sm font-ui-button">Followers</span>
+<span class="font-headline-md text-lg">1.4k</span>
+</div>
+</div>
+</div>
+<!-- Tags Card -->
+<div class="bg-white p-6 rounded-xl shadow-[0px_4px_20px_rgba(26,26,24,0.06)] border border-[#EDE8E3]">
+<h4 class="font-label-caps text-xs text-[#9A8F87] mb-6 tracking-widest">SUGGESTED TAGS</h4>
+<div class="flex flex-wrap gap-2">
+<span class="bg-[#FDFBF7] text-[#FF6B2B] px-3 py-1.5 rounded-full text-[10px] font-label-caps border border-orange-100 hover:bg-orange-50 cursor-pointer transition-colors">UNREQUITED</span>
+<span class="bg-[#FDFBF7] text-[#FF6B2B] px-3 py-1.5 rounded-full text-[10px] font-label-caps border border-orange-100 hover:bg-orange-50 cursor-pointer transition-colors">MIDNIGHT</span>
+<span class="bg-[#FDFBF7] text-[#FF6B2B] px-3 py-1.5 rounded-full text-[10px] font-label-caps border border-orange-100 hover:bg-orange-50 cursor-pointer transition-colors">REGRETS</span>
+<span class="bg-[#FDFBF7] text-[#FF6B2B] px-3 py-1.5 rounded-full text-[10px] font-label-caps border border-orange-100 hover:bg-orange-50 cursor-pointer transition-colors">LONGING</span>
+<span class="bg-[#FDFBF7] text-[#FF6B2B] px-3 py-1.5 rounded-full text-[10px] font-label-caps border border-orange-100 hover:bg-orange-50 cursor-pointer transition-colors">HEALING</span>
+</div>
+</div>
+<!-- Writers Card -->
+<div class="bg-white p-6 rounded-xl shadow-[0px_4px_20px_rgba(26,26,24,0.06)] border border-[#EDE8E3]">
+<h4 class="font-label-caps text-[10px] text-[#9A8F87] mb-6 tracking-widest leading-tight">WRITERS YOU SAVE MOST</h4>
+<div class="space-y-6">
+<div class="flex items-center justify-between gap-3">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-stone-100 overflow-hidden">
+<img alt="Writer" class="w-full h-full object-cover" data-alt="Close up portrait of a young woman with a thoughtful expression and neutral tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnlKsJCp1NNYLwmhst45OMRE_pkXCg0WVGlMXh__Rym6mCOC-Bqtgn4lEZ6s4gkEyUZ9WlHeedo_8Sf_KGlb1fqqCRJX5pDedoz-mHI2jT6MvDXDIB-d67SwWPXQIdfXi3gLrslDnQFxwD5RgIW1n6Z1GLO9E5BkAo8uNPmfLGEHWakqcUapDoBs266bFRsOdN7Wrey13hGZCGNDH2PjTMxuANzyO7mcbt7bc85OcAiwrqUNtlh_zXn2xCE4Y86aK22CdQQc6mR1A"/>
+</div>
+<span class="text-xs font-medium">Elena S.</span>
+</div>
+<button class="text-[#FF6B2B] text-[10px] font-label-caps hover:underline">FOLLOW</button>
+</div>
+<div class="flex items-center justify-between gap-3">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-stone-100 overflow-hidden">
+<img alt="Writer" class="w-full h-full object-cover" data-alt="Portrait of a man with a scholarly appearance in soft interior library lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwwo87MxxjwYv_28DHxCX241bNROzvZy-2JnjLkCSzJBSm0Bb9ij-HJTdhczhLZq4GX6_wAsX59Ultut2ePY_3Kuaa4D9rz55dRAme0hiwaQ7Dqpnr3d2T1Mkn73XQ4dnbYs12L2QbirnflsgQhJwHO1Voyu70YPnLcAnNQvYBtnsndOE1fWIiFzeRU-FZ_IapdCey9oCpTDbgnrWJNeDEKrtUEdtW6PXP8OlsJEpEVmHH1Qhs6pNTAus0WImgDAIGRIcWYvfxRfk"/>
+</div>
+<span class="text-xs font-medium">Marcus V.</span>
+</div>
+<button class="text-[#FF6B2B] text-[10px] font-label-caps hover:underline">FOLLOW</button>
+</div>
+<div class="flex items-center justify-between gap-3">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-stone-100 overflow-hidden">
+<img alt="Writer" class="w-full h-full object-cover" data-alt="Artistic profile portrait of a woman with dramatic lighting and a soft focus" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUy4JqqxgmGHYEC9koOk3U-KZQlKxqd6gCkJQ6TYrtZJupLXjBTOHxnVpTOwnwUqFwb4FF4VTE5Pr8WaomOR4hIebzKXNQVvYDjbhClFb4QZZEogo4y9r01_DnNyEww3qX2SxzNDlJ2iU8Kgfp0fF3D7M51Bmq55EiOxLkNuMCoyrfgDJZ3sYd8Up2qgl_LtlHuEbHmKPRe2ncBUfKdgZQS1NJ7CKDJ0e8XHbbRA4MwBhyFyy3T_7GVgTAXnmLT1gt_Bj3Pr4j0Nk"/>
+</div>
+<span class="text-xs font-medium">Sia Rose</span>
+</div>
+<button class="text-[#FF6B2B] text-[10px] font-label-caps hover:underline">FOLLOW</button>
+</div>
+</div>
+</div>
+</aside>
+</main>
+<!-- FAB -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-primary-container rounded-full flex items-center justify-center text-white floating-action-button transition-transform hover:scale-110 active:scale-90 z-40">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+<!-- Mobile Bottom Nav -->
+<div class="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-3 pb-safe bg-white/90 dark:bg-stone-900/90 backdrop-blur-md border-t border-stone-100 dark:border-stone-800 shadow-[0px_-4px_20px_rgba(26,26,24,0.04)] z-50">
+<div class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-600 transition-all duration-300">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-serif font-newsreader text-[11px] tracking-wide uppercase mt-1">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-600 transition-all duration-300">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span class="font-serif font-newsreader text-[11px] tracking-wide uppercase mt-1">Explore</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#FF6B2B] dark:text-orange-400 font-bold transition-all duration-300">
+<span class="material-symbols-outlined" data-icon="auto_stories" data-weight="fill" style="font-variation-settings: 'FILL' 1;">auto_stories</span>
+<span class="font-serif font-newsreader text-[11px] tracking-wide uppercase mt-1">Archives</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-600 transition-all duration-300">
+<span class="material-symbols-outlined" data-icon="mail">mail</span>
+<span class="font-serif font-newsreader text-[11px] tracking-wide uppercase mt-1">Inbox</span>
+</div>
+</div>
+</body></html>

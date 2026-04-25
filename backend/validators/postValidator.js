@@ -2,7 +2,7 @@ const Joi = require("joi");
 
 const createPostSchema = Joi.object({
   content: Joi.string().min(1).max(5000).required(),
-  visibility: Joi.string().valid("public", "followers", "private").default("public"),
+  visibility: Joi.string().valid("public", "followers", "private", "anonymous").default("public"),
   isAnonymous: Joi.boolean().default(false),
   style: Joi.object({
     font: Joi.string().default("sans-serif"),
@@ -19,11 +19,12 @@ const createPostSchema = Joi.object({
     })
   ).default([]),
   tags: Joi.array().items(Joi.string().regex(/^[a-zA-Z0-9-]+$/).message("Tags can only contain alphanumeric characters and hyphens")).max(10).default([]),
+  tagSlugs: Joi.array().items(Joi.string().regex(/^[a-zA-Z0-9-]+$/).message("Tag slugs can only contain alphanumeric characters and hyphens")).max(10).optional(),
 });
 
 const updatePostSchema = Joi.object({
   content: Joi.string().min(1).max(5000).optional(),
-  visibility: Joi.string().valid("public", "followers", "private").optional(),
+  visibility: Joi.string().valid("public", "followers", "private", "anonymous").optional(),
   isAnonymous: Joi.boolean().optional(),
   style: Joi.object({
     font: Joi.string().optional(),
@@ -40,6 +41,7 @@ const updatePostSchema = Joi.object({
     })
   ).optional(),
   tags: Joi.array().items(Joi.string().regex(/^[a-zA-Z0-9-]+$/)).max(10).optional(),
+  tagSlugs: Joi.array().items(Joi.string().regex(/^[a-zA-Z0-9-]+$/)).max(10).optional(),
 });
 
 module.exports = {

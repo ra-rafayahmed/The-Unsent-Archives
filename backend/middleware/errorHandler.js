@@ -22,6 +22,16 @@ const errorHandler = (err, req, res, next) => {
     message = `Resource not found with that ID`;
   }
 
+  if (err.name === "MulterError") {
+    statusCode = 400;
+
+    if (err.code === "LIMIT_FILE_SIZE") {
+      message = "File too large. Max upload size is 15MB";
+    } else {
+      message = "Upload failed";
+    }
+  }
+
   res.status(statusCode).json({
     status: statusCode.toString().startsWith("4") ? "fail" : "error",
     statusCode,

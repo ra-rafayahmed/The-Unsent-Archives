@@ -9,6 +9,7 @@ module.exports = {
   Tag:            require("./Tag"),
   Reaction:       require("./Reaction"),
   Collection:     require("./Collection"),
+  MediaAsset:     require("./MediaAsset"),
   AnalyticsEvent: require("./AnalyticsEvent"),
   SearchIndex:    require("./SearchIndex"),
 };

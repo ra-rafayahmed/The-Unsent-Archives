@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
+const path = require("path");
 const requestLogger = require("./middleware/requestLogger");
 const rateLimiter = require("./middleware/rateLimiter");
 const routes = require("./routes");
@@ -14,6 +15,7 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // 2. Logging
 app.use(requestLogger);

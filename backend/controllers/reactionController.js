@@ -1,6 +1,7 @@
 const { Reaction, Post } = require("../models");
 const asyncHandler = require("../utils/asyncHandler");
 const ApiError = require("../utils/ApiError");
+const mongoose = require("mongoose");
 
 // @desc    React to a post
 // @route   POST /api/posts/:id/reactions
@@ -31,11 +32,14 @@ const addReaction = asyncHandler(async (req, res, next) => {
     });
   } catch (error) {
     if (error.code === 11000) {
-      // User already reacted with THIS type, or we could change the model to allow only 1 reaction per user totally.
-      // With current schema { postId: 1, userId: 1, type: 1 } unique, they can 'like' and 'love'.
-      // If we want 1 reaction max per user per post, we should change schema index to { postId: 1, userId: 1 }.
-      // Let's assume current schema allows multiple types or we handle conflict.
-      return next(new ApiError(409, "You have already cast this reaction"));
+      // If same reaction already exists, treat this as a toggle-off for smoother UX.
+      await Reaction.deleteOne({ postId, userId, type });
+      await Post.findByIdAndUpdate(postId, { $inc: { reactionCount: -1 } });
+
+      return res.status(200).json({
+        status: "success",
+        message: "Reaction removed",
+      });
     }
     next(error);
   }
@@ -77,7 +81,7 @@ const getReactions = asyncHandler(async (req, res, next) => {
   const postId = req.params.id;
 
   const summary = await Reaction.aggregate([
-    { $match: { postId: require('mongoose').Types.ObjectId(postId) } },
+    { $match: { postId: new mongoose.Types.ObjectId(postId) } },
     { $group: { _id: "$type", count: { $sum: 1 } } }
   ]);
 

@@ -2,6 +2,24 @@ const { Post, Tag, SearchIndex, Collection, Reaction, AnalyticsEvent } = require
 const asyncHandler = require("../utils/asyncHandler");
 const ApiError = require("../utils/ApiError");
 
+const normalizePostInput = (body) => {
+  const normalizedVisibility = body.visibility === "anonymous" ? "public" : body.visibility;
+  const normalizedAnonymous =
+    body.visibility === "anonymous" ? true : Boolean(body.isAnonymous);
+  const normalizedTags =
+    Array.isArray(body.tagSlugs) && body.tagSlugs.length > 0
+      ? body.tagSlugs
+      : Array.isArray(body.tags)
+        ? body.tags
+        : [];
+
+  return {
+    visibility: normalizedVisibility,
+    isAnonymous: normalizedAnonymous,
+    tags: normalizedTags,
+  };
+};
+
 // Helper to process tags: creates missing tags, increments counts, returns ObjectIds and Slugs
 const processTags = async (tagNames) => {
   if (!tagNames || tagNames.length === 0) return { tagIds: [], tagSlugs: [] };
@@ -35,7 +53,8 @@ const processTags = async (tagNames) => {
 // @route   POST /api/posts
 // @access  Private
 const createPost = asyncHandler(async (req, res, next) => {
-  const { content, visibility, isAnonymous, style, media, tags } = req.body;
+  const { content, style, media } = req.body;
+  const { visibility, isAnonymous, tags } = normalizePostInput(req.body);
 
   const { tagIds, tagSlugs } = await processTags(tags);
 
@@ -129,17 +148,28 @@ const updatePost = asyncHandler(async (req, res, next) => {
 
   // Update fields
   const allowedUpdates = ["content", "visibility", "isAnonymous", "style", "media"];
+  const normalizedInput = normalizePostInput(req.body);
+
+  if (req.body.visibility !== undefined) {
+    post.visibility = normalizedInput.visibility;
+  }
+
+  if (req.body.isAnonymous !== undefined || req.body.visibility === "anonymous") {
+    post.isAnonymous = normalizedInput.isAnonymous;
+  }
+
   allowedUpdates.forEach(field => {
+    if (field === "visibility" || field === "isAnonymous") return;
     if (req.body[field] !== undefined) {
       post[field] = req.body[field];
     }
   });
 
   // Handle tags update (complex: requires diffing and adjusting Tag usageCounts)
-  if (req.body.tags !== undefined) {
+  if (req.body.tags !== undefined || req.body.tagSlugs !== undefined) {
      // Extremely simplified for this scale: we don't decrement old tags here to save time,
      // but in a production environment, you should $inc usageCount -1 for removed tags.
-     const { tagIds, tagSlugs } = await processTags(req.body.tags);
+     const { tagIds, tagSlugs } = await processTags(normalizedInput.tags);
      post.tagIds = tagIds;
      post.tagSlugs = tagSlugs;
   }
