@@ -26,8 +26,9 @@ const recommendationSchema = new Schema(
       },
     ],
 
-    // Raw engagement history used to update the scores above
-    // Weights: view=1, save=2, react=3, comment=5
+    // Raw engagement history used to update the scores above.
+    // The weight values below are guidelines (view≈1, save≈2, react≈3, comment≈5);
+    // callers are responsible for supplying the appropriate weight when recording events.
     engagementHistory: [
       {
         postId:     { type: Schema.Types.ObjectId, ref: "Post" },

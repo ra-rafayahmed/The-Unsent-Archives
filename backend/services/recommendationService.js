@@ -6,12 +6,20 @@
 // to the top of the ranked list.
 //
 // Strategy weights (default scores per hit):
-//   follow-network      12  (explicit follow = strongest intent signal)
-//   tag-match           10 × matched-tag-count
-//   collaborative-filter 8
+//   follow-network      FOLLOW_SCORE (explicit follow = strongest intent signal)
+//   tag-match           TAG_SCORE_PER_MATCH × matched-tag-count
+//   collaborative-filter COLLABORATIVE_SCORE
 //   trending            engagement-score × recency-decay
 
 const { User, Post, Reaction, Follow } = require("../models");
+
+// Tuning constants — adjust here to change recommendation weighting
+const FOLLOW_SCORE          = 12;   // follow network hit score
+const TAG_SCORE_PER_MATCH   = 10;   // points per matched tag
+const COLLABORATIVE_SCORE   = 8;    // collaborative filter hit score
+const TRENDING_WINDOW_DAYS  = 7;    // look-back window for trending posts
+const REACTION_WEIGHT       = 2;    // multiplier for reaction count in trending score
+const VIEW_WEIGHT           = 0.5;  // multiplier for view count in trending score
 
 class RecommendationService {
   /**
@@ -63,7 +71,7 @@ class RecommendationService {
         tagIds.some((uTag) => uTag.toString() === id.toString())
       ).length;
 
-      const score = matchedCount * 10;
+      const score = matchedCount * TAG_SCORE_PER_MATCH;
       const key   = post._id.toString();
 
       if (recommendations.has(key)) {
@@ -115,9 +123,9 @@ class RecommendationService {
     posts.forEach((post) => {
       const key = post._id.toString();
       if (recommendations.has(key)) {
-        recommendations.get(key).score += 8;
+        recommendations.get(key).score += COLLABORATIVE_SCORE;
       } else {
-        recommendations.set(key, { postId: post._id, score: 8, reason: "collaborative-filter" });
+        recommendations.set(key, { postId: post._id, score: COLLABORATIVE_SCORE, reason: "collaborative-filter" });
       }
     });
   }
@@ -126,7 +134,7 @@ class RecommendationService {
   // Strategy 3 – Trending posts (last 7 days)
   // ---------------------------------------------------------------------------
   static async _addTrendingRecs(userId, recommendations) {
-    const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const oneWeekAgo = new Date(Date.now() - TRENDING_WINDOW_DAYS * 24 * 60 * 60 * 1000);
 
     const trending = await Post.find({
       createdAt:  { $gte: oneWeekAgo },
@@ -139,7 +147,7 @@ class RecommendationService {
 
     trending.forEach((post, index) => {
       const recencyDecay    = 1 / (index + 1);
-      const engagementScore = (post.reactionCount || 0) * 2 + (post.viewCount || 0) * 0.5;
+      const engagementScore = (post.reactionCount || 0) * REACTION_WEIGHT + (post.viewCount || 0) * VIEW_WEIGHT;
       const score           = engagementScore * recencyDecay;
 
       const key = post._id.toString();
@@ -171,9 +179,9 @@ class RecommendationService {
     posts.forEach((post) => {
       const key = post._id.toString();
       if (recommendations.has(key)) {
-        recommendations.get(key).score += 12;
+        recommendations.get(key).score += FOLLOW_SCORE;
       } else {
-        recommendations.set(key, { postId: post._id, score: 12, reason: "follow-network" });
+        recommendations.set(key, { postId: post._id, score: FOLLOW_SCORE, reason: "follow-network" });
       }
     });
   }
