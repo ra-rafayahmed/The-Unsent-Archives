@@ -10,6 +10,7 @@ router.use("/feed", require("./feedRoutes"));
 router.use("/search", require("./searchRoutes"));
 router.use("/follows", require("./followsRoutes"));
 router.use("/uploads", require("./uploadRoutes"));
+router.use("/recommendations", require("./recommendationRoutes"));
 // Special mount for analytics because it has internal full paths like /posts/:id/analytics
 router.use("/", require("./analyticsRoutes"));
 
