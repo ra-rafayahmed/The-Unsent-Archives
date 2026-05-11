@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
-const path = require("path");
 const requestLogger = require("./middleware/requestLogger");
 const rateLimiter = require("./middleware/rateLimiter");
 const routes = require("./routes");
@@ -11,11 +10,18 @@ const ApiError = require("./utils/ApiError");
 const app = express();
 
 // 1. Security & Utility Middlewares
-app.use(helmet());
+// Allow images/audio served from /api/uploads/:id/file to embed cross-origin
+// (frontend at :3000 reading from API at :5000), otherwise helmet's default
+// `same-origin` CORP blocks media loading in the browser.
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  })
+);
 app.use(cors());
-app.use(express.json());
+// Increase JSON body limit slightly for posts that include media metadata.
+app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true }));
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // 2. Logging
 app.use(requestLogger);

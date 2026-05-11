@@ -8,6 +8,10 @@ const createPostSchema = Joi.object({
     font: Joi.string().default("sans-serif"),
     background: Joi.string().default("#ffffff"),
     textColor: Joi.string().default("#1a1a1a"),
+    fontSize: Joi.number().min(0.8).max(2.4).default(1.15),
+    lineHeight: Joi.number().min(1).max(2.4).default(1.6),
+    letterSpacing: Joi.number().min(-0.03).max(0.2).default(0),
+    textAlign: Joi.string().valid("left", "center", "right", "justify").default("center"),
   }).default({}),
   media: Joi.array().items(
     Joi.object({
@@ -30,6 +34,10 @@ const updatePostSchema = Joi.object({
     font: Joi.string().optional(),
     background: Joi.string().optional(),
     textColor: Joi.string().optional(),
+    fontSize: Joi.number().min(0.8).max(2.4).optional(),
+    lineHeight: Joi.number().min(1).max(2.4).optional(),
+    letterSpacing: Joi.number().min(-0.03).max(0.2).optional(),
+    textAlign: Joi.string().valid("left", "center", "right", "justify").optional(),
   }).optional(),
   media: Joi.array().items(
     Joi.object({

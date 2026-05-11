@@ -8,6 +8,9 @@ const mediaAssetSchema = new mongoose.Schema(
     mimeType: { type: String, required: true },
     size: { type: Number, required: true },
     mediaType: { type: String, enum: ["image", "audio"], required: true },
+    // Binary contents stored directly in Mongo so files are not tied to local disk.
+    // `select: false` keeps list/find queries lightweight.
+    data: { type: Buffer, select: false },
   },
   { timestamps: true }
 );

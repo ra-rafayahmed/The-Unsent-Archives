@@ -1,6 +1,7 @@
 const { Post, Tag, SearchIndex, Collection, Reaction, AnalyticsEvent } = require("../models");
 const asyncHandler = require("../utils/asyncHandler");
 const ApiError = require("../utils/ApiError");
+const RecommendationService = require("../services/recommendationService");
 
 const normalizePostInput = (body) => {
   const normalizedVisibility = body.visibility === "anonymous" ? "public" : body.visibility;
@@ -69,14 +70,13 @@ const createPost = asyncHandler(async (req, res, next) => {
     tagSlugs,
   });
 
-  // Upsert Shadow Search Index
-  await SearchIndex.create({
-    postId: post._id,
-    contentTokens: content, // A more robust app might tokenize this with NLP
-    tagSlugs,
-    authorUsername: req.user.username,
-    visibility,
-  });
+  // SearchIndex is upserted automatically by Post.post("save") trigger
+  // (see models/Post.js). We just patch the authorUsername here, which the
+  // trigger doesn't know about.
+  await SearchIndex.updateOne(
+    { postId: post._id },
+    { $set: { authorUsername: req.user.username } }
+  );
 
   res.status(201).json({
     status: "success",
@@ -114,6 +114,15 @@ const getPost = asyncHandler(async (req, res, next) => {
     postObj.authorId = null;
   }
 
+  // Mask anonymous commenters from anyone who isn't the comment's own author.
+  // The post author can still see who wrote what so they can moderate.
+  postObj.comments = (postObj.comments || []).map((c) => {
+    if (!c.isAnonymous) return c;
+    const isCommentOwner = req.user && c.userId && req.user.id === (c.userId._id || c.userId).toString();
+    if (isCommentOwner || isOwner) return c;
+    return { ...c, userId: null };
+  });
+
   // Fire-and-forget Analytics Log for viewing
   // (In production, you'd want to queue this or only log unique views per session)
   AnalyticsEvent.create({
@@ -125,7 +134,12 @@ const getPost = asyncHandler(async (req, res, next) => {
   
   // Atomically increment views
   Post.findByIdAndUpdate(post._id, { $inc: { viewCount: 1 } }).exec();
-  
+
+  // Feed the recommender (only when an authenticated user views)
+  if (req.user?.id && req.user.id !== post.authorId._id.toString()) {
+    RecommendationService.logEngagement(req.user.id, post._id, "view");
+  }
+
   res.status(200).json({
     status: "success",
     post: postObj,
@@ -175,16 +189,7 @@ const updatePost = asyncHandler(async (req, res, next) => {
   }
 
   await post.save();
-
-  // Sync SearchIndex
-  await SearchIndex.findOneAndUpdate(
-    { postId: post._id },
-    {
-      contentTokens: post.content,
-      tagSlugs: post.tagSlugs,
-      visibility: post.visibility
-    }
-  );
+  // SearchIndex stays in sync via Post.post("save") trigger.
 
   res.status(200).json({
     status: "success",
@@ -272,8 +277,8 @@ const repost = asyncHandler(async (req, res, next) => {
 // @route   POST /api/posts/:id/comments
 // @access  Private
 const addComment = asyncHandler(async (req, res, next) => {
-  const { text } = req.body;
-  
+  const { text, isAnonymous } = req.body;
+
   if (!text) return next(new ApiError(400, "Comment text is required"));
 
   const post = await Post.findById(req.params.id);
@@ -286,13 +291,23 @@ const addComment = asyncHandler(async (req, res, next) => {
   post.comments.push({
     userId: req.user.id,
     text,
+    isAnonymous: Boolean(isAnonymous),
   });
 
   await post.save();
 
+  // Feed the recommender
+  RecommendationService.logEngagement(req.user.id, post._id, "comment");
+
+  // Re-fetch with populated comment authors so the client can render the new
+  // comment without a second request.
+  const populated = await Post.findById(post._id)
+    .populate("authorId", "username avatarUrl")
+    .populate("comments.userId", "username avatarUrl");
+
   res.status(200).json({
     status: "success",
-    post,
+    post: populated,
   });
 });
 

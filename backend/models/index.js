@@ -12,4 +12,6 @@ module.exports = {
   MediaAsset:     require("./MediaAsset"),
   AnalyticsEvent: require("./AnalyticsEvent"),
   SearchIndex:    require("./SearchIndex"),
+  Report:         require("./Report"),
+  Recommendation: require("./Recommendation"),
 };

@@ -1,41 +1,55 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
+const backupCodeSchema = new mongoose.Schema(
+  {
+    codeHash: { type: String, required: true },
+    used: { type: Boolean, default: false },
+    usedAt: { type: Date },
+  },
+  { _id: false }
+);
+
 const userSchema = new mongoose.Schema(
   {
-    username: { 
-      type: String, 
-      required: true, 
-      unique: true, 
+    username: {
+      type: String,
+      required: true,
+      unique: true,
       trim: true,
-      minlength: 3, 
-      maxlength: 30, 
-      match: /^[a-zA-Z0-9_]+$/ 
+      minlength: 3,
+      maxlength: 30,
+      match: /^[a-zA-Z0-9_]+$/,
     },
-    email: { 
-      type: String, 
-      required: true, 
-      unique: true, 
+    email: {
+      type: String,
+      required: true,
+      unique: true,
       lowercase: true,
-      match: /^\S+@\S+\.\S+$/ 
+      match: /^\S+@\S+\.\S+$/,
     },
-    passwordHash: { 
-      type: String, 
-      required: true, 
-      select: false 
+    passwordHash: {
+      type: String,
+      required: true,
+      select: false,
     },
-    avatarUrl: { 
-      type: String, 
-      default: "" 
+    avatarUrl: {
+      type: String,
+      default: "",
     },
-    bio: { 
-      type: String, 
-      maxlength: 300, 
-      default: "" 
+    bio: {
+      type: String,
+      maxlength: 300,
+      default: "",
     },
-    isActive: { 
-      type: Boolean, 
-      default: true 
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
     },
     profile: {
       displayName: { type: String, maxlength: 50 },
@@ -43,14 +57,29 @@ const userSchema = new mongoose.Schema(
       website:     { type: String, maxlength: 200 },
     },
     tagInterests: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tag" }],
+    passwordResetTokenHash: { type: String, select: false },
+    passwordResetExpires: { type: Date, select: false },
+    // One-way hashed single-use recovery codes issued at registration.
+    backupCodes: { type: [backupCodeSchema], select: false, default: [] },
+    // Soft-moderation flags (used by admin/report flows).
+    reportCount: { type: Number, default: 0 },
+    isSuspended: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
 
-// Pre-save hook: hash password before saving to DB
+// TRIGGER: pre-save → hash password whenever it changes
 userSchema.pre("save", async function (next) {
   if (!this.isModified("passwordHash")) return next();
   this.passwordHash = await bcrypt.hash(this.passwordHash, 12);
+  next();
+});
+
+// TRIGGER: pre-save → keep email lowercased even on direct sets
+userSchema.pre("save", function (next) {
+  if (this.isModified("email") && this.email) {
+    this.email = this.email.toLowerCase().trim();
+  }
   next();
 });
 

@@ -3,6 +3,26 @@ const asyncHandler = require("../utils/asyncHandler");
 const ApiError = require("../utils/ApiError");
 const mongoose = require("mongoose");
 
+const canonicalEventType = (value = "") => {
+  const key = String(value || "").trim().toLowerCase();
+
+  if (key === "view" || key === "views") return "view";
+  if (key === "save" || key === "saved" || key === "bookmark") return "save";
+  if (key === "reaction" || key === "react") return "reaction";
+
+  return key;
+};
+
+const toCanonicalSummary = (events = []) => {
+  return events.reduce((acc, curr) => {
+    const eventKey = canonicalEventType(curr._id);
+    if (!eventKey) return acc;
+
+    acc[eventKey] = (acc[eventKey] || 0) + curr.count;
+    return acc;
+  }, {});
+};
+
 // @desc    Log an analytics event
 // @route   POST /api/analytics/events
 // @access  Mixed (optional auth)
@@ -46,10 +66,12 @@ const getPostAnalytics = asyncHandler(async (req, res, next) => {
     { $group: { _id: "$eventType", count: { $sum: 1 } } }
   ]);
 
-  const summary = events.reduce((acc, curr) => {
-    acc[curr._id] = curr.count;
-    return acc;
-  }, {});
+  const summary = toCanonicalSummary(events);
+
+  const commentsCount = post.comments?.length || 0;
+  const reads = Math.max(post.viewCount || 0, summary.view || 0);
+  const engagementTotal = (post.reactionCount || 0) + (post.saveCount || 0) + commentsCount;
+  const engagementRate = reads > 0 ? Number(((engagementTotal / reads) * 100).toFixed(2)) : 0;
 
   // Combine with denormalized counters
   res.status(200).json({
@@ -58,7 +80,9 @@ const getPostAnalytics = asyncHandler(async (req, res, next) => {
       views: post.viewCount,
       saves: post.saveCount,
       reactions: post.reactionCount,
-      ...summary
+      comments: commentsCount,
+      engagementRate,
+      events: summary,
     }
   });
 });
@@ -93,10 +117,7 @@ const getUserAnalytics = asyncHandler(async (req, res, next) => {
     ])
   ]);
 
-  const summary = events.reduce((acc, curr) => {
-    acc[curr._id] = curr.count;
-    return acc;
-  }, {});
+  const summary = toCanonicalSummary(events);
 
   const denormalizedTotals = totals.length > 0 ? totals[0] : { totalViews: 0, totalSaves: 0, totalReactions: 0 };
   delete denormalizedTotals._id;

@@ -15,9 +15,10 @@ const { Schema } = mongoose;
 // Embedded comment sub-document
 const commentSchema = new Schema(
   {
-    userId:    { type: Schema.Types.ObjectId, ref: "User", required: true },
-    text:      { type: String, required: true, maxlength: 1000 },
-    createdAt: { type: Date, default: Date.now },
+    userId:      { type: Schema.Types.ObjectId, ref: "User", required: true },
+    text:        { type: String, required: true, maxlength: 1000 },
+    isAnonymous: { type: Boolean, default: false },
+    createdAt:   { type: Date, default: Date.now },
   },
   { _id: true }
 );
@@ -40,6 +41,10 @@ const styleSchema = new Schema(
     font:       { type: String, default: "sans-serif" },
     background: { type: String, default: "#ffffff" },
     textColor:  { type: String, default: "#1a1a1a" },
+    fontSize:   { type: Number, default: 1.15 },
+    lineHeight: { type: Number, default: 1.6 },
+    letterSpacing: { type: Number, default: 0 },
+    textAlign:  { type: String, enum: ["left", "center", "right", "justify"], default: "left" },
   },
   { _id: false }
 );
@@ -65,6 +70,7 @@ const postSchema = new Schema(
     viewCount:     { type: Number, default: 0 },
     reactionCount: { type: Number, default: 0 },
     saveCount:     { type: Number, default: 0 },
+    reportCount:   { type: Number, default: 0 },
 
     // Embedded comments — bounded at 500 in the service layer
     comments:      { type: [commentSchema], default: [] },
@@ -77,5 +83,65 @@ postSchema.index({ authorId: 1, createdAt: -1 });         // user's own posts fe
 postSchema.index({ visibility: 1, createdAt: -1 });        // explore feed
 postSchema.index({ tagSlugs: 1, createdAt: -1 });          // posts by tag
 postSchema.index({ content: "text", tagSlugs: "text" });   // full-text search
+
+// TRIGGER: pre-validate → normalize tag slugs (lowercase, kebab-case)
+postSchema.pre("validate", function (next) {
+  if (Array.isArray(this.tagSlugs)) {
+    this.tagSlugs = this.tagSlugs
+      .filter(Boolean)
+      .map((s) => String(s).toLowerCase().trim().replace(/\s+/g, "-"));
+  }
+  // Cap embedded comments at 500 — write-side guard, not just service-layer
+  if (Array.isArray(this.comments) && this.comments.length > 500) {
+    this.comments = this.comments.slice(-500);
+  }
+  next();
+});
+
+// TRIGGER: post-save → keep the SearchIndex collection in sync with new
+// content / tagSlugs / visibility on every write. Avoids drift if a service
+// path skips the explicit index update.
+postSchema.post("save", async function (doc) {
+  try {
+    const SearchIndex = mongoose.model("SearchIndex");
+    await SearchIndex.findOneAndUpdate(
+      { postId: doc._id },
+      {
+        postId: doc._id,
+        contentTokens: doc.content,
+        tagSlugs: doc.tagSlugs,
+        visibility: doc.visibility,
+      },
+      { upsert: true, setDefaultsOnInsert: true }
+    );
+  } catch {
+    // best-effort, never block the write
+  }
+});
+
+// TRIGGER: post-deleteOne (document) → cascade clean up dependent rows
+postSchema.post("deleteOne", { document: true, query: false }, async function (doc) {
+  try {
+    const Reaction = mongoose.model("Reaction");
+    const AnalyticsEvent = mongoose.model("AnalyticsEvent");
+    const SearchIndex = mongoose.model("SearchIndex");
+    const Collection = mongoose.model("Collection");
+    const Tag = mongoose.model("Tag");
+    const Report = mongoose.model("Report");
+    await Promise.all([
+      Reaction.deleteMany({ postId: doc._id }),
+      AnalyticsEvent.deleteMany({ postId: doc._id }),
+      SearchIndex.deleteOne({ postId: doc._id }),
+      Collection.updateMany(
+        { postIds: doc._id },
+        { $pull: { postIds: doc._id }, $inc: { postCount: -1 } }
+      ),
+      Tag.updateMany({ _id: { $in: doc.tagIds || [] } }, { $inc: { usageCount: -1 } }),
+      Report.deleteMany({ targetType: "post", targetId: doc._id }),
+    ]);
+  } catch {
+    // swallow — cleanup is idempotent and best-effort
+  }
+});
 
 module.exports = mongoose.model("Post", postSchema);

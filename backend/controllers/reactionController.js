@@ -2,6 +2,7 @@ const { Reaction, Post } = require("../models");
 const asyncHandler = require("../utils/asyncHandler");
 const ApiError = require("../utils/ApiError");
 const mongoose = require("mongoose");
+const RecommendationService = require("../services/recommendationService");
 
 // @desc    React to a post
 // @route   POST /api/posts/:id/reactions
@@ -22,10 +23,13 @@ const addReaction = asyncHandler(async (req, res, next) => {
 
   try {
     const newReaction = await Reaction.create({ postId, userId, type });
-    
+
     // Atomically increment post reaction count
     await Post.findByIdAndUpdate(postId, { $inc: { reactionCount: 1 } });
-    
+
+    // Feed the recommender (best-effort, fire-and-forget)
+    RecommendationService.logEngagement(userId, postId, "react");
+
     res.status(201).json({
       status: "success",
       reaction: newReaction,

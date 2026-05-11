@@ -50,6 +50,8 @@ export const AuthProvider = ({ children }) => {
     const { data } = await api.post("/auth/register", payload);
     localStorage.setItem("token", data.token);
     setUser(normalizeUser(data.user));
+    // Returns the full response (includes one-time `backupCodes` array) so
+    // the registration UI can show recovery codes once.
     return data;
   };
 
@@ -58,8 +60,21 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const updateCurrentUser = (nextUser) => {
+    setUser(normalizeUser(nextUser));
+  };
+
   const value = useMemo(
-    () => ({ user, loading, isAuthenticated: Boolean(user), login, register, logout }),
+    () => ({
+      user,
+      loading,
+      isAuthenticated: Boolean(user),
+      isAdmin: user?.role === "admin",
+      login,
+      register,
+      logout,
+      updateCurrentUser,
+    }),
     [user, loading]
   );
 

@@ -1,6 +1,7 @@
 const { Collection, Post, AnalyticsEvent } = require("../models");
 const asyncHandler = require("../utils/asyncHandler");
 const ApiError = require("../utils/ApiError");
+const RecommendationService = require("../services/recommendationService");
 
 // @desc    Create a collection
 // @route   POST /api/collections
@@ -153,6 +154,9 @@ const addPost = asyncHandler(async (req, res, next) => {
     actorId: req.user.id,
     eventType: "save",
   }).catch(console.error);
+
+  // Feed the recommender
+  RecommendationService.logEngagement(req.user.id, postId, "save");
 
   res.status(200).json({
     status: "success",

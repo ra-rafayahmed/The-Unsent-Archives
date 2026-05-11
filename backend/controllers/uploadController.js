@@ -1,12 +1,11 @@
-const fs = require("fs/promises");
 const path = require("path");
 const { MediaAsset } = require("../models");
 const asyncHandler = require("../utils/asyncHandler");
 const ApiError = require("../utils/ApiError");
 
-const toPublicUrl = (req, uploadPath) => {
-  const normalized = uploadPath.replace(/\\/g, "/");
-  return `${req.protocol}://${req.get("host")}/${normalized}`;
+const buildPublicUrl = (req, assetId) => {
+  // Absolute URL so it can be embedded directly as <img src> / <audio src>.
+  return `${req.protocol}://${req.get("host")}/api/uploads/${assetId}/file`;
 };
 
 const uploadMedia = asyncHandler(async (req, res, next) => {
@@ -14,21 +13,30 @@ const uploadMedia = asyncHandler(async (req, res, next) => {
     return next(new ApiError(400, "File is required"));
   }
 
-  const relativePath = path.join("uploads", req.uploadMediaType === "image" ? "images" : "audio", req.file.filename);
-  const url = toPublicUrl(req, relativePath);
+  const safeOriginal = (req.file.originalname || "upload").replace(/[^\w.\-]/g, "_");
+  const ext = path.extname(safeOriginal).toLowerCase();
+  const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`;
 
   const asset = await MediaAsset.create({
     ownerId: req.user.id,
-    url,
-    fileName: req.file.filename,
+    fileName,
     mimeType: req.file.mimetype,
     size: req.file.size,
     mediaType: req.uploadMediaType,
+    data: req.file.buffer,
+    url: "pending", // backfilled below once we have the _id
   });
+
+  asset.url = buildPublicUrl(req, asset._id);
+  await asset.save();
+
+  // Strip the binary out of the response payload so we don't ship Mongo Buffer
+  // metadata back to the browser.
+  const { data: _omit, ...assetView } = asset.toObject();
 
   res.status(201).json({
     status: "success",
-    asset,
+    asset: assetView,
   });
 });
 
@@ -53,17 +61,7 @@ const deleteMedia = asyncHandler(async (req, res, next) => {
     return next(new ApiError(403, "Not authorized to delete this media asset"));
   }
 
-  const parsed = new URL(asset.url);
-  const relativePath = parsed.pathname.startsWith("/") ? parsed.pathname.slice(1) : parsed.pathname;
-  const fullPath = path.join(__dirname, "..", relativePath);
-
   await asset.deleteOne();
-
-  try {
-    await fs.unlink(fullPath);
-  } catch {
-    // Ignore disk cleanup failures when metadata is already removed.
-  }
 
   res.status(200).json({
     status: "success",
@@ -71,8 +69,31 @@ const deleteMedia = asyncHandler(async (req, res, next) => {
   });
 });
 
+// @desc    Stream the stored bytes for a media asset
+// @route   GET /api/uploads/:id/file
+// @access  Public (assets are referenced from public posts/profiles)
+const streamMedia = asyncHandler(async (req, res, next) => {
+  const asset = await MediaAsset.findById(req.params.id).select("+data mimeType fileName size");
+
+  if (!asset || !asset.data) {
+    return next(new ApiError(404, "Media not found"));
+  }
+
+  res.setHeader("Content-Type", asset.mimeType || "application/octet-stream");
+  res.setHeader("Content-Length", asset.size);
+  res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+  res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+  res.setHeader(
+    "Content-Disposition",
+    `inline; filename="${asset.fileName.replace(/"/g, "")}"`
+  );
+
+  res.end(asset.data);
+});
+
 module.exports = {
   listMyMedia,
   uploadMedia,
   deleteMedia,
+  streamMedia,
 };

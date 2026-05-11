@@ -125,10 +125,31 @@ const getFollowing = asyncHandler(async (req, res, next) => {
   });
 });
 
+// @desc    Get follow status between current user and profile user
+// @route   GET /api/users/:id/follow/status
+// @access  Private
+const getFollowStatus = asyncHandler(async (req, res, next) => {
+  const followeeId = req.params.id;
+  const followerId = req.user.id;
+
+  const isFollowing = Boolean(
+    await Follow.exists({
+      followerId,
+      followeeId,
+    })
+  );
+
+  res.status(200).json({
+    status: "success",
+    isFollowing,
+  });
+});
+
 module.exports = {
   // Existing nested routes
   followUser,
   unfollowUser,
+  getFollowStatus,
   getFollowers,
   getFollowing,
   // Frontend-compatible global routes

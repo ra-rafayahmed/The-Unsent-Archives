@@ -1,22 +1,9 @@
-const fs = require("fs");
-const path = require("path");
-const crypto = require("crypto");
 const multer = require("multer");
 const ApiError = require("../utils/ApiError");
 
-const uploadsRoot = path.join(__dirname, "..", "uploads");
-const uploadsImages = path.join(uploadsRoot, "images");
-const uploadsAudio = path.join(uploadsRoot, "audio");
-
-[uploadsRoot, uploadsImages, uploadsAudio].forEach((dir) => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-});
-
 const allowedMimes = {
   image: new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]),
-  audio: new Set(["audio/mpeg", "audio/wav", "audio/ogg", "audio/mp4"]),
+  audio: new Set(["audio/mpeg", "audio/wav", "audio/ogg", "audio/mp4", "audio/x-m4a", "audio/aac"]),
 };
 
 const resolveMediaType = (mimetype) => {
@@ -25,23 +12,9 @@ const resolveMediaType = (mimetype) => {
   return null;
 };
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const mediaType = resolveMediaType(file.mimetype);
-
-    if (!mediaType) {
-      return cb(new ApiError(400, "Unsupported file type"));
-    }
-
-    req.uploadMediaType = mediaType;
-    cb(null, mediaType === "image" ? uploadsImages : uploadsAudio);
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname || "").toLowerCase();
-    const unique = `${Date.now()}-${crypto.randomBytes(8).toString("hex")}`;
-    cb(null, `${unique}${ext}`);
-  },
-});
+// Memory storage so binary lands directly in `req.file.buffer` and we can
+// persist it to MongoDB instead of the local filesystem.
+const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
   const mediaType = resolveMediaType(file.mimetype);
@@ -51,6 +24,7 @@ const fileFilter = (req, file, cb) => {
     return;
   }
 
+  req.uploadMediaType = mediaType;
   cb(null, true);
 };
 
@@ -64,5 +38,4 @@ const uploadSingle = multer({
 
 module.exports = {
   uploadSingle,
-  uploadsRoot,
 };
