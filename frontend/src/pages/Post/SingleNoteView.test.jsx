@@ -137,4 +137,15 @@ describe("SingleNoteView", () => {
     expect(await screen.findByRole("button", { name: "Follow" })).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /Edit/ })).not.toBeInTheDocument();
   });
+
+  it("offers Report to any signed-in non-author, even with no collections", async () => {
+    authState.user = { id: "someone-else" };
+    authState.isAuthenticated = true;
+    mockApi({ collections: [] });
+    renderPage();
+    await screen.findByText("I kept this one.");
+    expect(screen.getByRole("button", { name: /Report/ })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Save/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "🗑 Delete" })).not.toBeInTheDocument();
+  });
 });

@@ -269,7 +269,7 @@ const SingleNoteView = () => {
           ))}
         </div>
 
-        {(canEdit || canDelete || (isAuthenticated && collections.length > 0)) && (
+        {(canEdit || canDelete || isAuthenticated) && (
           <div className="manuscript-toolbar">
             {isAuthenticated && collections.length > 0 ? (
               <>
