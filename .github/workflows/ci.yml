@@ -24,7 +24,17 @@ jobs:
           node-version: 20
           cache: npm
           cache-dependency-path: backend/package-lock.json
+      # Match the npm major used to generate the lockfiles locally.
+      - run: npm install -g npm@11
+      - name: Cache MongoDB binary for mongodb-memory-server
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/mongodb-binaries
+          key: mongodb-binaries-${{ runner.os }}-${{ hashFiles('backend/package-lock.json') }}
+          restore-keys: mongodb-binaries-${{ runner.os }}-
       - run: npm ci
+        env:
+          MONGOMS_DISABLE_POSTINSTALL: "1"
       - run: npm run lint
       - run: npm run format:check
       - run: npm test
@@ -44,6 +54,7 @@ jobs:
           node-version: 20
           cache: npm
           cache-dependency-path: frontend/package-lock.json
+      - run: npm install -g npm@11
       - run: npm ci
       - run: npm run lint
       - run: npm run format:check
