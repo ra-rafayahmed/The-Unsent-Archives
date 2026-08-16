@@ -49,3 +49,9 @@ Thumbs.db
 .vscode/
 *.swp
 *.swo
+
+# Local upload scratch (media is stored in MongoDB, not on disk)
+backend/uploads/
+
+# Test artifacts
+coverage/
