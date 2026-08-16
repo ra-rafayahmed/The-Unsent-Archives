@@ -9,6 +9,10 @@ const ApiError = require("./utils/ApiError");
 
 const app = express();
 
+// We sit behind a reverse proxy (nginx in docker compose / most PaaS hosts);
+// trust the first hop so req.ip and the rate limiter see the real client IP.
+app.set("trust proxy", 1);
+
 // 1. Security & Utility Middlewares
 // Allow images/audio served from /api/uploads/:id/file to embed cross-origin
 // (frontend at :3000 reading from API at :5000), otherwise helmet's default
