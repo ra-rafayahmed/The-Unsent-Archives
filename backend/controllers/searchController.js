@@ -18,7 +18,7 @@ const search = asyncHandler(async (req, res, next) => {
   if (q) {
     query.$text = { $search: q };
   }
-  
+
   if (tag) {
     query.tagSlugs = tag.toLowerCase(); // Exact match on array
   }
@@ -28,9 +28,7 @@ const search = asyncHandler(async (req, res, next) => {
   }
 
   // Find in SearchIndex
-  let searchQuery = SearchIndex.find(query)
-    .skip(skip)
-    .limit(limit);
+  let searchQuery = SearchIndex.find(query).skip(skip).limit(limit);
 
   if (q) {
     // Sort by text score if querying by text
@@ -40,12 +38,9 @@ const search = asyncHandler(async (req, res, next) => {
     searchQuery = searchQuery.sort({ createdAt: -1 });
   }
 
-  const [indexHits, total] = await Promise.all([
-    searchQuery,
-    SearchIndex.countDocuments(query)
-  ]);
+  const [indexHits, total] = await Promise.all([searchQuery, SearchIndex.countDocuments(query)]);
 
-  const postIds = indexHits.map(hit => hit.postId);
+  const postIds = indexHits.map((hit) => hit.postId);
 
   const posts = postIds.length
     ? await Post.find({ _id: { $in: postIds } })
@@ -54,7 +49,7 @@ const search = asyncHandler(async (req, res, next) => {
     : [];
 
   const orderedPosts = postIds
-    .map(id => posts.find(p => p._id.toString() === id.toString()))
+    .map((id) => posts.find((p) => p._id.toString() === id.toString()))
     .filter(Boolean);
 
   const cleanedPosts = orderedPosts.map((post) => {
@@ -79,9 +74,7 @@ const search = asyncHandler(async (req, res, next) => {
   }
 
   const users = userSearchTerm
-    ? await User.find(userQuery)
-        .select("username avatarUrl bio profile.displayName")
-        .limit(10)
+    ? await User.find(userQuery).select("username avatarUrl bio profile.displayName").limit(10)
     : [];
 
   const tagSearchTerm = tag || q;
@@ -109,5 +102,5 @@ const search = asyncHandler(async (req, res, next) => {
 });
 
 module.exports = {
-  search
+  search,
 };

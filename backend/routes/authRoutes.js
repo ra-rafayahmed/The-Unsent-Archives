@@ -23,24 +23,9 @@ const {
 
 router.post("/register", authLimiter, validate(registerSchema), register);
 router.post("/login", authLimiter, validate(loginSchema), login);
-router.post(
-  "/forgot-password",
-  authLimiter,
-  validate(forgotPasswordSchema),
-  forgotPassword
-);
-router.post(
-  "/reset-password",
-  authLimiter,
-  validate(resetPasswordSchema),
-  resetPassword
-);
-router.post(
-  "/recover",
-  authLimiter,
-  validate(recoverWithBackupCodeSchema),
-  recoverWithBackupCode
-);
+router.post("/forgot-password", authLimiter, validate(forgotPasswordSchema), forgotPassword);
+router.post("/reset-password", authLimiter, validate(resetPasswordSchema), resetPassword);
+router.post("/recover", authLimiter, validate(recoverWithBackupCodeSchema), recoverWithBackupCode);
 
 router.get("/me", auth, getMe);
 router.get("/backup-codes", auth, getBackupCodeStatus);

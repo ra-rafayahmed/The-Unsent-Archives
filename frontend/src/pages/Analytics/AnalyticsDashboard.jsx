@@ -36,7 +36,9 @@ const TooltipBox = ({ active, payload, label }) => {
 
 const StatTile = ({ label, value, glyph }) => (
   <div className="analytics-stat">
-    <span className="analytics-stat-glyph" aria-hidden="true">{glyph}</span>
+    <span className="analytics-stat-glyph" aria-hidden="true">
+      {glyph}
+    </span>
     <span className="analytics-stat-num">{value}</span>
     <span className="analytics-stat-label">{label}</span>
   </div>
@@ -138,8 +140,7 @@ const AnalyticsDashboard = () => {
         <span className="auth-eyebrow">Behind the page</span>
         <h1 className="library-title">Analytics</h1>
         <p className="library-sub">
-          See how your archive travels — who's reading, who's saving, what's
-          striking a chord.
+          See how your archive travels — who's reading, who's saving, what's striking a chord.
         </p>
       </header>
 
@@ -223,7 +224,10 @@ const AnalyticsDashboard = () => {
         ) : (
           <>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={selectedPostChartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+              <BarChart
+                data={selectedPostChartData}
+                margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+              >
                 <CartesianGrid stroke="rgba(154,52,18,0.12)" strokeDasharray="3 3" />
                 <XAxis dataKey="name" stroke="#7a6a5a" fontSize={12} />
                 <YAxis allowDecimals={false} stroke="#7a6a5a" fontSize={12} />
@@ -245,7 +249,10 @@ const AnalyticsDashboard = () => {
               <div className="analytics-events">
                 <h4 className="side-title">Event mix</h4>
                 <ResponsiveContainer width="100%" height={220}>
-                  <BarChart data={selectedEventData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                  <BarChart
+                    data={selectedEventData}
+                    margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                  >
                     <CartesianGrid stroke="rgba(154,52,18,0.12)" strokeDasharray="3 3" />
                     <XAxis dataKey="name" stroke="#7a6a5a" fontSize={12} />
                     <YAxis allowDecimals={false} stroke="#7a6a5a" fontSize={12} />

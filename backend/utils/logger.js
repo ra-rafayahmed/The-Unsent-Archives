@@ -5,11 +5,16 @@
 const pino = require("pino");
 const config = require("../config");
 
-const level = process.env.LOG_LEVEL || (config.env === "test" ? "silent" : config.env === "production" ? "info" : "debug");
+const level =
+  process.env.LOG_LEVEL ||
+  (config.env === "test" ? "silent" : config.env === "production" ? "info" : "debug");
 
 const transport =
   config.env === "development"
-    ? { target: "pino-pretty", options: { colorize: true, translateTime: "SYS:standard", ignore: "pid,hostname" } }
+    ? {
+        target: "pino-pretty",
+        options: { colorize: true, translateTime: "SYS:standard", ignore: "pid,hostname" },
+      }
     : undefined;
 
 const logger = pino({

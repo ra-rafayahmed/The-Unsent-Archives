@@ -89,7 +89,7 @@ const getFollowers = asyncHandler(async (req, res, next) => {
     total,
     page,
     pages: Math.ceil(total / limit),
-    followers: follows.map(f => ({
+    followers: follows.map((f) => ({
       ...f.followerId.toObject(),
       followedAt: f.followedAt,
     })),
@@ -118,7 +118,7 @@ const getFollowing = asyncHandler(async (req, res, next) => {
     total,
     page,
     pages: Math.ceil(total / limit),
-    following: follows.map(f => ({
+    following: follows.map((f) => ({
       ...f.followeeId.toObject(),
       followedAt: f.followedAt,
     })),

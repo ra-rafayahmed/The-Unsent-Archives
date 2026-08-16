@@ -97,8 +97,7 @@ const AdminDashboard = () => {
         <span className="auth-eyebrow">Moderation</span>
         <h1 className="library-title">Admin panel</h1>
         <p className="library-sub">
-          Review reports, recover lost accounts, and keep the archive a kind
-          place.
+          Review reports, recover lost accounts, and keep the archive a kind place.
         </p>
       </header>
 
@@ -110,7 +109,9 @@ const AdminDashboard = () => {
             className={t.id === tab ? "pill-tab active" : "pill-tab"}
             onClick={() => setTab(t.id)}
           >
-            <span className="pill-tab-icon" aria-hidden="true">{t.glyph}</span>
+            <span className="pill-tab-icon" aria-hidden="true">
+              {t.glyph}
+            </span>
             {t.label}
           </button>
         ))}
@@ -148,10 +149,12 @@ const AdminDashboard = () => {
                   <div className="report-card-head">
                     <span className={`report-pill report-pill-${r.reason}`}>{r.reason}</span>
                     <span className="report-meta">
-                      {r.targetType === "user" ? "Account" : "Note"} ·
-                      filed by{" "}
+                      {r.targetType === "user" ? "Account" : "Note"} · filed by{" "}
                       {r.reporterId ? (
-                        <Link to={`/profile/${r.reporterId._id}`} className="manuscript-author-link">
+                        <Link
+                          to={`/profile/${r.reporterId._id}`}
+                          className="manuscript-author-link"
+                        >
                           @{r.reporterId.username}
                         </Link>
                       ) : (
@@ -242,7 +245,11 @@ const AdminDashboard = () => {
         <div className="panel admin-pane">
           <div className="row-between admin-toolbar">
             <h3 className="side-title">Users</h3>
-            <select value={sort} onChange={(e) => setSort(e.target.value)} className="analytics-post-select">
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+              className="analytics-post-select"
+            >
               <option value="recent">Sort: recent</option>
               <option value="reports">Sort: most reported</option>
             </select>
@@ -259,16 +266,22 @@ const AdminDashboard = () => {
                   <div className="row-inline">
                     <span className={`pill ${u.role === "admin" ? "active" : ""}`}>{u.role}</span>
                     {u.isSuspended ? <span className="pill is-warn">suspended</span> : null}
-                    {u.reportCount ? (
-                      <span className="pill is-warn">⚑ {u.reportCount}</span>
-                    ) : null}
+                    {u.reportCount ? <span className="pill is-warn">⚑ {u.reportCount}</span> : null}
                   </div>
                 </div>
                 <div className="row-inline">
-                  <button type="button" className="ghost-btn small" onClick={() => issueResetForUser(u)}>
+                  <button
+                    type="button"
+                    className="ghost-btn small"
+                    onClick={() => issueResetForUser(u)}
+                  >
                     Issue reset
                   </button>
-                  <button type="button" className="ghost-btn small" onClick={() => toggleRole(u._id, u.role)}>
+                  <button
+                    type="button"
+                    className="ghost-btn small"
+                    onClick={() => toggleRole(u._id, u.role)}
+                  >
                     Make {u.role === "admin" ? "user" : "admin"}
                   </button>
                   <button
@@ -278,7 +291,11 @@ const AdminDashboard = () => {
                   >
                     {u.isSuspended ? "Unsuspend" : "Suspend"}
                   </button>
-                  <button type="button" className="ghost-btn small is-danger" onClick={() => deleteUser(u._id)}>
+                  <button
+                    type="button"
+                    className="ghost-btn small is-danger"
+                    onClick={() => deleteUser(u._id)}
+                  >
                     Delete
                   </button>
                 </div>
@@ -292,7 +309,11 @@ const AdminDashboard = () => {
         <div className="panel admin-pane">
           <div className="row-between admin-toolbar">
             <h3 className="side-title">Notes</h3>
-            <select value={sort} onChange={(e) => setSort(e.target.value)} className="analytics-post-select">
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+              className="analytics-post-select"
+            >
               <option value="recent">Sort: recent</option>
               <option value="reports">Sort: most reported</option>
             </select>
@@ -315,7 +336,11 @@ const AdminDashboard = () => {
                     </span>
                   </div>
                 </div>
-                <button type="button" className="ghost-btn small is-danger" onClick={() => deletePost(p._id)}>
+                <button
+                  type="button"
+                  className="ghost-btn small is-danger"
+                  onClick={() => deletePost(p._id)}
+                >
                   Delete
                 </button>
               </div>
@@ -329,8 +354,8 @@ const AdminDashboard = () => {
           <div className="modal-card" onClick={(e) => e.stopPropagation()}>
             <h3>Reset link issued</h3>
             <p className="muted">
-              Share this with <strong>@{issued.user.username}</strong>. It works
-              once and expires in 30 minutes.
+              Share this with <strong>@{issued.user.username}</strong>. It works once and expires in
+              30 minutes.
             </p>
             <code className="auth-callout-code">{issued.resetLink}</code>
             <div className="row-inline" style={{ justifyContent: "flex-end", marginTop: "0.6rem" }}>

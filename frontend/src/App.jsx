@@ -29,15 +29,57 @@ const App = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/explore" element={<ExplorePage />} />
         <Route path="/posts/:id" element={<SingleNoteView />} />
-        <Route path="/profile" element={<ProtectedRoute><UserProfile own /></ProtectedRoute>} />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <UserProfile own />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/profile/:id" element={<UserProfile />} />
 
-        <Route path="/write" element={<ProtectedRoute><CreateNotePage /></ProtectedRoute>} />
-        <Route path="/write/:id" element={<ProtectedRoute><CreateNotePage /></ProtectedRoute>} />
-        <Route path="/library" element={<ProtectedRoute><CollectionsBoard /></ProtectedRoute>} />
+        <Route
+          path="/write"
+          element={
+            <ProtectedRoute>
+              <CreateNotePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/write/:id"
+          element={
+            <ProtectedRoute>
+              <CreateNotePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/library"
+          element={
+            <ProtectedRoute>
+              <CollectionsBoard />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/collections/:id" element={<CollectionDetailPage />} />
-        <Route path="/analytics" element={<ProtectedRoute><AnalyticsDashboard /></ProtectedRoute>} />
-        <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+        <Route
+          path="/analytics"
+          element={
+            <ProtectedRoute>
+              <AnalyticsDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

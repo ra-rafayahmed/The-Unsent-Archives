@@ -4,7 +4,9 @@ const ApiError = require("../utils/ApiError");
 const mongoose = require("mongoose");
 
 const canonicalEventType = (value = "") => {
-  const key = String(value || "").trim().toLowerCase();
+  const key = String(value || "")
+    .trim()
+    .toLowerCase();
 
   if (key === "view" || key === "views") return "view";
   if (key === "save" || key === "saved" || key === "bookmark") return "save";
@@ -36,13 +38,13 @@ const logEvent = asyncHandler(async (req, res, next) => {
 
   // Let other controllers handle 'view' and 'save' and 'share' directly when those actions happen.
   // This endpoint is mostly useful for client-side explicit 'click' on external links, or 'report'
-  
+
   await AnalyticsEvent.create({
     postId,
     actorId: req.user ? req.user.id : null,
     eventType: normalizedEventType,
-    ipHash: process.env.NODE_ENV === "production" ? req.ip : "localhost", 
-    metadata
+    ipHash: process.env.NODE_ENV === "production" ? req.ip : "localhost",
+    metadata,
   });
 
   res.status(201).json({ status: "success", eventType: normalizedEventType });
@@ -63,7 +65,7 @@ const getPostAnalytics = asyncHandler(async (req, res, next) => {
 
   const events = await AnalyticsEvent.aggregate([
     { $match: { postId: new mongoose.Types.ObjectId(postId) } },
-    { $group: { _id: "$eventType", count: { $sum: 1 } } }
+    { $group: { _id: "$eventType", count: { $sum: 1 } } },
   ]);
 
   const summary = toCanonicalSummary(events);
@@ -83,7 +85,7 @@ const getPostAnalytics = asyncHandler(async (req, res, next) => {
       comments: commentsCount,
       engagementRate,
       events: summary,
-    }
+    },
   });
 });
 
@@ -96,41 +98,43 @@ const getUserAnalytics = asyncHandler(async (req, res, next) => {
   }
 
   const posts = await Post.find({ authorId: req.user.id });
-  const postIds = posts.map(p => p._id);
+  const postIds = posts.map((p) => p._id);
 
   const [totals, events] = await Promise.all([
     // Aggregate denormalized counters
     Post.aggregate([
       { $match: { authorId: new mongoose.Types.ObjectId(req.user.id) } },
-      { $group: { 
-          _id: null, 
+      {
+        $group: {
+          _id: null,
           totalViews: { $sum: "$viewCount" },
           totalSaves: { $sum: "$saveCount" },
-          totalReactions: { $sum: "$reactionCount" }
-        }
-      }
+          totalReactions: { $sum: "$reactionCount" },
+        },
+      },
     ]),
     // Aggregate detailed events
     AnalyticsEvent.aggregate([
       { $match: { postId: { $in: postIds } } },
-      { $group: { _id: "$eventType", count: { $sum: 1 } } }
-    ])
+      { $group: { _id: "$eventType", count: { $sum: 1 } } },
+    ]),
   ]);
 
   const summary = toCanonicalSummary(events);
 
-  const denormalizedTotals = totals.length > 0 ? totals[0] : { totalViews: 0, totalSaves: 0, totalReactions: 0 };
+  const denormalizedTotals =
+    totals.length > 0 ? totals[0] : { totalViews: 0, totalSaves: 0, totalReactions: 0 };
   delete denormalizedTotals._id;
 
   res.status(200).json({
     status: "success",
     totals: denormalizedTotals,
-    eventBreakdown: summary
+    eventBreakdown: summary,
   });
 });
 
 module.exports = {
   logEvent,
   getPostAnalytics,
-  getUserAnalytics
+  getUserAnalytics,
 };

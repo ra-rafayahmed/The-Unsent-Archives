@@ -7,9 +7,7 @@ const { getPagination } = require("../utils/pagination");
 // @route   GET /api/users/:id
 // @access  Public
 const getProfile = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.params.id)
-    .populate("tagInterests", "name slug")
-    .lean(); // Faster query, returns plain JS object
+  const user = await User.findById(req.params.id).populate("tagInterests", "name slug").lean(); // Faster query, returns plain JS object
 
   if (!user) {
     return next(new ApiError(404, "User not found"));
@@ -76,7 +74,7 @@ const getUserPosts = asyncHandler(async (req, res, next) => {
 
   // Determine which posts a user can see
   const query = { authorId: id };
-  
+
   // If the requester is NOT the author, they can only see public posts, or anonymous posts
   if (!req.user || req.user.id !== id) {
     query.visibility = "public"; // Optionally include 'followers' if checking follow status later
@@ -93,7 +91,7 @@ const getUserPosts = asyncHandler(async (req, res, next) => {
   ]);
 
   // Strip author for anonymous posts if viewed by a non-author
-  const cleanedPosts = posts.map(post => {
+  const cleanedPosts = posts.map((post) => {
     const postObj = post.toObject();
     if (postObj.isAnonymous && (!req.user || req.user.id !== postObj.authorId._id.toString())) {
       postObj.authorId = null;
@@ -119,7 +117,7 @@ const getUserCollections = asyncHandler(async (req, res, next) => {
   const { page, limit, skip } = getPagination(req.query.page, req.query.limit);
 
   const query = { ownerId: id };
-  
+
   if (!req.user || req.user.id !== id) {
     query.visibility = "public";
   }
@@ -132,7 +130,7 @@ const getUserCollections = asyncHandler(async (req, res, next) => {
       .populate({
         path: "postIds",
         select: "content style _id",
-        options: { limit: 4 } // Get only top 4 for a preview grid
+        options: { limit: 4 }, // Get only top 4 for a preview grid
       }),
     Collection.countDocuments(query),
   ]);

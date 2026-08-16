@@ -7,9 +7,9 @@
 const mongoose = require("mongoose");
 
 const reactionSchema = new mongoose.Schema({
-  postId:    { type: mongoose.Schema.Types.ObjectId, ref: "Post", required: true },
-  userId:    { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  type:      { type: String, enum: ["like", "love", "haha", "wow", "sad", "angry"], required: true },
+  postId: { type: mongoose.Schema.Types.ObjectId, ref: "Post", required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  type: { type: String, enum: ["like", "love", "haha", "wow", "sad", "angry"], required: true },
   reactedAt: { type: Date, default: Date.now },
 });
 
@@ -21,9 +21,7 @@ reactionSchema.index({ userId: 1, reactedAt: -1 });
 // so feeds can sort by popularity without aggregating across reactions.
 reactionSchema.post("save", async function (doc) {
   try {
-    await mongoose
-      .model("Post")
-      .findByIdAndUpdate(doc.postId, { $inc: { reactionCount: 1 } });
+    await mongoose.model("Post").findByIdAndUpdate(doc.postId, { $inc: { reactionCount: 1 } });
   } catch {
     // best-effort; counter drift is acceptable, source of truth is Reaction
   }
@@ -34,10 +32,7 @@ reactionSchema.post("deleteOne", { document: true, query: false }, async functio
   try {
     await mongoose
       .model("Post")
-      .updateOne(
-        { _id: doc.postId, reactionCount: { $gt: 0 } },
-        { $inc: { reactionCount: -1 } }
-      );
+      .updateOne({ _id: doc.postId, reactionCount: { $gt: 0 } }, { $inc: { reactionCount: -1 } });
   } catch {
     // swallow
   }

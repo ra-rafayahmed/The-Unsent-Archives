@@ -29,9 +29,9 @@ const VIEW_WEIGHT = 0.5;
 // Per-engagement weight on the *interest profile* (not the per-post score).
 // Used by logEngagement to bump tagInterests / followingTrend.
 const ENGAGEMENT_WEIGHT = {
-  view:    1,
-  save:    2,
-  react:   3,
+  view: 1,
+  save: 2,
+  react: 3,
   comment: 5,
 };
 
@@ -53,7 +53,7 @@ const bump = (map, postId, delta, reason) => {
   } else {
     existing.score += delta;
     // Keep the strongest reason: follow > tag > collaborative > trending
-    const order = { "follow-network": 4, "tag-match": 3, "collaborative-filter": 2, "trending": 1 };
+    const order = { "follow-network": 4, "tag-match": 3, "collaborative-filter": 2, trending: 1 };
     if ((order[reason] || 0) > (order[existing.reason] || 0)) {
       existing.reason = reason;
     }
@@ -145,8 +145,7 @@ const _addTrendingRecs = async (userId, scores) => {
   posts.forEach((post, index) => {
     const recencyDecay = 1 / (index + 1);
     const engagementScore =
-      (post.reactionCount || 0) * REACTION_WEIGHT +
-      (post.viewCount || 0) * VIEW_WEIGHT;
+      (post.reactionCount || 0) * REACTION_WEIGHT + (post.viewCount || 0) * VIEW_WEIGHT;
     bump(scores, post._id, engagementScore * recencyDecay, "trending");
   });
 };
@@ -188,9 +187,7 @@ const computeRanked = async (userId, limit = DEFAULT_LIMIT) => {
     _addFollowNetworkRecs(userId, scores),
   ]);
 
-  return [...scores.values()]
-    .sort((a, b) => b.score - a.score)
-    .slice(0, limit);
+  return [...scores.values()].sort((a, b) => b.score - a.score).slice(0, limit);
 };
 
 /**
@@ -252,7 +249,11 @@ const hydrateRanked = async (ranked) => {
  * Return the user's recommendations. Uses the cached list if it's fresh,
  * otherwise recomputes and persists.
  */
-const getRecommendations = async (userId, limit = DEFAULT_LIMIT, { ttlMs = 30 * 60 * 1000 } = {}) => {
+const getRecommendations = async (
+  userId,
+  limit = DEFAULT_LIMIT,
+  { ttlMs = 30 * 60 * 1000 } = {}
+) => {
   if (!userId) return [];
 
   const cache = await Recommendation.findOne({ userId: toObjectId(userId) }).select(
@@ -317,9 +318,7 @@ const logEngagement = async (userId, postId, engagement) => {
 
     // Evolve followingTrend (only if author isn't anonymous)
     if (post.authorId && !post.isAnonymous) {
-      const authorMap = new Map(
-        profile.followingTrend.map((t) => [idStr(t.followedUserId), t])
-      );
+      const authorMap = new Map(profile.followingTrend.map((t) => [idStr(t.followedUserId), t]));
       const key = idStr(post.authorId);
       const existing = authorMap.get(key);
       if (existing) existing.score += weight;

@@ -28,9 +28,7 @@ const ForgotPassword = () => {
     }
   };
 
-  const resetLink = devToken
-    ? `${window.location.origin}/reset-password?token=${devToken}`
-    : null;
+  const resetLink = devToken ? `${window.location.origin}/reset-password?token=${devToken}` : null;
 
   return (
     <div className="auth-wrap">
@@ -41,8 +39,7 @@ const ForgotPassword = () => {
         <h1 className="brand brand-center">The Unsent Archives</h1>
         <h2 className="auth-title">Recover your account</h2>
         <p className="auth-sub">
-          Enter the email tied to your archive. We will send a link to set a new
-          password.
+          Enter the email tied to your archive. We will send a link to set a new password.
         </p>
 
         <label>
@@ -65,14 +62,13 @@ const ForgotPassword = () => {
         {submitted && (
           <div className="auth-callout">
             <p>
-              If an account exists for <strong>{email}</strong>, a reset link has
-              been generated. It is valid for 30 minutes.
+              If an account exists for <strong>{email}</strong>, a reset link has been generated. It
+              is valid for 30 minutes.
             </p>
             {resetLink && (
               <>
                 <p className="auth-callout-hint">
-                  Email delivery is not configured yet, so here is your one-time
-                  link:
+                  Email delivery is not configured yet, so here is your one-time link:
                 </p>
                 <Link to={`/reset-password?token=${devToken}`} className="auth-callout-link">
                   Open reset link

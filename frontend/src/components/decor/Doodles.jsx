@@ -1,10 +1,5 @@
 const Doodle = ({ children, className = "", style }) => (
-  <svg
-    className={`doodle ${className}`}
-    viewBox="0 0 100 100"
-    aria-hidden="true"
-    style={style}
-  >
+  <svg className={`doodle ${className}`} viewBox="0 0 100 100" aria-hidden="true" style={style}>
     {children}
   </svg>
 );
@@ -58,7 +53,10 @@ export const StarDoodle = (props) => (
 
 export const SparkleDoodle = (props) => (
   <Doodle {...props}>
-    <path d="M50 10 L 54 46 L 90 50 L 54 54 L 50 90 L 46 54 L 10 50 L 46 46 Z" fill="currentColor" />
+    <path
+      d="M50 10 L 54 46 L 90 50 L 54 54 L 50 90 L 46 54 L 10 50 L 46 46 Z"
+      fill="currentColor"
+    />
   </Doodle>
 );
 
@@ -108,7 +106,13 @@ export const PaperPlaneDoodle = (props) => (
       strokeLinejoin="round"
       strokeLinecap="round"
     />
-    <path d="M10 50 L 52 60" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    <path
+      d="M10 50 L 52 60"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+    />
   </Doodle>
 );
 

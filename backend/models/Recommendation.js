@@ -27,19 +27,19 @@ const followingTrendSchema = new Schema(
 
 const engagementSchema = new Schema(
   {
-    postId:     { type: Schema.Types.ObjectId, ref: "Post", required: true },
+    postId: { type: Schema.Types.ObjectId, ref: "Post", required: true },
     engagement: { type: String, enum: ["view", "save", "react", "comment"], required: true },
-    weight:     { type: Number, default: 1 },
-    timestamp:  { type: Date, default: Date.now },
+    weight: { type: Number, default: 1 },
+    timestamp: { type: Date, default: Date.now },
   },
   { _id: false }
 );
 
 const recommendedPostSchema = new Schema(
   {
-    postId:    { type: Schema.Types.ObjectId, ref: "Post", required: true },
-    score:     { type: Number, default: 0 },
-    reason:    {
+    postId: { type: Schema.Types.ObjectId, ref: "Post", required: true },
+    score: { type: Number, default: 0 },
+    reason: {
       type: String,
       enum: ["tag-match", "collaborative-filter", "trending", "follow-network"],
       required: true,
@@ -57,11 +57,11 @@ const recommendationSchema = new Schema(
       required: true,
       unique: true,
     },
-    tagInterests:      { type: [tagInterestSchema], default: [] },
-    followingTrend:    { type: [followingTrendSchema], default: [] },
+    tagInterests: { type: [tagInterestSchema], default: [] },
+    followingTrend: { type: [followingTrendSchema], default: [] },
     engagementHistory: { type: [engagementSchema], default: [] },
-    recommendedPosts:  { type: [recommendedPostSchema], default: [] },
-    lastUpdated:       { type: Date, default: null },
+    recommendedPosts: { type: [recommendedPostSchema], default: [] },
+    lastUpdated: { type: Date, default: null },
   },
   { timestamps: true }
 );

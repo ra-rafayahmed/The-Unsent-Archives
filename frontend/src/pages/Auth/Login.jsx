@@ -35,9 +35,7 @@ const Login = () => {
         <span className="auth-eyebrow">Welcome back, writer</span>
         <h1 className="brand brand-center">The Unsent Archives</h1>
         <h2 className="auth-title">Sign in to your shelf</h2>
-        <p className="auth-sub">
-          Pick up where you left the bookmark.
-        </p>
+        <p className="auth-sub">Pick up where you left the bookmark.</p>
 
         <label>
           Email
@@ -61,9 +59,7 @@ const Login = () => {
             type="password"
             required
             value={form.password}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, password: e.target.value }))
-            }
+            onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
             placeholder="Your secret line"
           />
         </label>

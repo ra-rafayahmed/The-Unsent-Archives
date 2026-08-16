@@ -6,12 +6,12 @@ const mongoose = require("mongoose");
 
 const collectionSchema = new mongoose.Schema(
   {
-    ownerId:     { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    name:        { type: String, required: true, maxlength: 100 },
+    ownerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    name: { type: String, required: true, maxlength: 100 },
     description: { type: String, maxlength: 500, default: "" },
-    visibility:  { type: String, enum: ["public", "private"], default: "private" },
-    postIds:     [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
-    postCount:   { type: Number, default: 0 },
+    visibility: { type: String, enum: ["public", "private"], default: "private" },
+    postIds: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
+    postCount: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

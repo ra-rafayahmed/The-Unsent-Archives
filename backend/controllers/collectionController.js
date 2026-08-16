@@ -33,8 +33,8 @@ const getCollection = asyncHandler(async (req, res, next) => {
       path: "postIds",
       populate: [
         { path: "authorId", select: "username avatarUrl" },
-        { path: "tagIds", select: "name slug" }
-      ]
+        { path: "tagIds", select: "name slug" },
+      ],
     });
 
   if (!collection) {
@@ -49,7 +49,7 @@ const getCollection = asyncHandler(async (req, res, next) => {
 
   // Handle anonymous posts inside the collection for non-owners
   const colObj = collection.toObject();
-  colObj.postIds = colObj.postIds.map(post => {
+  colObj.postIds = colObj.postIds.map((post) => {
     if (post.isAnonymous && (!req.user || req.user.id !== post.authorId._id.toString())) {
       post.authorId = null;
     }
@@ -104,8 +104,8 @@ const deleteCollection = asyncHandler(async (req, res, next) => {
   }
 
   await collection.deleteOne();
-  
-  // Note: We don't decrement Post.saveCount here because saveCount represents 
+
+  // Note: We don't decrement Post.saveCount here because saveCount represents
   // historical saves across all time/collections.
 
   res.status(200).json({
@@ -119,7 +119,7 @@ const deleteCollection = asyncHandler(async (req, res, next) => {
 // @access  Private (Owner only)
 const addPost = asyncHandler(async (req, res, next) => {
   const { postId } = req.body;
-  
+
   if (!postId) return next(new ApiError(400, "postId is required"));
 
   const collection = await Collection.findById(req.params.id);
@@ -138,7 +138,7 @@ const addPost = asyncHandler(async (req, res, next) => {
 
   // Check if post is accessible to user (private post from someone else is not allowed)
   if (post.visibility === "private" && post.authorId.toString() !== req.user.id) {
-     return next(new ApiError(403, "Cannot save private posts from other users"));
+    return next(new ApiError(403, "Cannot save private posts from other users"));
   }
 
   // Add securely using mongoose push

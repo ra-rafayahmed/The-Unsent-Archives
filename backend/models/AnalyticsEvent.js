@@ -4,14 +4,14 @@
 const mongoose = require("mongoose");
 
 const analyticsEventSchema = new mongoose.Schema({
-  postId:    { type: mongoose.Schema.Types.ObjectId, ref: "Post", required: true },
-  actorId:   { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+  postId: { type: mongoose.Schema.Types.ObjectId, ref: "Post", required: true },
+  actorId: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
   eventType: { type: String, enum: ["view", "click", "share", "save", "report"], required: true },
-  ipHash:    { type: String },
+  ipHash: { type: String },
   metadata: {
     userAgent: { type: String },
-    referer:   { type: String },
-    platform:  { type: String, enum: ["web", "mobile", "desktop"] },
+    referer: { type: String },
+    platform: { type: String, enum: ["web", "mobile", "desktop"] },
   },
   occurredAt: { type: Date, default: Date.now },
 });

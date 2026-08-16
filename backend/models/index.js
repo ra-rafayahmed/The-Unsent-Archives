@@ -3,15 +3,15 @@
 // const { User, Post, Follow } = require("./models");
 
 module.exports = {
-  User:           require("./User"),
-  Follow:         require("./Follow"),
-  Post:           require("./Post"),
-  Tag:            require("./Tag"),
-  Reaction:       require("./Reaction"),
-  Collection:     require("./Collection"),
-  MediaAsset:     require("./MediaAsset"),
+  User: require("./User"),
+  Follow: require("./Follow"),
+  Post: require("./Post"),
+  Tag: require("./Tag"),
+  Reaction: require("./Reaction"),
+  Collection: require("./Collection"),
+  MediaAsset: require("./MediaAsset"),
   AnalyticsEvent: require("./AnalyticsEvent"),
-  SearchIndex:    require("./SearchIndex"),
-  Report:         require("./Report"),
+  SearchIndex: require("./SearchIndex"),
+  Report: require("./Report"),
   Recommendation: require("./Recommendation"),
 };

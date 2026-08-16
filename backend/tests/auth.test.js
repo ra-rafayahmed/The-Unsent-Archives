@@ -11,7 +11,11 @@ describe("POST /api/auth/register", () => {
     expect(res.status).toBe(201);
     expect(res.body.status).toBe("success");
     expect(typeof res.body.token).toBe("string");
-    expect(res.body.user).toMatchObject({ username: "alice", email: "alice@example.com", role: "user" });
+    expect(res.body.user).toMatchObject({
+      username: "alice",
+      email: "alice@example.com",
+      role: "user",
+    });
     expect(res.body.backupCodes).toHaveLength(8);
     expect(res.body.user).not.toHaveProperty("passwordHash");
 
@@ -70,7 +74,9 @@ describe("POST /api/auth/login", () => {
 
   it("returns 401 for a wrong password and for an unknown email", async () => {
     const { user } = await registerUser();
-    const wrong = await request(app).post("/api/auth/login").send({ email: user.email, password: "nope-nope" });
+    const wrong = await request(app)
+      .post("/api/auth/login")
+      .send({ email: user.email, password: "nope-nope" });
     expect(wrong.status).toBe(401);
 
     const unknown = await request(app)
@@ -117,12 +123,16 @@ describe("password reset flow", () => {
     expect(reset.status).toBe(200);
     expect(typeof reset.body.token).toBe("string");
 
-    const login = await request(app).post("/api/auth/login").send({ email: user.email, password: "newpassword456" });
+    const login = await request(app)
+      .post("/api/auth/login")
+      .send({ email: user.email, password: "newpassword456" });
     expect(login.status).toBe(200);
   });
 
   it("does not reveal whether an email exists", async () => {
-    const res = await request(app).post("/api/auth/forgot-password").send({ email: "nobody@example.com" });
+    const res = await request(app)
+      .post("/api/auth/forgot-password")
+      .send({ email: "nobody@example.com" });
     expect(res.status).toBe(200);
     expect(res.body.resetToken).toBeUndefined();
   });

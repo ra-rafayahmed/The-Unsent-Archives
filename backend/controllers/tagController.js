@@ -33,9 +33,7 @@ const listTags = asyncHandler(async (req, res, next) => {
 // @route   GET /api/tags/trending
 // @access  Public
 const getTrending = asyncHandler(async (req, res, next) => {
-  const tags = await Tag.find()
-    .sort({ usageCount: -1 })
-    .limit(20);
+  const tags = await Tag.find().sort({ usageCount: -1 }).limit(20);
 
   res.status(200).json({
     status: "success",
@@ -59,14 +57,14 @@ const getPostsByTag = asyncHandler(async (req, res, next) => {
       .skip(skip)
       .limit(limit)
       .populate("authorId", "username avatarUrl"),
-    Post.countDocuments(query)
+    Post.countDocuments(query),
   ]);
 
   // Strip anonymous
-  const cleanedPosts = posts.map(post => {
+  const cleanedPosts = posts.map((post) => {
     const p = post.toObject();
     if (p.isAnonymous && (!req.user || req.user.id !== p.authorId._id.toString())) {
-       p.authorId = null;
+      p.authorId = null;
     }
     return p;
   });

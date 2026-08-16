@@ -174,7 +174,10 @@ const CreateNotePage = () => {
 
         <label>
           Visibility
-          <select value={form.visibility} onChange={(e) => setForm((f) => ({ ...f, visibility: e.target.value }))}>
+          <select
+            value={form.visibility}
+            onChange={(e) => setForm((f) => ({ ...f, visibility: e.target.value }))}
+          >
             <option value="public">Public</option>
             <option value="anonymous">Anonymous</option>
             <option value="private">Private</option>
@@ -183,9 +186,16 @@ const CreateNotePage = () => {
 
         <label>
           Font
-          <select value={form.style.font} onChange={(e) => setForm((f) => ({ ...f, style: { ...f.style, font: e.target.value } }))}>
+          <select
+            value={form.style.font}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, style: { ...f.style, font: e.target.value } }))
+            }
+          >
             {FONT_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>{option.label}</option>
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
             ))}
           </select>
         </label>
@@ -195,7 +205,9 @@ const CreateNotePage = () => {
           <input
             type="color"
             value={form.style.textColor}
-            onChange={(e) => setForm((f) => ({ ...f, style: { ...f.style, textColor: e.target.value } }))}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, style: { ...f.style, textColor: e.target.value } }))
+            }
           />
         </label>
 
@@ -207,7 +219,9 @@ const CreateNotePage = () => {
             max="2.2"
             step="0.05"
             value={form.style.fontSize}
-            onChange={(e) => setForm((f) => ({ ...f, style: { ...f.style, fontSize: Number(e.target.value) } }))}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, style: { ...f.style, fontSize: Number(e.target.value) } }))
+            }
           />
         </label>
 
@@ -219,7 +233,9 @@ const CreateNotePage = () => {
             max="2.2"
             step="0.05"
             value={form.style.lineHeight}
-            onChange={(e) => setForm((f) => ({ ...f, style: { ...f.style, lineHeight: Number(e.target.value) } }))}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, style: { ...f.style, lineHeight: Number(e.target.value) } }))
+            }
           />
         </label>
 
@@ -231,7 +247,12 @@ const CreateNotePage = () => {
             max="0.18"
             step="0.01"
             value={form.style.letterSpacing}
-            onChange={(e) => setForm((f) => ({ ...f, style: { ...f.style, letterSpacing: Number(e.target.value) } }))}
+            onChange={(e) =>
+              setForm((f) => ({
+                ...f,
+                style: { ...f.style, letterSpacing: Number(e.target.value) },
+              }))
+            }
           />
         </label>
 
@@ -239,7 +260,9 @@ const CreateNotePage = () => {
           Text alignment
           <select
             value={form.style.textAlign}
-            onChange={(e) => setForm((f) => ({ ...f, style: { ...f.style, textAlign: e.target.value } }))}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, style: { ...f.style, textAlign: e.target.value } }))
+            }
           >
             <option value="left">Left</option>
             <option value="center">Center</option>
@@ -281,9 +304,7 @@ const CreateNotePage = () => {
             <input type="file" accept="image/*,.gif" onChange={onImageFileChange} hidden />
             <span className="dropzone-icon">🖼️</span>
             <span>
-              {isUploadingImage
-                ? "Uploading image..."
-                : "Drop or pick a JPG / PNG / GIF / WEBP"}
+              {isUploadingImage ? "Uploading image..." : "Drop or pick a JPG / PNG / GIF / WEBP"}
             </span>
             <span className="dropzone-hint">stored in the archive (max 15MB)</span>
           </label>
@@ -316,9 +337,7 @@ const CreateNotePage = () => {
             <input type="file" accept="audio/*" onChange={onAudioFileChange} hidden />
             <span className="dropzone-icon">🎵</span>
             <span>
-              {isUploadingAudio
-                ? "Uploading audio..."
-                : "Drop or pick an MP3 / WAV / OGG / M4A"}
+              {isUploadingAudio ? "Uploading audio..." : "Drop or pick an MP3 / WAV / OGG / M4A"}
             </span>
             <span className="dropzone-hint">stored in the archive (max 15MB)</span>
           </label>
@@ -344,12 +363,19 @@ const CreateNotePage = () => {
           <input value={tagsInput} onChange={(e) => setTagsInput(e.target.value)} />
         </label>
 
-        <button type="button" className="primary-btn" onClick={save}>{id ? "Update" : "Publish"}</button>
+        <button type="button" className="primary-btn" onClick={save}>
+          {id ? "Update" : "Publish"}
+        </button>
         {error ? <p className="error">{error}</p> : null}
       </aside>
 
-      <article className="editor-canvas" style={{ background: form.style.background, color: form.style.textColor }}>
-        {imageUrl ? <div className="editor-image-preview" style={{ backgroundImage: `url(${imageUrl})` }} /> : null}
+      <article
+        className="editor-canvas"
+        style={{ background: form.style.background, color: form.style.textColor }}
+      >
+        {imageUrl ? (
+          <div className="editor-image-preview" style={{ backgroundImage: `url(${imageUrl})` }} />
+        ) : null}
 
         <textarea
           style={{

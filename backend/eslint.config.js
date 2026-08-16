@@ -14,7 +14,10 @@ module.exports = [
       globals: { ...globals.node },
     },
     rules: {
-      "no-unused-vars": ["error", { argsIgnorePattern: "^_|^next$|^req$|^res$", caughtErrors: "none" }],
+      "no-unused-vars": [
+        "error",
+        { argsIgnorePattern: "^_|^next$|^req$|^res$", caughtErrors: "none" },
+      ],
       "no-console": "warn",
     },
   },

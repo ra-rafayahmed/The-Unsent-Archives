@@ -13,7 +13,9 @@ const Navbar = () => {
   return (
     <header className="topbar">
       <div className="topbar-inner">
-        <Link to="/" className="brand">The Unsent Archives</Link>
+        <Link to="/" className="brand">
+          The Unsent Archives
+        </Link>
 
         <nav className="desktop-nav">
           <NavLink to="/">Home</NavLink>
@@ -26,16 +28,24 @@ const Navbar = () => {
         <div className="topbar-actions">
           {!isAuthenticated ? (
             <>
-              <Link to="/login" className="ghost-btn">Login</Link>
-              <Link to="/register" className="primary-btn">Join</Link>
+              <Link to="/login" className="ghost-btn">
+                Login
+              </Link>
+              <Link to="/register" className="primary-btn">
+                Join
+              </Link>
             </>
           ) : (
             <>
               <Link to="/profile" className="ghost-btn nav-profile-link">
-                {user?.avatarUrl ? <img src={user.avatarUrl} alt="avatar" className="nav-avatar" /> : null}
+                {user?.avatarUrl ? (
+                  <img src={user.avatarUrl} alt="avatar" className="nav-avatar" />
+                ) : null}
                 {user?.username || "Profile"}
               </Link>
-              <button type="button" className="ghost-btn" onClick={onLogout}>Logout</button>
+              <button type="button" className="ghost-btn" onClick={onLogout}>
+                Logout
+              </button>
             </>
           )}
         </div>

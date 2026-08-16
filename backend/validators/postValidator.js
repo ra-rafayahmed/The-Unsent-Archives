@@ -13,17 +13,33 @@ const createPostSchema = Joi.object({
     letterSpacing: Joi.number().min(-0.03).max(0.2).default(0),
     textAlign: Joi.string().valid("left", "center", "right", "justify").default("center"),
   }).default({}),
-  media: Joi.array().items(
-    Joi.object({
-      url: Joi.string().uri().required(),
-      type: Joi.string().valid("image", "video", "audio").required(),
-      mimeType: Joi.string().optional(),
-      width: Joi.number().optional(),
-      height: Joi.number().optional(),
-    })
-  ).default([]),
-  tags: Joi.array().items(Joi.string().regex(/^[a-zA-Z0-9-]+$/).message("Tags can only contain alphanumeric characters and hyphens")).max(10).default([]),
-  tagSlugs: Joi.array().items(Joi.string().regex(/^[a-zA-Z0-9-]+$/).message("Tag slugs can only contain alphanumeric characters and hyphens")).max(10).optional(),
+  media: Joi.array()
+    .items(
+      Joi.object({
+        url: Joi.string().uri().required(),
+        type: Joi.string().valid("image", "video", "audio").required(),
+        mimeType: Joi.string().optional(),
+        width: Joi.number().optional(),
+        height: Joi.number().optional(),
+      })
+    )
+    .default([]),
+  tags: Joi.array()
+    .items(
+      Joi.string()
+        .regex(/^[a-zA-Z0-9-]+$/)
+        .message("Tags can only contain alphanumeric characters and hyphens")
+    )
+    .max(10)
+    .default([]),
+  tagSlugs: Joi.array()
+    .items(
+      Joi.string()
+        .regex(/^[a-zA-Z0-9-]+$/)
+        .message("Tag slugs can only contain alphanumeric characters and hyphens")
+    )
+    .max(10)
+    .optional(),
 });
 
 const updatePostSchema = Joi.object({
@@ -39,17 +55,25 @@ const updatePostSchema = Joi.object({
     letterSpacing: Joi.number().min(-0.03).max(0.2).optional(),
     textAlign: Joi.string().valid("left", "center", "right", "justify").optional(),
   }).optional(),
-  media: Joi.array().items(
-    Joi.object({
-      url: Joi.string().uri().required(),
-      type: Joi.string().valid("image", "video", "audio").required(),
-      mimeType: Joi.string().optional(),
-      width: Joi.number().optional(),
-      height: Joi.number().optional(),
-    })
-  ).optional(),
-  tags: Joi.array().items(Joi.string().regex(/^[a-zA-Z0-9-]+$/)).max(10).optional(),
-  tagSlugs: Joi.array().items(Joi.string().regex(/^[a-zA-Z0-9-]+$/)).max(10).optional(),
+  media: Joi.array()
+    .items(
+      Joi.object({
+        url: Joi.string().uri().required(),
+        type: Joi.string().valid("image", "video", "audio").required(),
+        mimeType: Joi.string().optional(),
+        width: Joi.number().optional(),
+        height: Joi.number().optional(),
+      })
+    )
+    .optional(),
+  tags: Joi.array()
+    .items(Joi.string().regex(/^[a-zA-Z0-9-]+$/))
+    .max(10)
+    .optional(),
+  tagSlugs: Joi.array()
+    .items(Joi.string().regex(/^[a-zA-Z0-9-]+$/))
+    .max(10)
+    .optional(),
 });
 
 module.exports = {

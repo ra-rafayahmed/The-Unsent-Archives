@@ -86,22 +86,39 @@ const HomePage = () => {
         <span className="hero-tape hero-tape-r" aria-hidden="true" />
 
         <span className="hero-eyebrow">
-          {isAuthenticated ? `Welcome back, ${user?.username || "writer"},` : "A quiet shelf for unsent words,"}
+          {isAuthenticated
+            ? `Welcome back, ${user?.username || "writer"},`
+            : "A quiet shelf for unsent words,"}
         </span>
 
         <h1 className="hero-title">
           {isAuthenticated ? (
-            <>What never made it<br />out today?</>
+            <>
+              What never made it
+              <br />
+              out today?
+            </>
           ) : (
-            <>The Unsent<br />Archives</>
+            <>
+              The Unsent
+              <br />
+              Archives
+            </>
           )}
           <svg className="hero-underline" viewBox="0 0 320 20" aria-hidden="true">
-            <path d="M4 12 C 60 4, 140 18, 200 8 S 300 14, 316 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            <path
+              d="M4 12 C 60 4, 140 18, 200 8 S 300 14, 316 6"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
           </svg>
         </h1>
 
         <p className="hero-sub">
-          Notes, letters, and confessions left on the page.<br />
+          Notes, letters, and confessions left on the page.
+          <br />
           Read, reflect, and add to the shelf.
         </p>
 
@@ -129,10 +146,36 @@ const HomePage = () => {
             strokeLinecap="round"
             className="hero-quill-stroke"
           />
-          <path d="M30 130 L 22 138" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" className="hero-quill-stroke" />
-          <ellipse cx="20" cy="134" rx="9" ry="4" fill="none" stroke="currentColor" strokeWidth="1.4" />
-          <path d="M70 60 L 84 74 M62 70 L 76 84 M54 80 L 68 94" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
-          <path d="M30 130 C 50 132, 80 132, 100 128" stroke="currentColor" strokeWidth="1" strokeLinecap="round" fill="none" opacity="0.55" />
+          <path
+            d="M30 130 L 22 138"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            className="hero-quill-stroke"
+          />
+          <ellipse
+            cx="20"
+            cy="134"
+            rx="9"
+            ry="4"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.4"
+          />
+          <path
+            d="M70 60 L 84 74 M62 70 L 76 84 M54 80 L 68 94"
+            stroke="currentColor"
+            strokeWidth="1"
+            strokeLinecap="round"
+          />
+          <path
+            d="M30 130 C 50 132, 80 132, 100 128"
+            stroke="currentColor"
+            strokeWidth="1"
+            strokeLinecap="round"
+            fill="none"
+            opacity="0.55"
+          />
         </svg>
       </header>
 
@@ -149,12 +192,12 @@ const HomePage = () => {
                 {filter.id === "ForYou"
                   ? "✨"
                   : filter.id === "Trending"
-                  ? "🔥"
-                  : filter.id === "Recent"
-                  ? "🕒"
-                  : filter.id === "Following"
-                  ? "♡"
-                  : "✦"}
+                    ? "🔥"
+                    : filter.id === "Recent"
+                      ? "🕒"
+                      : filter.id === "Following"
+                        ? "♡"
+                        : "✦"}
               </span>
               {filter.label}
             </button>
@@ -198,8 +241,8 @@ const HomePage = () => {
             {activeFilter === "ForYou"
               ? "React to a few notes, follow some writers, and we'll pick pages that fit your shelf."
               : activeFilter === "Following"
-              ? "Follow a few writers and their words will gather here."
-              : "Be the first to leave something for the archive."}
+                ? "Follow a few writers and their words will gather here."
+                : "Be the first to leave something for the archive."}
           </p>
           {isAuthenticated && (
             <Link to="/write" className="primary-btn">

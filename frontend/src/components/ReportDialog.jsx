@@ -44,19 +44,13 @@ const ReportDialog = ({ open, onClose, targetType, targetId, targetLabel }) => {
 
   return (
     <div className="modal-backdrop" onClick={close}>
-      <form
-        className="modal-card"
-        onClick={(e) => e.stopPropagation()}
-        onSubmit={submit}
-      >
+      <form className="modal-card" onClick={(e) => e.stopPropagation()} onSubmit={submit}>
         <h3>Report {targetType === "user" ? "this writer" : "this note"}</h3>
         {targetLabel ? <p className="muted">{targetLabel}</p> : null}
 
         {done ? (
           <>
-            <p className="manuscript-flash">
-              Thank you. An admin will review this shortly.
-            </p>
+            <p className="manuscript-flash">Thank you. An admin will review this shortly.</p>
             <div className="row-inline" style={{ justifyContent: "flex-end" }}>
               <button type="button" className="primary-btn" onClick={close}>
                 Close

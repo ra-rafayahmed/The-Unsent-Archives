@@ -55,7 +55,7 @@ const removeReaction = asyncHandler(async (req, res, next) => {
   const postId = req.params.id;
   const userId = req.user.id;
   const { type } = req.body; // or could just remove ALL reactions from user if we changed schema
-  
+
   const query = { postId, userId };
   if (type) query.type = type;
 
@@ -85,7 +85,7 @@ const getReactions = asyncHandler(async (req, res, next) => {
 
   const summary = await Reaction.aggregate([
     { $match: { postId: new mongoose.Types.ObjectId(postId) } },
-    { $group: { _id: "$type", count: { $sum: 1 } } }
+    { $group: { _id: "$type", count: { $sum: 1 } } },
   ]);
 
   // Format to { like: 5, love: 2 }

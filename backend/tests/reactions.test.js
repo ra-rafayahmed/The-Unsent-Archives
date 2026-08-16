@@ -13,7 +13,10 @@ describe("POST /api/posts/:id/reactions", () => {
   it("rejects an unknown reaction type", async () => {
     const { user, token } = await registerUser();
     const post = await createPost(user.id);
-    const res = await request(app).post(url(post._id)).set(authHeader(token)).send({ type: "yikes" });
+    const res = await request(app)
+      .post(url(post._id))
+      .set(authHeader(token))
+      .send({ type: "yikes" });
     expect(res.status).toBe(400);
   });
 
@@ -21,9 +24,16 @@ describe("POST /api/posts/:id/reactions", () => {
     const { user, token } = await registerUser();
     const post = await createPost(user.id);
 
-    const res = await request(app).post(url(post._id)).set(authHeader(token)).send({ type: "love" });
+    const res = await request(app)
+      .post(url(post._id))
+      .set(authHeader(token))
+      .send({ type: "love" });
     expect(res.status).toBe(201);
-    expect(res.body.reaction).toMatchObject({ postId: String(post._id), userId: user.id, type: "love" });
+    expect(res.body.reaction).toMatchObject({
+      postId: String(post._id),
+      userId: user.id,
+      type: "love",
+    });
 
     expect(await Reaction.countDocuments({ postId: post._id })).toBe(1);
     expect((await Post.findById(post._id)).reactionCount).toBe(1);
@@ -34,7 +44,10 @@ describe("POST /api/posts/:id/reactions", () => {
     const post = await createPost(user.id);
 
     await request(app).post(url(post._id)).set(authHeader(token)).send({ type: "like" });
-    const second = await request(app).post(url(post._id)).set(authHeader(token)).send({ type: "like" });
+    const second = await request(app)
+      .post(url(post._id))
+      .set(authHeader(token))
+      .send({ type: "like" });
     expect(second.status).toBe(200);
     expect(second.body.message).toMatch(/removed/i);
 
@@ -65,7 +78,10 @@ describe("DELETE /api/posts/:id/reactions", () => {
     const post = await createPost(user.id);
     await request(app).post(url(post._id)).set(authHeader(token)).send({ type: "sad" });
 
-    const res = await request(app).delete(url(post._id)).set(authHeader(token)).send({ type: "sad" });
+    const res = await request(app)
+      .delete(url(post._id))
+      .set(authHeader(token))
+      .send({ type: "sad" });
     expect(res.status).toBe(200);
     expect(await Reaction.countDocuments({ postId: post._id })).toBe(0);
     expect((await Post.findById(post._id)).reactionCount).toBe(0);
@@ -74,7 +90,10 @@ describe("DELETE /api/posts/:id/reactions", () => {
   it("returns 400 when there is nothing to remove", async () => {
     const { user, token } = await registerUser();
     const post = await createPost(user.id);
-    const res = await request(app).delete(url(post._id)).set(authHeader(token)).send({ type: "sad" });
+    const res = await request(app)
+      .delete(url(post._id))
+      .set(authHeader(token))
+      .send({ type: "sad" });
     expect(res.status).toBe(400);
     expect((await Post.findById(post._id)).reactionCount).toBe(0);
   });

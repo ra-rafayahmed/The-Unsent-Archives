@@ -4,7 +4,10 @@ const ctrl = require("../controllers/collectionController");
 const validate = require("../middleware/validate");
 const { auth } = require("../middleware/auth");
 const { optionalAuth } = require("../middleware/optionalAuth");
-const { createCollectionSchema, updateCollectionSchema } = require("../validators/collectionValidator");
+const {
+  createCollectionSchema,
+  updateCollectionSchema,
+} = require("../validators/collectionValidator");
 
 router.post("/", auth, validate(createCollectionSchema), ctrl.createCollection);
 router.get("/:id", optionalAuth, ctrl.getCollection);

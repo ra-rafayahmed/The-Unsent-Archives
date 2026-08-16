@@ -1,13 +1,5 @@
 const crypto = require("crypto");
-const {
-  User,
-  Post,
-  Reaction,
-  Collection,
-  Follow,
-  MediaAsset,
-  Report,
-} = require("../models");
+const { User, Post, Reaction, Collection, Follow, MediaAsset, Report } = require("../models");
 const asyncHandler = require("../utils/asyncHandler");
 const ApiError = require("../utils/ApiError");
 const { hashResetToken, RESET_TOKEN_TTL_MS } = require("./authController");
@@ -21,10 +13,7 @@ const deletePostCascade = async (post) => {
 
 const listUsers = asyncHandler(async (req, res) => {
   const { sort = "recent" } = req.query;
-  const sortStage =
-    sort === "reports"
-      ? { reportCount: -1, createdAt: -1 }
-      : { createdAt: -1 };
+  const sortStage = sort === "reports" ? { reportCount: -1, createdAt: -1 } : { createdAt: -1 };
 
   const users = await User.find()
     .select("username email role isActive isSuspended reportCount createdAt avatarUrl")
@@ -40,13 +29,12 @@ const listUsers = asyncHandler(async (req, res) => {
 
 const listPosts = asyncHandler(async (req, res) => {
   const { sort = "recent" } = req.query;
-  const sortStage =
-    sort === "reports"
-      ? { reportCount: -1, createdAt: -1 }
-      : { createdAt: -1 };
+  const sortStage = sort === "reports" ? { reportCount: -1, createdAt: -1 } : { createdAt: -1 };
 
   const posts = await Post.find()
-    .select("content authorId visibility isAnonymous createdAt reactionCount viewCount saveCount reportCount")
+    .select(
+      "content authorId visibility isAnonymous createdAt reactionCount viewCount saveCount reportCount"
+    )
     .populate("authorId", "username email")
     .sort(sortStage)
     .limit(300);
@@ -125,12 +113,11 @@ const deleteUserAsAdmin = asyncHandler(async (req, res, next) => {
     Follow.deleteMany({ $or: [{ followerId: user._id }, { followeeId: user._id }] }),
     Collection.deleteMany({ ownerId: user._id }),
     MediaAsset.deleteMany({ ownerId: user._id }),
-    Post.updateMany(
-      { "comments.userId": user._id },
-      { $pull: { comments: { userId: user._id } } }
-    ),
+    Post.updateMany({ "comments.userId": user._id }, { $pull: { comments: { userId: user._id } } }),
     Reaction.deleteMany({ userId: user._id }),
-    Report.deleteMany({ $or: [{ reporterId: user._id }, { targetType: "user", targetId: user._id }] }),
+    Report.deleteMany({
+      $or: [{ reporterId: user._id }, { targetType: "user", targetId: user._id }],
+    }),
   ]);
 
   res.status(200).json({
@@ -153,8 +140,7 @@ const issueResetToken = asyncHandler(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
 
   const baseUrl =
-    req.headers.origin ||
-    `${req.protocol}://${req.get("host").replace(/:\d+$/, ":3000")}`;
+    req.headers.origin || `${req.protocol}://${req.get("host").replace(/:\d+$/, ":3000")}`;
 
   res.status(200).json({
     status: "success",
@@ -182,7 +168,9 @@ const listReports = asyncHandler(async (req, res) => {
     reports.map(async (r) => {
       const obj = r.toObject();
       if (r.targetType === "user") {
-        const u = await User.findById(r.targetId).select("username email avatarUrl isSuspended reportCount");
+        const u = await User.findById(r.targetId).select(
+          "username email avatarUrl isSuspended reportCount"
+        );
         obj.target = u;
       } else {
         const p = await Post.findById(r.targetId)

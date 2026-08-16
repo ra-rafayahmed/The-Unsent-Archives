@@ -6,8 +6,7 @@ const logger = require("../utils/logger");
 
 const normalizePostInput = (body) => {
   const normalizedVisibility = body.visibility === "anonymous" ? "public" : body.visibility;
-  const normalizedAnonymous =
-    body.visibility === "anonymous" ? true : Boolean(body.isAnonymous);
+  const normalizedAnonymous = body.visibility === "anonymous" ? true : Boolean(body.isAnonymous);
   const normalizedTags =
     Array.isArray(body.tagSlugs) && body.tagSlugs.length > 0
       ? body.tagSlugs
@@ -25,29 +24,29 @@ const normalizePostInput = (body) => {
 // Helper to process tags: creates missing tags, increments counts, returns ObjectIds and Slugs
 const processTags = async (tagNames) => {
   if (!tagNames || tagNames.length === 0) return { tagIds: [], tagSlugs: [] };
-  
+
   // Clean names to lower, hyphenated slugs
-  const slugs = tagNames.map(name => name.toLowerCase().trim().replace(/\s+/g, '-'));
-  
+  const slugs = tagNames.map((name) => name.toLowerCase().trim().replace(/\s+/g, "-"));
+
   const tagIds = [];
-  
+
   for (let i = 0; i < slugs.length; i++) {
     const slug = slugs[i];
     const name = tagNames[i].trim();
-    
+
     // Find or create tag
     let tag = await Tag.findOne({ slug });
-    
+
     if (tag) {
       tag.usageCount += 1;
       await tag.save();
     } else {
       tag = await Tag.create({ name, slug, usageCount: 1 });
     }
-    
+
     tagIds.push(tag._id);
   }
-  
+
   return { tagIds, tagSlugs: slugs };
 };
 
@@ -101,11 +100,11 @@ const getPost = asyncHandler(async (req, res, next) => {
 
   // Permissions check
   const isOwner = req.user && req.user.id === post.authorId._id.toString();
-  
+
   if (post.visibility === "private" && !isOwner) {
     return next(new ApiError(403, "This post is private"));
   }
-  
+
   // TODO: Add logic for 'followers' visibility if needed
 
   const postObj = post.toObject();
@@ -119,7 +118,8 @@ const getPost = asyncHandler(async (req, res, next) => {
   // The post author can still see who wrote what so they can moderate.
   postObj.comments = (postObj.comments || []).map((c) => {
     if (!c.isAnonymous) return c;
-    const isCommentOwner = req.user && c.userId && req.user.id === (c.userId._id || c.userId).toString();
+    const isCommentOwner =
+      req.user && c.userId && req.user.id === (c.userId._id || c.userId).toString();
     if (isCommentOwner || isOwner) return c;
     return { ...c, userId: null };
   });
@@ -132,9 +132,12 @@ const getPost = asyncHandler(async (req, res, next) => {
     eventType: "view",
     ipHash: req.ip, // Hashing IP is better for privacy
   }).catch((err) =>
-    logger.warn({ err, postId: post._id, userId: req.user?.id }, "failed to log view analytics event")
+    logger.warn(
+      { err, postId: post._id, userId: req.user?.id },
+      "failed to log view analytics event"
+    )
   );
-  
+
   // Atomically increment views
   Post.findByIdAndUpdate(post._id, { $inc: { viewCount: 1 } }).exec();
 
@@ -175,7 +178,7 @@ const updatePost = asyncHandler(async (req, res, next) => {
     post.isAnonymous = normalizedInput.isAnonymous;
   }
 
-  allowedUpdates.forEach(field => {
+  allowedUpdates.forEach((field) => {
     if (field === "visibility" || field === "isAnonymous") return;
     if (req.body[field] !== undefined) {
       post[field] = req.body[field];
@@ -184,11 +187,11 @@ const updatePost = asyncHandler(async (req, res, next) => {
 
   // Handle tags update (complex: requires diffing and adjusting Tag usageCounts)
   if (req.body.tags !== undefined || req.body.tagSlugs !== undefined) {
-     // Extremely simplified for this scale: we don't decrement old tags here to save time,
-     // but in a production environment, you should $inc usageCount -1 for removed tags.
-     const { tagIds, tagSlugs } = await processTags(normalizedInput.tags);
-     post.tagIds = tagIds;
-     post.tagSlugs = tagSlugs;
+    // Extremely simplified for this scale: we don't decrement old tags here to save time,
+    // but in a production environment, you should $inc usageCount -1 for removed tags.
+    const { tagIds, tagSlugs } = await processTags(normalizedInput.tags);
+    post.tagIds = tagIds;
+    post.tagSlugs = tagSlugs;
   }
 
   await post.save();
@@ -225,10 +228,7 @@ const deletePost = asyncHandler(async (req, res, next) => {
       { $pull: { postIds: post._id }, $inc: { postCount: -1 } }
     ),
     // Decrement tag usage counts
-    Tag.updateMany(
-      { _id: { $in: post.tagIds } },
-      { $inc: { usageCount: -1 } }
-    )
+    Tag.updateMany({ _id: { $in: post.tagIds } }, { $inc: { usageCount: -1 } }),
   ];
 
   await Promise.all(cascadeOps);
@@ -244,7 +244,7 @@ const deletePost = asyncHandler(async (req, res, next) => {
 // @access  Private
 const repost = asyncHandler(async (req, res, next) => {
   const originalPost = await Post.findById(req.params.id);
-  
+
   if (!originalPost) {
     return next(new ApiError(404, "Original post not found"));
   }
@@ -258,7 +258,7 @@ const repost = asyncHandler(async (req, res, next) => {
 
   const post = await Post.create({
     authorId: req.user.id,
-    content: content || `Repost of ${originalPost._id}`, 
+    content: content || `Repost of ${originalPost._id}`,
     visibility,
     isAnonymous,
     repostOf: originalPost._id,
@@ -269,7 +269,10 @@ const repost = asyncHandler(async (req, res, next) => {
     actorId: req.user.id,
     eventType: "share",
   }).catch((err) =>
-    logger.warn({ err, postId: originalPost._id, userId: req.user.id }, "failed to log share analytics event")
+    logger.warn(
+      { err, postId: originalPost._id, userId: req.user.id },
+      "failed to log share analytics event"
+    )
   );
 
   res.status(201).json({
@@ -349,5 +352,5 @@ module.exports = {
   deletePost,
   repost,
   addComment,
-  deleteComment
+  deleteComment,
 };

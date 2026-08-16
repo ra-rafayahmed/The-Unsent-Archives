@@ -5,37 +5,40 @@
 The stitch folder contains 7 conceptual HTML mockups and a comprehensive `DESIGN.md`. These are **not** code to be reused — they are visual references for the aesthetic, layout patterns, and interaction style. The following design DNA should be extracted and applied:
 
 ### 1.1 Brand Philosophy
+
 > "Digital Ephemera" — the preservation of intimate thoughts that were never meant to be shared. The personality is quiet, intellectual, and deeply human.
 
 ### 1.2 Color Palette
+
 All stitch screens use the same **Material Design 3** token family. The core values are:
 
-| Token | Hex | Usage |
-|---|---|---|
-| `background` (page) | `#F5EFE6` | Warm aged-paper base for all pages |
-| `surface` (cards) | `#FFFFFF` | Pure white for cards and elevated surfaces |
-| `primary` | `#a83900` | Deep burnt orange, used for text links and active states |
-| `primary-container` | `#FF6B2B` | Vibrant orange, used for CTAs, FAB, active pills |
-| `on-surface` | `#1c1c1a` | Primary text color |
-| `outline-variant` | `#e2bfb3` | Subtle borders and dividers |
-| `secondary-container` | `#e7e2d9` | Tag chip backgrounds |
-| Card shadow | `0px 4px 20px rgba(26,26,24,0.06)` | Consistent ambient shadow across all cards |
-| Hover shadow | `0px 8px 30px rgba(26,26,24,0.10)` | Deepened shadow on card hover |
+| Token                 | Hex                                | Usage                                                    |
+| --------------------- | ---------------------------------- | -------------------------------------------------------- |
+| `background` (page)   | `#F5EFE6`                          | Warm aged-paper base for all pages                       |
+| `surface` (cards)     | `#FFFFFF`                          | Pure white for cards and elevated surfaces               |
+| `primary`             | `#a83900`                          | Deep burnt orange, used for text links and active states |
+| `primary-container`   | `#FF6B2B`                          | Vibrant orange, used for CTAs, FAB, active pills         |
+| `on-surface`          | `#1c1c1a`                          | Primary text color                                       |
+| `outline-variant`     | `#e2bfb3`                          | Subtle borders and dividers                              |
+| `secondary-container` | `#e7e2d9`                          | Tag chip backgrounds                                     |
+| Card shadow           | `0px 4px 20px rgba(26,26,24,0.06)` | Consistent ambient shadow across all cards               |
+| Hover shadow          | `0px 8px 30px rgba(26,26,24,0.10)` | Deepened shadow on card hover                            |
 
 ### 1.3 Typography (Dual Typeface Strategy)
+
 - **Newsreader** (serif) — "Voice of the author". Headlines, quotes, poetry, pull-quotes
 - **Work Sans** (sans-serif) — "Voice of the platform". Navigation, labels, metadata, buttons
 
-| Scale | Font | Size | Weight | Use |
-|---|---|---|---|---|
-| `display-serif` | Newsreader | 48px | 600 | Hero text, splash |
-| `headline-lg` | Newsreader | 32px | 500 | Page headings |
-| `headline-md` | Newsreader | 24px | 500 | Section titles, card titles |
-| `quote-text` | Newsreader | 20px | 400 | Post content, literary text |
-| `body-lg` | Work Sans | 18px | 400 | Extended paragraphs |
-| `body-md` | Work Sans | 16px | 400 | Default body text |
-| `label-caps` | Work Sans | 12px | 600 | Uppercase metadata labels, tags |
-| `ui-button` | Work Sans | 14px | 500 | Button text |
+| Scale           | Font       | Size | Weight | Use                             |
+| --------------- | ---------- | ---- | ------ | ------------------------------- |
+| `display-serif` | Newsreader | 48px | 600    | Hero text, splash               |
+| `headline-lg`   | Newsreader | 32px | 500    | Page headings                   |
+| `headline-md`   | Newsreader | 24px | 500    | Section titles, card titles     |
+| `quote-text`    | Newsreader | 20px | 400    | Post content, literary text     |
+| `body-lg`       | Work Sans  | 18px | 400    | Extended paragraphs             |
+| `body-md`       | Work Sans  | 16px | 400    | Default body text               |
+| `label-caps`    | Work Sans  | 12px | 600    | Uppercase metadata labels, tags |
+| `ui-button`     | Work Sans  | 14px | 500    | Button text                     |
 
 ### 1.4 Component Patterns (From Stitch Screens)
 
@@ -62,14 +65,17 @@ Each page below maps to one stitch inspiration + corresponding backend API endpo
 ---
 
 ### 2.1 Authentication Pages (`/login`, `/register`)
+
 **Stitch Reference:** None (no auth mockup exists). Design a minimal card-based form centered on the `#F5EFE6` background, consistent with the editorial aesthetic.
 
 **Backend Endpoints:**
+
 - `POST /api/auth/register` — Body: `{ username, email, password }`
 - `POST /api/auth/login` — Body: `{ email, password }` → Returns `{ token, user }`
 - `GET /api/auth/me` — Validate stored JWT on app load
 
 **Implementation Notes:**
+
 - Store JWT in `localStorage`; attach via Axios interceptor on all requests
 - Use React Context (`AuthContext`) for global auth state
 - Protect private routes (`/write`, `/library`, `/profile`) with a `<ProtectedRoute>` wrapper
@@ -80,9 +86,11 @@ Each page below maps to one stitch inspiration + corresponding backend API endpo
 ---
 
 ### 2.2 Home / Discovery Feed (`/`)
+
 **Stitch Reference:** `home_discovery_feed/`
 
 **Key Design Patterns from Stitch:**
+
 - Sticky top navbar with brand name, search input (in a white pill with orange focus ring), user avatar
 - Filter row: horizontal scrollable pills (`All`, `Quotes`, `Micro-poetry`, `Thoughts`, `Reflections`, `Anonymous`, `Trending`) — All pill = orange filled, rest = white ghost border
 - Masonry grid below with mixed card types:
@@ -96,6 +104,7 @@ Each page below maps to one stitch inspiration + corresponding backend API endpo
 - Floating Action Button (write) in bottom-right
 
 **Backend Endpoints:**
+
 - `GET /api/feed/` — General explore feed (paginated, returns array of Post objects)
 - `GET /api/feed/trending` — Trending posts
 - `GET /api/feed/following` — Posts from followed users (authenticated)
@@ -103,6 +112,7 @@ Each page below maps to one stitch inspiration + corresponding backend API endpo
 - `GET /api/search/` — For the search bar functionality (query param: `?q=`)
 
 **Data Mapping (Post Model → Card):**
+
 ```
 Post.content        → card body text
 Post.style.font     → determines serif vs sans vs monospace rendering
@@ -120,9 +130,11 @@ Post.authorId       → populated to get username, avatarUrl
 ---
 
 ### 2.3 Single Note View (`/posts/:id`)
+
 **Stitch Reference:** `single_note_view_the_unsent_archives/`
 
 **Key Design Patterns from Stitch:**
+
 - Full-width centered layout (`max-w-[640px]`)
 - Hero card with background image, gradient overlay `from-black/80`, white overlay text in `display-serif` italic
 - Postmark badge (circular, rotated, top-right of hero)
@@ -134,6 +146,7 @@ Post.authorId       → populated to get username, avatarUrl
 - **Comments Section ("Letters to the Writer"):** Current user avatar + textarea + "Post Anonymously" button. Past comments show: avatar, username, timestamp, quoted excerpt border-left, response text
 
 **Backend Endpoints:**
+
 - `GET /api/posts/:id` — Fetch full post with populated author & embedded comments
 - `POST /api/posts/:id/reactions` — Body: `{ type }` where type ∈ `[like, love, haha, wow, sad, angry]`
 - `DELETE /api/posts/:id/reactions` — Remove own reaction
@@ -144,6 +157,7 @@ Post.authorId       → populated to get username, avatarUrl
 - `POST /api/events` — Log view event for analytics: `{ type: "view", postId }`
 
 **Data Mapping:**
+
 ```
 Post.content              → hero text overlay
 Post.media[0] (image)     → hero background image
@@ -159,9 +173,11 @@ Post.isAnonymous          → hide author band, show person_off placeholder inst
 ---
 
 ### 2.4 Note Editor / Creator (`/write`)
+
 **Stitch Reference:** `note_editor_creator_refined/`
 
 **Key Design Patterns from Stitch:**
+
 - Split screen layout: Left panel (35%) = Editor Settings, Right panel (65%) = Live Canvas
 - Top bar: back arrow, brand name, "Save Draft" (ghost) + "Publish" (orange pill) buttons
 - **Left Panel Settings:**
@@ -178,6 +194,7 @@ Post.isAnonymous          → hide author band, show person_off placeholder inst
 - Postmark badge floating bottom-right (date + city, decorative)
 
 **Backend Endpoints:**
+
 - `POST /api/posts/` — Create new post
   ```json
   {
@@ -193,6 +210,7 @@ Post.isAnonymous          → hide author band, show person_off placeholder inst
 - `GET /api/tags/` — Autocomplete tags in metadata section
 
 **Key Implementation Details:**
+
 - The editor should live-preview styling changes (font, background color) on the canvas card in real time
 - Character counter maps to `Post.content.maxlength` (5000 chars from the model)
 - Visibility toggle directly maps to `Post.visibility` enum + `Post.isAnonymous` boolean
@@ -201,9 +219,11 @@ Post.isAnonymous          → hide author band, show person_off placeholder inst
 ---
 
 ### 2.5 User Profile (`/profile/:id`)
+
 **Stitch Reference:** `user_profile_clara_whitmore/`
 
 **Key Design Patterns from Stitch:**
+
 - Desktop: 12-column grid (8 col main + 4 col sidebar)
 - **Profile Header Card:** Avatar with orange ring border, display name in `headline-md`, @username below, italic bio quote, Follow + Message pills, stats row (Notes count / Followers / Following)
 - **Tab Navigation:** `Notes` | `Collections` | `Saved` — Active tab = orange text + orange bottom border
@@ -214,6 +234,7 @@ Post.isAnonymous          → hide author band, show person_off placeholder inst
   - "Writers like [user]" card: List of similar writers with avatars + follow buttons
 
 **Backend Endpoints:**
+
 - `GET /api/users/:id` — Profile data: `{ username, email, avatarUrl, bio, profile: { displayName, location, website }, tagInterests }`
 - `PUT /api/users/:id` — Update own profile (authenticated, self only)
 - `GET /api/users/:id/posts` — User's posts (paginated, respects visibility)
@@ -224,6 +245,7 @@ Post.isAnonymous          → hide author band, show person_off placeholder inst
 - `GET /api/follows/following` — Following list
 
 **Data Mapping:**
+
 ```
 User.username        → @username label
 User.profile.displayName → display name heading
@@ -235,9 +257,11 @@ User.tagInterests    → "Core Themes" chips in sidebar
 ---
 
 ### 2.6 My Collections / Library (`/library`)
+
 **Stitch Reference:** `my_collections/`
 
 **Key Design Patterns from Stitch:**
+
 - Header: "My Collections" title + italic subtitle + "+ New Collection" orange pill button
 - Tab pills: `My Collections` (active, filled) | `Saved by Others` (ghost)
 - **Collection Card Grid** (3 columns desktop): Each card is 340px tall with:
@@ -249,6 +273,7 @@ User.tagInterests    → "Core Themes" chips in sidebar
 - **Right Sidebar:** Collection Stats card (Total Notes, Collections count, Followers), Suggested Tags cloud, "Writers You Save Most" list
 
 **Backend Endpoints:**
+
 - `GET /api/users/:id/collections` — Fetch own collections
 - `POST /api/collections/` — Create: `{ name, description, visibility }`
 - `GET /api/collections/:id` — Fetch single collection with populated posts
@@ -258,6 +283,7 @@ User.tagInterests    → "Core Themes" chips in sidebar
 - `DELETE /api/collections/:id/posts/:postId` — Remove post
 
 **Data Mapping:**
+
 ```
 Collection.name       → card title
 Collection.visibility → public/private badge + icon
@@ -268,9 +294,11 @@ Collection.postIds    → populated for collection detail view
 ---
 
 ### 2.7 Explore / Search (`/explore`)
+
 **Stitch Reference:** `explore_search_the_unsent_archives/`
 
 **Key Design Patterns from Stitch:**
+
 - Active search bar with orange ring highlight, populated search text + close icon
 - Search dropdown overlay: recent search (history icon), tag suggestion, user suggestion, autocomplete, recent tag chips
 - Trending Tags pill strip (horizontal scroll): first tag = orange filled "TRENDING: [tag]", rest = white ghost
@@ -280,6 +308,7 @@ Collection.postIds    → populated for collection detail view
 - "Voices You Might Recognize" — horizontal scroll of writer cards: text-bg banner → avatar circle overlapping → name + member since + Follow button
 
 **Backend Endpoints:**
+
 - `GET /api/search/?q=` — Full-text search across posts and users
 - `GET /api/tags/` — List all tags
 - `GET /api/tags/trending` — Trending tags for the pill strip
@@ -289,14 +318,17 @@ Collection.postIds    → populated for collection detail view
 ---
 
 ### 2.8 Analytics Dashboard (Private) (`/analytics`)
+
 **Stitch Reference:** None (no mockup exists). Design a clean stats page.
 
 **Backend Endpoints:**
+
 - `GET /api/posts/:id/analytics` — Per-post metrics (views, saves, reactions, reach)
 - `GET /api/users/:id/analytics` — Aggregate account metrics
 - `POST /api/events` — Log events (view, save, share) for tracking
 
 **Implementation Notes:**
+
 - Only accessible by the post owner, even for anonymous posts
 - Simple stat cards showing: total views, total saves, total reactions, reach
 - Per-post breakdown table/list
@@ -306,17 +338,17 @@ Collection.postIds    → populated for collection detail view
 
 ## 3. Tech Stack & Project Setup
 
-| Layer | Choice | Rationale |
-|---|---|---|
-| Build tool | Vite | Fast HMR, already initialized |
-| Framework | React 19 | Already installed |
-| Routing | react-router-dom v7 | Already installed |
-| Styling | Tailwind CSS v4 + `@tailwindcss/postcss` | Already configured |
-| HTTP Client | Axios | Already installed, interceptor configured |
-| Layout | react-masonry-css | Already installed |
-| State | React Context (Auth) | Lightweight, sufficient for auth state |
-| Icons | Google Material Symbols Outlined | Consistent with all stitch designs |
-| Fonts | Newsreader + Work Sans (Google Fonts) | Already linked in index.html |
+| Layer       | Choice                                   | Rationale                                 |
+| ----------- | ---------------------------------------- | ----------------------------------------- |
+| Build tool  | Vite                                     | Fast HMR, already initialized             |
+| Framework   | React 19                                 | Already installed                         |
+| Routing     | react-router-dom v7                      | Already installed                         |
+| Styling     | Tailwind CSS v4 + `@tailwindcss/postcss` | Already configured                        |
+| HTTP Client | Axios                                    | Already installed, interceptor configured |
+| Layout      | react-masonry-css                        | Already installed                         |
+| State       | React Context (Auth)                     | Lightweight, sufficient for auth state    |
+| Icons       | Google Material Symbols Outlined         | Consistent with all stitch designs        |
+| Fonts       | Newsreader + Work Sans (Google Fonts)    | Already linked in index.html              |
 
 ---
 
@@ -388,46 +420,35 @@ frontend/src/
 
 ## 5. Route Map
 
-| Route | Page | Auth Required | Stitch Source |
-|---|---|---|---|
-| `/login` | Login | No | — |
-| `/register` | Register | No | — |
-| `/` | HomePage (Discovery Feed) | No | `home_discovery_feed` |
-| `/explore` | ExplorePage (Search + Mood) | No | `explore_search_the_unsent_archives` |
-| `/posts/:id` | SingleNoteView | No (public posts) | `single_note_view_the_unsent_archives` |
-| `/write` | CreateNotePage | **Yes** | `note_editor_creator_refined` |
-| `/write/:id` | Edit existing post | **Yes** | `note_editor_creator_refined` |
-| `/profile/:id` | UserProfile (others) | No | `user_profile_clara_whitmore` |
-| `/profile` | UserProfile (own) | **Yes** | `user_profile_clara_whitmore` |
-| `/library` | CollectionsBoard | **Yes** | `my_collections` |
-| `/library/:id` | Single collection view | Depends | `my_collections` |
-| `/analytics` | AnalyticsDashboard | **Yes** | — |
+| Route          | Page                        | Auth Required     | Stitch Source                          |
+| -------------- | --------------------------- | ----------------- | -------------------------------------- |
+| `/login`       | Login                       | No                | —                                      |
+| `/register`    | Register                    | No                | —                                      |
+| `/`            | HomePage (Discovery Feed)   | No                | `home_discovery_feed`                  |
+| `/explore`     | ExplorePage (Search + Mood) | No                | `explore_search_the_unsent_archives`   |
+| `/posts/:id`   | SingleNoteView              | No (public posts) | `single_note_view_the_unsent_archives` |
+| `/write`       | CreateNotePage              | **Yes**           | `note_editor_creator_refined`          |
+| `/write/:id`   | Edit existing post          | **Yes**           | `note_editor_creator_refined`          |
+| `/profile/:id` | UserProfile (others)        | No                | `user_profile_clara_whitmore`          |
+| `/profile`     | UserProfile (own)           | **Yes**           | `user_profile_clara_whitmore`          |
+| `/library`     | CollectionsBoard            | **Yes**           | `my_collections`                       |
+| `/library/:id` | Single collection view      | Depends           | `my_collections`                       |
+| `/analytics`   | AnalyticsDashboard          | **Yes**           | —                                      |
 
 ---
 
 ## 6. Implementation Order
 
 **Phase 1 — Foundation**
+
 1. Configure `tailwind.config.js` with exact design tokens from DESIGN.md
 2. Set up `index.css` global styles (masonry classes, scrollbar, parchment texture)
 3. Build layout shell: `Navbar`, `MobileNav`, `FAB`, `RootLayout`
 4. Implement `AuthContext` + `Login` + `Register` pages
 5. Configure all routes in `App.jsx`
 
-**Phase 2 — Core Content**
-6. Build `NoteCard.jsx` (universal card handling all variants: text, image, audio, anonymous, poetry)
-7. Build `HomePage.jsx` with `FilterPills` + masonry grid using `GET /api/feed/`
-8. Build `SingleNoteView.jsx` with `ReactionStrip`, `WriterBand`, `CommentSection`
-9. Build `CreateNotePage.jsx` with split-panel editor
+**Phase 2 — Core Content** 6. Build `NoteCard.jsx` (universal card handling all variants: text, image, audio, anonymous, poetry) 7. Build `HomePage.jsx` with `FilterPills` + masonry grid using `GET /api/feed/` 8. Build `SingleNoteView.jsx` with `ReactionStrip`, `WriterBand`, `CommentSection` 9. Build `CreateNotePage.jsx` with split-panel editor
 
-**Phase 3 — Social & Discovery**
-10. Build `UserProfile.jsx` with `ProfileHeader`, tabs, masonry grid of user posts
-11. Build `CollectionsBoard.jsx` with collection card grid
-12. Build `ExplorePage.jsx` with search, mood scroll, trending tags, sidebar widgets
-13. Wire up follow/unfollow functionality across all writer cards
+**Phase 3 — Social & Discovery** 10. Build `UserProfile.jsx` with `ProfileHeader`, tabs, masonry grid of user posts 11. Build `CollectionsBoard.jsx` with collection card grid 12. Build `ExplorePage.jsx` with search, mood scroll, trending tags, sidebar widgets 13. Wire up follow/unfollow functionality across all writer cards
 
-**Phase 4 — Polish**
-14. Build `AnalyticsDashboard.jsx`
-15. Add loading states, error boundaries, empty states
-16. Mobile responsiveness pass for all pages
-17. Animation polish (hover lifts, transitions, scroll behaviors)
+**Phase 4 — Polish** 14. Build `AnalyticsDashboard.jsx` 15. Add loading states, error boundaries, empty states 16. Mobile responsiveness pass for all pages 17. Animation polish (hover lifts, transitions, scroll behaviors)

@@ -69,9 +69,8 @@ const Register = () => {
           <h1 className="brand brand-center">The Unsent Archives</h1>
           <h2 className="auth-title">Your recovery codes</h2>
           <p className="auth-sub">
-            If you ever lose your password <strong>and</strong> can't access your
-            email, any one of these codes recovers your account. We only show
-            them once.
+            If you ever lose your password <strong>and</strong> can't access your email, any one of
+            these codes recovers your account. We only show them once.
           </p>
 
           <div className="backup-grid">
@@ -121,9 +120,7 @@ const Register = () => {
         <span className="auth-eyebrow">Open a fresh notebook</span>
         <h1 className="brand brand-center">The Unsent Archives</h1>
         <h2 className="auth-title">Create your writer profile</h2>
-        <p className="auth-sub">
-          A quiet shelf for everything you never got to send.
-        </p>
+        <p className="auth-sub">A quiet shelf for everything you never got to send.</p>
 
         <label>
           Pen name

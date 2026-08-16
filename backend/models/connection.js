@@ -44,9 +44,7 @@ mongoose.connection.on("disconnected", () =>
   logger.warn("MongoDB disconnected — attempting reconnect...")
 );
 
-mongoose.connection.on("reconnected", () =>
-  logger.info("MongoDB reconnected")
-);
+mongoose.connection.on("reconnected", () => logger.info("MongoDB reconnected"));
 
 // ── Graceful shutdown ─────────────────────────────────────────────────────────
 // Closes the connection cleanly when the process receives SIGINT (Ctrl+C) or
@@ -56,7 +54,13 @@ async function closeDB() {
   logger.info("MongoDB connection closed");
 }
 
-process.on("SIGINT",  async () => { await closeDB(); process.exit(0); });
-process.on("SIGTERM", async () => { await closeDB(); process.exit(0); });
+process.on("SIGINT", async () => {
+  await closeDB();
+  process.exit(0);
+});
+process.on("SIGTERM", async () => {
+  await closeDB();
+  process.exit(0);
+});
 
 module.exports = { connectDB, closeDB };

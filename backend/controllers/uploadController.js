@@ -84,10 +84,7 @@ const streamMedia = asyncHandler(async (req, res, next) => {
   res.setHeader("Content-Length", asset.size);
   res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
   res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
-  res.setHeader(
-    "Content-Disposition",
-    `inline; filename="${asset.fileName.replace(/"/g, "")}"`
-  );
+  res.setHeader("Content-Disposition", `inline; filename="${asset.fileName.replace(/"/g, "")}"`);
 
   res.end(asset.data);
 });

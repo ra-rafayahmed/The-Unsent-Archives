@@ -41,8 +41,8 @@ const CollectionsBoard = () => {
         <span className="auth-eyebrow">Your shelves</span>
         <h1 className="library-title">My Library</h1>
         <p className="library-sub">
-          Curated stacks of unsent letters. Mark them private to keep them
-          close, or public to share the spine of your archive.
+          Curated stacks of unsent letters. Mark them private to keep them close, or public to share
+          the spine of your archive.
         </p>
 
         <div className="library-cta">

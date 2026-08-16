@@ -223,7 +223,8 @@ const SingleNoteView = () => {
   };
 
   const toggleFollow = async () => {
-    if (!post?.authorId?._id || post?.isAnonymous || !user?.id || post.authorId._id === user.id) return;
+    if (!post?.authorId?._id || post?.isAnonymous || !user?.id || post.authorId._id === user.id)
+      return;
 
     setError("");
     setStatus("");
@@ -269,7 +270,9 @@ const SingleNoteView = () => {
     >
       <article className={`note-manuscript ${isDarkTheme ? "note-theme-dark" : ""}`}>
         <header className="manuscript-head">
-          <span className="manuscript-flourish" aria-hidden="true">❦</span>
+          <span className="manuscript-flourish" aria-hidden="true">
+            ❦
+          </span>
           <div className="manuscript-author">
             {visibleAuthorId ? (
               <>
@@ -291,7 +294,9 @@ const SingleNoteView = () => {
               <span className="manuscript-author-link">{visibleAuthorName || "Writer"}</span>
             )}
           </div>
-          <span className="manuscript-flourish" aria-hidden="true">❦</span>
+          <span className="manuscript-flourish" aria-hidden="true">
+            ❦
+          </span>
         </header>
 
         {image ? (
@@ -307,7 +312,9 @@ const SingleNoteView = () => {
         {(post.tagSlugs || []).length > 0 && (
           <div className="manuscript-tags">
             {post.tagSlugs.map((tag) => (
-              <span key={tag} className="chip note-chip">#{tag}</span>
+              <span key={tag} className="chip note-chip">
+                #{tag}
+              </span>
             ))}
           </div>
         )}
@@ -340,7 +347,9 @@ const SingleNoteView = () => {
             ["wow", "✨", "Wow"],
           ].map(([type, glyph, label]) => (
             <button key={type} type="button" className="reaction-chip" onClick={() => react(type)}>
-              <span className="reaction-glyph" aria-hidden="true">{glyph}</span>
+              <span className="reaction-glyph" aria-hidden="true">
+                {glyph}
+              </span>
               <span>{label}</span>
               <span className="reaction-count">{reactions[type] || 0}</span>
             </button>
@@ -357,7 +366,9 @@ const SingleNoteView = () => {
                   className="manuscript-select"
                 >
                   {collections.map((c) => (
-                    <option key={c._id} value={c._id}>{c.name}</option>
+                    <option key={c._id} value={c._id}>
+                      {c.name}
+                    </option>
                   ))}
                 </select>
                 <button type="button" className="manuscript-toolbar-btn" onClick={saveToCollection}>
@@ -371,7 +382,11 @@ const SingleNoteView = () => {
               </Link>
             ) : null}
             {canDelete ? (
-              <button type="button" className="manuscript-toolbar-btn is-danger" onClick={deletePost}>
+              <button
+                type="button"
+                className="manuscript-toolbar-btn is-danger"
+                onClick={deletePost}
+              >
                 🗑 Delete
               </button>
             ) : null}
@@ -392,7 +407,9 @@ const SingleNoteView = () => {
 
         <section className="manuscript-letters">
           <div className="manuscript-letters-head">
-            <span className="manuscript-flourish" aria-hidden="true">✒</span>
+            <span className="manuscript-flourish" aria-hidden="true">
+              ✒
+            </span>
             <h3>Letters to the Writer</h3>
           </div>
 
@@ -420,7 +437,10 @@ const SingleNoteView = () => {
             </>
           ) : (
             <p className="manuscript-muted">
-              <Link to="/login" className="manuscript-author-link">Sign in</Link> to leave a letter.
+              <Link to="/login" className="manuscript-author-link">
+                Sign in
+              </Link>{" "}
+              to leave a letter.
             </p>
           )}
 
@@ -431,9 +451,7 @@ const SingleNoteView = () => {
               const commenterName = isAnonComment ? "Anonymous" : c.userId?.username || "Writer";
               const commenterAvatar = !isAnonComment ? c.userId?.avatarUrl : null;
               const canDeleteComment =
-                user?.id &&
-                (canEdit ||
-                  (commenterId && commenterId.toString() === user.id));
+                user?.id && (canEdit || (commenterId && commenterId.toString() === user.id));
 
               return (
                 <div key={c._id} className="comment-item manuscript-comment">
@@ -453,9 +471,7 @@ const SingleNoteView = () => {
                       ) : (
                         <strong>{commenterName}</strong>
                       )}
-                      {isAnonComment && (
-                        <span className="manuscript-anon-tag">anonymous</span>
-                      )}
+                      {isAnonComment && <span className="manuscript-anon-tag">anonymous</span>}
                     </div>
                     {canDeleteComment ? (
                       <button

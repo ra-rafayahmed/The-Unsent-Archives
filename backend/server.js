@@ -7,7 +7,7 @@ let server;
 
 async function startServer() {
   await connectDB();
-  
+
   server = app.listen(config.port, () => {
     logger.info({ env: config.env, port: config.port }, "Server started");
   });

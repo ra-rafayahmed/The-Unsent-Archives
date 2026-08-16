@@ -52,8 +52,8 @@ const RecoverWithCode = () => {
         <h1 className="brand brand-center">The Unsent Archives</h1>
         <h2 className="auth-title">Recover with a backup code</h2>
         <p className="auth-sub">
-          Enter your email and one of the codes you saved when you joined. It
-          will work once and then be retired.
+          Enter your email and one of the codes you saved when you joined. It will work once and
+          then be retired.
         </p>
 
         <label>
@@ -107,9 +107,8 @@ const RecoverWithCode = () => {
         </button>
 
         <p className="auth-foot">
-          Lost your codes too?{" "}
-          <Link to="/forgot-password">Email a reset link</Link>
-          {" "}or contact an admin.
+          Lost your codes too? <Link to="/forgot-password">Email a reset link</Link> or contact an
+          admin.
         </p>
         <p className="auth-foot">
           Back to <Link to="/login">login</Link>

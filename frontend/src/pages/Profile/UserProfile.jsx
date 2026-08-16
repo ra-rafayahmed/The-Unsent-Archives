@@ -40,9 +40,7 @@ const UserProfile = ({ own = false }) => {
       setProfile(pRes.data.user);
       setPosts(postRes.data.posts || []);
       setPublicCollections(
-        (colRes.data.collections || []).filter(
-          (c) => c.visibility === "public" || own
-        )
+        (colRes.data.collections || []).filter((c) => c.visibility === "public" || own)
       );
       setForm({
         bio: pRes.data.user.bio || "",
@@ -144,7 +142,10 @@ const UserProfile = ({ own = false }) => {
       if (isFollowing) {
         await api.delete(`/users/${userId}/follow`);
         setIsFollowing(false);
-        setProfile((prev) => ({ ...prev, followerCount: Math.max(0, (prev?.followerCount || 0) - 1) }));
+        setProfile((prev) => ({
+          ...prev,
+          followerCount: Math.max(0, (prev?.followerCount || 0) - 1),
+        }));
         setStatus("Unfollowed");
       } else {
         await api.post(`/users/${userId}/follow`);
@@ -216,7 +217,8 @@ const UserProfile = ({ own = false }) => {
             </div>
 
             <p className="profile-bio">
-              {profile.bio || (own ? "Add a bio so readers know whose pages they're turning." : "No bio yet.")}
+              {profile.bio ||
+                (own ? "Add a bio so readers know whose pages they're turning." : "No bio yet.")}
             </p>
 
             <div className="profile-stats">
@@ -335,15 +337,30 @@ const UserProfile = ({ own = false }) => {
         </div>
 
         {posts.length ? (
-          <Masonry breakpointCols={{ default: 3, 1100: 2, 700: 1 }} className="masonry-grid" columnClassName="masonry-col">
+          <Masonry
+            breakpointCols={{ default: 3, 1100: 2, 700: 1 }}
+            className="masonry-grid"
+            columnClassName="masonry-col"
+          >
             {posts.map((p, i) => (
-              <NoteCard key={p._id} post={p} canDelete={own} canEdit={own} onDelete={deletePost} variantSeed={i} />
+              <NoteCard
+                key={p._id}
+                post={p}
+                canDelete={own}
+                canEdit={own}
+                onDelete={deletePost}
+                variantSeed={i}
+              />
             ))}
           </Masonry>
         ) : (
           <div className="empty-state">
             <h3>{own ? "No notes yet" : "This shelf is empty"}</h3>
-            <p>{own ? "Your unsent words will gather here once you write." : "Check back later — silence is also a draft."}</p>
+            <p>
+              {own
+                ? "Your unsent words will gather here once you write."
+                : "Check back later — silence is also a draft."}
+            </p>
             {own && (
               <Link to="/write" className="primary-btn">
                 Write your first note
@@ -358,7 +375,9 @@ const UserProfile = ({ own = false }) => {
           <h3 className="side-title">Recent themes</h3>
           {(() => {
             const counts = new Map();
-            posts.forEach((p) => (p.tagSlugs || []).forEach((s) => counts.set(s, (counts.get(s) || 0) + 1)));
+            posts.forEach((p) =>
+              (p.tagSlugs || []).forEach((s) => counts.set(s, (counts.get(s) || 0) + 1))
+            );
             const recent = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12);
             return recent.length ? (
               <div className="chip-row">
@@ -375,9 +394,7 @@ const UserProfile = ({ own = false }) => {
               </div>
             ) : (
               <p className="muted">
-                {own
-                  ? "Tags from your notes will gather here."
-                  : "No themes from this writer yet."}
+                {own ? "Tags from your notes will gather here." : "No themes from this writer yet."}
               </p>
             );
           })()}

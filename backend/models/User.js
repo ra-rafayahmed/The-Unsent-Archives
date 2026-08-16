@@ -57,8 +57,8 @@ const userSchema = new mongoose.Schema(
     },
     profile: {
       displayName: { type: String, maxlength: 50 },
-      location:    { type: String, maxlength: 100 },
-      website:     { type: String, maxlength: 200 },
+      location: { type: String, maxlength: 100 },
+      website: { type: String, maxlength: 200 },
     },
     tagInterests: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tag" }],
     passwordResetTokenHash: { type: String, select: false },

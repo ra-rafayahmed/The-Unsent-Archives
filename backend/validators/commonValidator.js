@@ -12,5 +12,5 @@ const pagination = Joi.object({
 module.exports = {
   objectId,
   pagination,
-  objectIdPattern
+  objectIdPattern,
 };

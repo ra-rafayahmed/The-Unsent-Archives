@@ -7,11 +7,11 @@ const mongoose = require("mongoose");
 
 const searchIndexSchema = new mongoose.Schema(
   {
-    postId:         { type: mongoose.Schema.Types.ObjectId, ref: "Post", required: true, unique: true },
-    contentTokens:  { type: String, default: "" },
-    tagSlugs:       [{ type: String }],
+    postId: { type: mongoose.Schema.Types.ObjectId, ref: "Post", required: true, unique: true },
+    contentTokens: { type: String, default: "" },
+    tagSlugs: [{ type: String }],
     authorUsername: { type: String },
-    visibility:     { type: String, enum: ["public", "followers", "private"] },
+    visibility: { type: String, enum: ["public", "followers", "private"] },
   },
   { timestamps: true }
 );

@@ -48,7 +48,10 @@ describe("POST /api/posts", () => {
 
   it("rejects invalid payloads", async () => {
     const { token } = await registerUser();
-    const empty = await request(app).post("/api/posts").set(authHeader(token)).send({ content: "" });
+    const empty = await request(app)
+      .post("/api/posts")
+      .set(authHeader(token))
+      .send({ content: "" });
     expect(empty.status).toBe(400);
     const badTag = await request(app)
       .post("/api/posts")
@@ -92,8 +95,12 @@ describe("GET /api/posts/:id", () => {
     const post = await createPost(owner.user.id, { visibility: "private" });
 
     expect((await request(app).get(`/api/posts/${post._id}`)).status).toBe(403);
-    expect((await request(app).get(`/api/posts/${post._id}`).set(authHeader(other.token))).status).toBe(403);
-    expect((await request(app).get(`/api/posts/${post._id}`).set(authHeader(owner.token))).status).toBe(200);
+    expect(
+      (await request(app).get(`/api/posts/${post._id}`).set(authHeader(other.token))).status
+    ).toBe(403);
+    expect(
+      (await request(app).get(`/api/posts/${post._id}`).set(authHeader(owner.token))).status
+    ).toBe(200);
   });
 
   it("returns 404 for a missing post and 400 for a malformed id", async () => {
@@ -134,7 +141,10 @@ describe("PUT /api/posts/:id", () => {
 describe("DELETE /api/posts/:id", () => {
   it("lets the author delete and cleans up the search index", async () => {
     const { token } = await registerUser();
-    const created = await request(app).post("/api/posts").set(authHeader(token)).send({ content: "bye" });
+    const created = await request(app)
+      .post("/api/posts")
+      .set(authHeader(token))
+      .send({ content: "bye" });
     const id = created.body.post._id;
 
     const res = await request(app).delete(`/api/posts/${id}`).set(authHeader(token));
@@ -171,7 +181,10 @@ describe("comments", () => {
   it("rejects an empty comment", async () => {
     const { user, token } = await registerUser();
     const post = await createPost(user.id);
-    const res = await request(app).post(`/api/posts/${post._id}/comments`).set(authHeader(token)).send({});
+    const res = await request(app)
+      .post(`/api/posts/${post._id}/comments`)
+      .set(authHeader(token))
+      .send({});
     expect(res.status).toBe(400);
   });
 
@@ -186,7 +199,9 @@ describe("comments", () => {
       .set(authHeader(commenter.token))
       .send({ text: "anon", isAnonymous: true });
 
-    const asStranger = await request(app).get(`/api/posts/${post._id}`).set(authHeader(stranger.token));
+    const asStranger = await request(app)
+      .get(`/api/posts/${post._id}`)
+      .set(authHeader(stranger.token));
     expect(asStranger.body.post.comments[0].userId).toBeNull();
 
     const asOwner = await request(app).get(`/api/posts/${post._id}`).set(authHeader(owner.token));

@@ -1,303 +1,458 @@
-<!DOCTYPE html>
+<!doctype html>
 
-<html lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>The Unsent Archives | Discovery Feed</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500&amp;family=Work+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-        tailwind.config = {
-          darkMode: "class",
-          theme: {
-            extend: {
-              "colors": {
-                      "primary": "#a83900",
-                      "secondary": "#615e57",
-                      "on-secondary-container": "#67645d",
-                      "surface-container-lowest": "#ffffff",
-                      "surface-variant": "#e5e2de",
-                      "on-tertiary": "#ffffff",
-                      "surface-container-high": "#ebe8e4",
-                      "error-container": "#ffdad6",
-                      "outline": "#8d7167",
-                      "background": "#fcf9f5",
-                      "secondary-container": "#e7e2d9",
-                      "surface-container-low": "#f6f3ef",
-                      "on-primary": "#ffffff",
-                      "on-secondary-fixed": "#1d1b16",
-                      "surface-container-highest": "#e5e2de",
-                      "surface-bright": "#fcf9f5",
-                      "on-tertiary-fixed": "#1a1c1c",
-                      "surface": "#fcf9f5",
-                      "on-tertiary-container": "#2f3132",
-                      "on-secondary-fixed-variant": "#494640",
-                      "inverse-primary": "#ffb59a",
-                      "tertiary-fixed": "#e2e2e2",
-                      "on-tertiary-fixed-variant": "#454747",
-                      "primary-fixed": "#ffdbce",
-                      "surface-tint": "#a83900",
-                      "on-surface-variant": "#594138",
-                      "primary-container": "#ff6b2b",
-                      "tertiary-container": "#989999",
-                      "tertiary-fixed-dim": "#c6c6c7",
-                      "on-primary-fixed": "#380d00",
-                      "error": "#ba1a1a",
-                      "on-surface": "#1c1c1a",
-                      "inverse-on-surface": "#f3f0ec",
-                      "inverse-surface": "#31302e",
-                      "on-error-container": "#93000a",
-                      "outline-variant": "#e2bfb3",
-                      "on-secondary": "#ffffff",
-                      "on-primary-container": "#5c1c00",
-                      "on-primary-fixed-variant": "#802a00",
-                      "on-background": "#1c1c1a",
-                      "primary-fixed-dim": "#ffb59a",
-                      "on-error": "#ffffff",
-                      "surface-container": "#f0edea",
-                      "surface-dim": "#dcdad6",
-                      "secondary-fixed": "#e7e2d9",
-                      "tertiary": "#5d5f5f",
-                      "secondary-fixed-dim": "#cbc6bd"
-              },
-              "borderRadius": {
-                      "DEFAULT": "0.25rem",
-                      "lg": "0.5rem",
-                      "xl": "0.75rem",
-                      "full": "9999px"
-              },
-              "spacing": {
-                      "base": "8px",
-                      "container-max": "1120px",
-                      "stack-lg": "48px",
-                      "gutter": "24px",
-                      "stack-sm": "12px",
-                      "stack-md": "24px",
-                      "margin-mobile": "20px",
-                      "margin-desktop": "64px"
-              },
-              "fontFamily": {
-                      "body-md": ["Work Sans"],
-                      "ui-button": ["Work Sans"],
-                      "body-lg": ["Work Sans"],
-                      "display-serif": ["Newsreader"],
-                      "quote-text": ["Newsreader"],
-                      "headline-md": ["Newsreader"],
-                      "headline-lg": ["Newsreader"],
-                      "label-caps": ["Work Sans"]
-              },
-              "fontSize": {
-                      "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
-                      "ui-button": ["14px", {"lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "500"}],
-                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
-                      "display-serif": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}],
-                      "quote-text": ["20px", {"lineHeight": "1.6", "fontWeight": "400"}],
-                      "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
-                      "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "500"}],
-                      "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "600"}]
-              }
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>The Unsent Archives | Discovery Feed</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500&amp;family=Work+Sans:wght@400;500;600&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#a83900",
+              secondary: "#615e57",
+              "on-secondary-container": "#67645d",
+              "surface-container-lowest": "#ffffff",
+              "surface-variant": "#e5e2de",
+              "on-tertiary": "#ffffff",
+              "surface-container-high": "#ebe8e4",
+              "error-container": "#ffdad6",
+              outline: "#8d7167",
+              background: "#fcf9f5",
+              "secondary-container": "#e7e2d9",
+              "surface-container-low": "#f6f3ef",
+              "on-primary": "#ffffff",
+              "on-secondary-fixed": "#1d1b16",
+              "surface-container-highest": "#e5e2de",
+              "surface-bright": "#fcf9f5",
+              "on-tertiary-fixed": "#1a1c1c",
+              surface: "#fcf9f5",
+              "on-tertiary-container": "#2f3132",
+              "on-secondary-fixed-variant": "#494640",
+              "inverse-primary": "#ffb59a",
+              "tertiary-fixed": "#e2e2e2",
+              "on-tertiary-fixed-variant": "#454747",
+              "primary-fixed": "#ffdbce",
+              "surface-tint": "#a83900",
+              "on-surface-variant": "#594138",
+              "primary-container": "#ff6b2b",
+              "tertiary-container": "#989999",
+              "tertiary-fixed-dim": "#c6c6c7",
+              "on-primary-fixed": "#380d00",
+              error: "#ba1a1a",
+              "on-surface": "#1c1c1a",
+              "inverse-on-surface": "#f3f0ec",
+              "inverse-surface": "#31302e",
+              "on-error-container": "#93000a",
+              "outline-variant": "#e2bfb3",
+              "on-secondary": "#ffffff",
+              "on-primary-container": "#5c1c00",
+              "on-primary-fixed-variant": "#802a00",
+              "on-background": "#1c1c1a",
+              "primary-fixed-dim": "#ffb59a",
+              "on-error": "#ffffff",
+              "surface-container": "#f0edea",
+              "surface-dim": "#dcdad6",
+              "secondary-fixed": "#e7e2d9",
+              tertiary: "#5d5f5f",
+              "secondary-fixed-dim": "#cbc6bd",
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+            spacing: {
+              base: "8px",
+              "container-max": "1120px",
+              "stack-lg": "48px",
+              gutter: "24px",
+              "stack-sm": "12px",
+              "stack-md": "24px",
+              "margin-mobile": "20px",
+              "margin-desktop": "64px",
+            },
+            fontFamily: {
+              "body-md": ["Work Sans"],
+              "ui-button": ["Work Sans"],
+              "body-lg": ["Work Sans"],
+              "display-serif": ["Newsreader"],
+              "quote-text": ["Newsreader"],
+              "headline-md": ["Newsreader"],
+              "headline-lg": ["Newsreader"],
+              "label-caps": ["Work Sans"],
+            },
+            fontSize: {
+              "body-md": ["16px", { lineHeight: "1.5", fontWeight: "400" }],
+              "ui-button": [
+                "14px",
+                { lineHeight: "1", letterSpacing: "0.01em", fontWeight: "500" },
+              ],
+              "body-lg": ["18px", { lineHeight: "1.6", fontWeight: "400" }],
+              "display-serif": [
+                "48px",
+                { lineHeight: "1.1", letterSpacing: "-0.02em", fontWeight: "600" },
+              ],
+              "quote-text": ["20px", { lineHeight: "1.6", fontWeight: "400" }],
+              "headline-md": ["24px", { lineHeight: "1.3", fontWeight: "500" }],
+              "headline-lg": ["32px", { lineHeight: "1.2", fontWeight: "500" }],
+              "label-caps": [
+                "12px",
+                { lineHeight: "1", letterSpacing: "0.08em", fontWeight: "600" },
+              ],
             },
           },
-        }
-      </script>
-<style>
+        },
+      };
+    </script>
+    <style>
+      .masonry {
+        column-count: 1;
+        column-gap: 1.5rem;
+      }
+      @media (min-width: 768px) {
         .masonry {
-            column-count: 1;
-            column-gap: 1.5rem;
+          column-count: 2;
         }
-        @media (min-width: 768px) {
-            .masonry {
-                column-count: 2;
-            }
+      }
+      @media (min-width: 1024px) {
+        .masonry {
+          column-count: 3;
         }
-        @media (min-width: 1024px) {
-            .masonry {
-                column-count: 3;
-            }
-        }
-        .masonry-item {
-            break-inside: avoid;
-            margin-bottom: 1.5rem;
-        }
-        .parchment-texture {
-            background-color: #FDFBF7;
-            background-image: radial-gradient(#EAE2D5 0.5px, transparent 0.5px);
-            background-size: 10px 10px;
-        }
+      }
+      .masonry-item {
+        break-inside: avoid;
+        margin-bottom: 1.5rem;
+      }
+      .parchment-texture {
+        background-color: #fdfbf7;
+        background-image: radial-gradient(#eae2d5 0.5px, transparent 0.5px);
+        background-size: 10px 10px;
+      }
     </style>
-</head>
-<body class="bg-[#F5EFE6] min-h-screen font-body-md text-on-surface">
-<!-- TopNavBar -->
-<header class="sticky top-0 z-50 bg-[#F5EFE6] border-b border-[#EAE2D5] shadow-[0_4px_20px_rgba(26,26,24,0.06)]">
-<div class="flex justify-between items-center w-full px-6 py-3 max-w-7xl mx-auto">
-<div class="flex items-center gap-8 flex-1">
-<h1 class="text-2xl font-bold text-[#FF6B2B] font-display-serif italic tracking-tight shrink-0">The Unsent Archives</h1>
-<div class="hidden md:flex items-center bg-[#FFFFFF] rounded-full px-4 py-2 w-full max-w-md border border-transparent focus-within:border-primary-container transition-all shadow-sm">
-<span class="material-symbols-outlined text-stone-400 mr-2" data-icon="search">search</span>
-<input class="bg-transparent border-none focus:ring-0 text-sm w-full font-body-md" placeholder="Search the attic..." type="text"/>
-</div>
-</div>
-<nav class="flex items-center gap-6">
-<a class="hidden md:block font-ui-button text-[#FF6B2B] border-b-2 border-[#FF6B2B] pb-1" href="#">Explore</a>
-<button class="material-symbols-outlined text-stone-600 hover:text-[#FF6B2B] transition-colors" data-icon="notifications">notifications</button>
-<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-sm cursor-pointer hover:scale-105 transition-transform">
-<img alt="User profile avatar" class="w-full h-full object-cover" data-alt="Close up portrait of a man with a kind expression and soft natural lighting in a studio setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXWc0H6DCgVPDqID8v6m7kKHUwCCNB5ZlvnpNVwjU-CItAyjMkdK1J4XWpdj1f6hbhf3_UduwrBJn-s-t_-fVavol2_adZtBosB2VP3unlmyeye0qPWqJyj1JpF8QXCFwkGZLdoz8EdLiKbL2psAAvnXUZYl0rAFw6MTY7zntv_Yo9Ya1FDWRAirB8XhoqKUANqEKlocT_SXRhxelg-MFEIkeEVDNREC7AEYhXhJ1hH4Zx1bOhpi_hq9XHWvX0O-vgC6pBJCf4j0w"/>
-</div>
-</nav>
-</div>
-</header>
-<!-- Filter Row -->
-<div class="bg-[#F5EFE6] py-4 overflow-x-auto no-scrollbar border-b border-[#EAE2D5]/50">
-<div class="max-w-7xl mx-auto px-6 flex items-center gap-3">
-<button class="px-6 py-2 rounded-full bg-[#FF6B2B] text-white font-ui-button text-sm transition-all shadow-sm">All</button>
-<button class="px-6 py-2 rounded-full bg-white border border-[#C8BFB8] text-stone-600 font-ui-button text-sm hover:border-[#FF6B2B] hover:text-[#FF6B2B] transition-all">Quotes</button>
-<button class="px-6 py-2 rounded-full bg-white border border-[#C8BFB8] text-stone-600 font-ui-button text-sm hover:border-[#FF6B2B] hover:text-[#FF6B2B] transition-all shrink-0">Micro-poetry</button>
-<button class="px-6 py-2 rounded-full bg-white border border-[#C8BFB8] text-stone-600 font-ui-button text-sm hover:border-[#FF6B2B] hover:text-[#FF6B2B] transition-all">Thoughts</button>
-<button class="px-6 py-2 rounded-full bg-white border border-[#C8BFB8] text-stone-600 font-ui-button text-sm hover:border-[#FF6B2B] hover:text-[#FF6B2B] transition-all">Reflections</button>
-<button class="px-6 py-2 rounded-full bg-white border border-[#C8BFB8] text-stone-600 font-ui-button text-sm hover:border-[#FF6B2B] hover:text-[#FF6B2B] transition-all">Anonymous</button>
-<button class="px-6 py-2 rounded-full bg-white border border-[#C8BFB8] text-stone-600 font-ui-button text-sm hover:border-[#FF6B2B] hover:text-[#FF6B2B] transition-all">Trending</button>
-</div>
-</div>
-<!-- Main Content Masonry -->
-<main class="max-w-7xl mx-auto px-6 py-10">
-<div class="masonry">
-<!-- 1. QUOTE -->
-<div class="masonry-item bg-white rounded-xl p-8 shadow-[0_4px_20px_rgba(26,26,24,0.06)] hover:translate-y-[-2px] transition-all group">
-<div class="flex justify-between items-start mb-6">
-<span class="material-symbols-outlined text-[#FF6B2B]/20 text-4xl" data-icon="format_quote">format_quote</span>
-<div class="w-8 h-8 rounded-full border border-[#EAE2D5] flex items-center justify-center text-[#C8BFB8] group-hover:bg-[#F5EFE6] transition-colors">
-<span class="material-symbols-outlined text-sm" data-icon="push_pin">push_pin</span>
-</div>
-</div>
-<p class="font-quote-text italic text-stone-800 mb-8 leading-relaxed">
-                    "I still look for your car in every parking lot, even though I know you moved three states away and drives something different now."
-                </p>
-<div class="flex justify-between items-center pt-6 border-t border-[#F5EFE6]">
-<span class="font-label-caps text-[#C8BFB8]">@clara_writes</span>
-<div class="flex gap-4">
-<button class="material-symbols-outlined text-stone-400 text-lg hover:text-[#FF6B2B]" data-icon="favorite">favorite</button>
-<button class="material-symbols-outlined text-stone-400 text-lg hover:text-[#FF6B2B]" data-icon="share">share</button>
-</div>
-</div>
-</div>
-<!-- 2. ANONYMOUS -->
-<div class="masonry-item bg-white rounded-xl p-8 shadow-[0_4px_20px_rgba(26,26,24,0.06)] hover:translate-y-[-2px] transition-all">
-<p class="font-body-lg text-stone-700 mb-8 leading-relaxed">
-                    I told my mother I was happy today. It was easier than explaining the hollow feeling that comes when the sun sets. Some lies are just kinder versions of the truth.
-                </p>
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 bg-[#F5EFE6] rounded-full flex items-center justify-center">
-<span class="material-symbols-outlined text-stone-500 text-sm" data-icon="person_off">person_off</span>
-</div>
-<span class="font-label-caps text-stone-500">Anonymous</span>
-</div>
-</div>
-<!-- 3. REFLECTION (Tall) -->
-<div class="masonry-item bg-white rounded-xl p-8 shadow-[0_4px_20px_rgba(26,26,24,0.06)] hover:translate-y-[-2px] transition-all">
-<div class="flex justify-end mb-4">
-<div class="px-2 py-1 bg-[#EAE2D5] rounded text-[10px] font-label-caps text-stone-600">POSTMARK: 11.24.23</div>
-</div>
-<p class="font-body-md text-stone-800 mb-6 leading-relaxed">
-                    In the end, we will not remember the grand arguments or the dramatic departures. We will remember the way the light hit the kitchen table on a Tuesday morning while we drank coffee in silence.
-                </p>
-<p class="font-body-md text-stone-800 mb-8 leading-relaxed">
-                    That silence was once comfortable. Now, it's a ghost. I wonder if you still use that chipped blue mug, or if it broke like everything else we tried to hold onto too tightly. I saw a bird today that looked like the one you pointed out in the park three years ago. It didn't sing.
-                </p>
-<div class="flex justify-between items-center pt-6 border-t border-[#F5EFE6]">
-<span class="font-label-caps text-[#FF6B2B]">@morning_light</span>
-<span class="material-symbols-outlined text-stone-400" data-icon="more_horiz">more_horiz</span>
-</div>
-</div>
-<!-- 4. IMAGE CARD -->
-<div class="masonry-item relative rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(26,26,24,0.06)] hover:translate-y-[-2px] transition-all aspect-[4/5] flex flex-col justify-end p-8">
-<div class="absolute inset-0 z-0">
-<img alt="Warm golden hour archive atmosphere" class="w-full h-full object-cover" data-alt="A dusty sunlit attic with rays of golden light illuminating swirling dust motes and stacks of old vintage letters" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6VNa-sTwlqz5A7m3Hpk2G0OCibyVNiICSJB-NEzKLOlXiuM4XQE0KSNGOcxz4MoF0RqDyNpJESAXkuCTTZtA1g6EsY-AlOlL_aNkPFVBG-kstPfAggVP2lWq_oyE0T2R8Z50vcn87DnkG_-HsJDg-QHSE6tBR0XpVixrWcSo9s0L6pB2oR9lPRv8FxeB5szIMgbrH1Kw9viCfstJD1gb2fKkQCKscPDuokli2gA-jHt1w_ylRnMufPln3wWqBG6UVAdhvJSVpGpc"/>
-<div class="absolute inset-0 bg-black/40"></div>
-</div>
-<div class="relative z-10">
-<p class="font-display-serif italic text-2xl text-white mb-6 leading-tight">
-                        "The silence between us has grown its own language, and I've forgotten how to translate it."
-                    </p>
-<div class="flex items-center gap-3">
-<div class="w-6 h-6 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 overflow-hidden">
-<img alt="Author avatar" class="w-full h-full object-cover" data-alt="Portrait of a young creative person with glasses in soft lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFK7k6Osz_2RVrPwtbA6h08m-fDXyBF-MeIASR450LoOCx7X2C8j6UQqvEL91ANH6EwmlkP7RHohESp8c1lfSQqH_EsSVai3yl9jKByVzlnXyUILsNs4rTzYgMLyHSZl3yVhWV_EQbtiNOFYOuBeEuCDnJ8TDAR1tGdENuTLisfISe0ViJjwTrDCBOST4M90TrLi5bhDmSIJd1ARA2Vb230xeGzGroWAgsucIXVO48HOKxLgKi7eP9RlVtFu3Cjh2cnnfzx1ktIVc"/>
-</div>
-<span class="font-label-caps text-white/90">@the_attic_dweller</span>
-</div>
-</div>
-</div>
-<!-- 5. TRENDING -->
-<div class="masonry-item bg-white rounded-xl p-8 shadow-[0_4px_20px_rgba(26,26,24,0.06)] hover:translate-y-[-2px] transition-all">
-<p class="font-quote-text text-stone-800 mb-8 leading-relaxed">
-                    "Maybe we are just two stars that were never meant to form a constellation, only to pass by and witness each other's light for a brief second."
-                </p>
-<div class="flex flex-col gap-4">
-<div class="inline-flex items-center gap-2 text-[#FF6B2B]">
-<span class="material-symbols-outlined text-sm" data-icon="trending_up" data-weight="fill">trending_up</span>
-<span class="font-label-caps">TRENDING</span>
-</div>
-<div class="flex justify-between items-center">
-<span class="font-label-caps text-stone-400">@cosmic_dust</span>
-<div class="flex gap-2">
-<span class="text-xs text-stone-400 font-body-md">1.2k reads</span>
-</div>
-</div>
-</div>
-</div>
-<!-- 6. POETRY -->
-<div class="masonry-item bg-white rounded-xl p-10 shadow-[0_4px_20px_rgba(26,26,24,0.06)] hover:translate-y-[-2px] transition-all text-center">
-<span class="material-symbols-outlined text-[#EAE2D5] mb-6" data-icon="ink_pen">ink_pen</span>
-<p class="font-display-serif italic text-[22px] text-stone-900 leading-loose mb-10">
-                    You were the ink,<br/>
-                    I was the page,<br/>
-                    Now the story is finished,<br/>
-                    And the paper is starting<br/>
-                    To yellow with age.
-                </p>
-<div class="font-label-caps text-stone-400 border-t border-[#F5EFE6] pt-6">@ink_and_stains</div>
-</div>
-<!-- 7. EDITOR PREVIEW -->
-<div class="masonry-item parchment-texture rounded-xl p-8 shadow-[0_4px_20px_rgba(26,26,24,0.06)] border border-[#EAE2D5] hover:rotate-1 transition-transform cursor-pointer">
-<div class="flex justify-between items-start mb-6">
-<span class="material-symbols-outlined text-[#FF6B2B]" data-icon="music_note">music_note</span>
-<span class="font-label-caps text-[#C8BFB8]">Listening: Claire de Lune</span>
-</div>
-<p class="font-serif text-stone-700 text-lg leading-relaxed mb-8 opacity-80" style="font-family: 'Courier New', Courier, monospace;">
-                    some days I write to remember.<br/>
-                    most days I write because if I don't,<br/>
-                    the words will turn into stones<br/>
-                    and I will sink.
-                </p>
-<div class="flex items-center justify-between">
-<span class="font-label-caps text-stone-500">@soul_pages</span>
-<span class="material-symbols-outlined text-stone-300" data-icon="edit">edit</span>
-</div>
-</div>
-</div>
-</main>
-<!-- Floating Action Button -->
-<button class="fixed bottom-8 right-8 w-14 h-14 bg-[#FF6B2B] rounded-full flex items-center justify-center text-white shadow-[0_4px_15px_rgba(255,107,43,0.4)] hover:scale-110 active:scale-95 transition-all z-50">
-<span class="material-symbols-outlined text-2xl" data-icon="edit">edit</span>
-</button>
-<!-- BottomNavBar (Mobile Only) -->
-<footer class="md:hidden fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-md border-t border-[#EAE2D5] flex justify-around items-center px-4 py-3 pb-safe z-50 shadow-[0_-4px_15px_rgba(0,0,0,0.03)]">
-<div class="flex flex-col items-center justify-center text-stone-400">
-<span class="material-symbols-outlined" data-icon="auto_stories">auto_stories</span>
-<span class="font-label-caps text-[10px] mt-1">Archive</span>
-</div>
-<div class="flex flex-col items-center justify-center text-[#FF6B2B] font-bold">
-<span class="material-symbols-outlined" data-icon="explore" data-weight="fill">explore</span>
-<span class="font-label-caps text-[10px] mt-1">Explore</span>
-</div>
-<div class="flex flex-col items-center justify-center text-stone-400">
-<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
-<span class="font-label-caps text-[10px] mt-1">Notifications</span>
-</div>
-<div class="flex flex-col items-center justify-center text-stone-400">
-<span class="material-symbols-outlined" data-icon="person">person</span>
-<span class="font-label-caps text-[10px] mt-1">Profile</span>
-</div>
-</footer>
-</body></html>
+  </head>
+  <body class="bg-[#F5EFE6] min-h-screen font-body-md text-on-surface">
+    <!-- TopNavBar -->
+    <header
+      class="sticky top-0 z-50 bg-[#F5EFE6] border-b border-[#EAE2D5] shadow-[0_4px_20px_rgba(26,26,24,0.06)]"
+    >
+      <div class="flex justify-between items-center w-full px-6 py-3 max-w-7xl mx-auto">
+        <div class="flex items-center gap-8 flex-1">
+          <h1
+            class="text-2xl font-bold text-[#FF6B2B] font-display-serif italic tracking-tight shrink-0"
+          >
+            The Unsent Archives
+          </h1>
+          <div
+            class="hidden md:flex items-center bg-[#FFFFFF] rounded-full px-4 py-2 w-full max-w-md border border-transparent focus-within:border-primary-container transition-all shadow-sm"
+          >
+            <span class="material-symbols-outlined text-stone-400 mr-2" data-icon="search"
+              >search</span
+            >
+            <input
+              class="bg-transparent border-none focus:ring-0 text-sm w-full font-body-md"
+              placeholder="Search the attic..."
+              type="text"
+            />
+          </div>
+        </div>
+        <nav class="flex items-center gap-6">
+          <a
+            class="hidden md:block font-ui-button text-[#FF6B2B] border-b-2 border-[#FF6B2B] pb-1"
+            href="#"
+            >Explore</a
+          >
+          <button
+            class="material-symbols-outlined text-stone-600 hover:text-[#FF6B2B] transition-colors"
+            data-icon="notifications"
+          >
+            notifications
+          </button>
+          <div
+            class="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-sm cursor-pointer hover:scale-105 transition-transform"
+          >
+            <img
+              alt="User profile avatar"
+              class="w-full h-full object-cover"
+              data-alt="Close up portrait of a man with a kind expression and soft natural lighting in a studio setting"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXWc0H6DCgVPDqID8v6m7kKHUwCCNB5ZlvnpNVwjU-CItAyjMkdK1J4XWpdj1f6hbhf3_UduwrBJn-s-t_-fVavol2_adZtBosB2VP3unlmyeye0qPWqJyj1JpF8QXCFwkGZLdoz8EdLiKbL2psAAvnXUZYl0rAFw6MTY7zntv_Yo9Ya1FDWRAirB8XhoqKUANqEKlocT_SXRhxelg-MFEIkeEVDNREC7AEYhXhJ1hH4Zx1bOhpi_hq9XHWvX0O-vgC6pBJCf4j0w"
+            />
+          </div>
+        </nav>
+      </div>
+    </header>
+    <!-- Filter Row -->
+    <div class="bg-[#F5EFE6] py-4 overflow-x-auto no-scrollbar border-b border-[#EAE2D5]/50">
+      <div class="max-w-7xl mx-auto px-6 flex items-center gap-3">
+        <button
+          class="px-6 py-2 rounded-full bg-[#FF6B2B] text-white font-ui-button text-sm transition-all shadow-sm"
+        >
+          All
+        </button>
+        <button
+          class="px-6 py-2 rounded-full bg-white border border-[#C8BFB8] text-stone-600 font-ui-button text-sm hover:border-[#FF6B2B] hover:text-[#FF6B2B] transition-all"
+        >
+          Quotes
+        </button>
+        <button
+          class="px-6 py-2 rounded-full bg-white border border-[#C8BFB8] text-stone-600 font-ui-button text-sm hover:border-[#FF6B2B] hover:text-[#FF6B2B] transition-all shrink-0"
+        >
+          Micro-poetry
+        </button>
+        <button
+          class="px-6 py-2 rounded-full bg-white border border-[#C8BFB8] text-stone-600 font-ui-button text-sm hover:border-[#FF6B2B] hover:text-[#FF6B2B] transition-all"
+        >
+          Thoughts
+        </button>
+        <button
+          class="px-6 py-2 rounded-full bg-white border border-[#C8BFB8] text-stone-600 font-ui-button text-sm hover:border-[#FF6B2B] hover:text-[#FF6B2B] transition-all"
+        >
+          Reflections
+        </button>
+        <button
+          class="px-6 py-2 rounded-full bg-white border border-[#C8BFB8] text-stone-600 font-ui-button text-sm hover:border-[#FF6B2B] hover:text-[#FF6B2B] transition-all"
+        >
+          Anonymous
+        </button>
+        <button
+          class="px-6 py-2 rounded-full bg-white border border-[#C8BFB8] text-stone-600 font-ui-button text-sm hover:border-[#FF6B2B] hover:text-[#FF6B2B] transition-all"
+        >
+          Trending
+        </button>
+      </div>
+    </div>
+    <!-- Main Content Masonry -->
+    <main class="max-w-7xl mx-auto px-6 py-10">
+      <div class="masonry">
+        <!-- 1. QUOTE -->
+        <div
+          class="masonry-item bg-white rounded-xl p-8 shadow-[0_4px_20px_rgba(26,26,24,0.06)] hover:translate-y-[-2px] transition-all group"
+        >
+          <div class="flex justify-between items-start mb-6">
+            <span
+              class="material-symbols-outlined text-[#FF6B2B]/20 text-4xl"
+              data-icon="format_quote"
+              >format_quote</span
+            >
+            <div
+              class="w-8 h-8 rounded-full border border-[#EAE2D5] flex items-center justify-center text-[#C8BFB8] group-hover:bg-[#F5EFE6] transition-colors"
+            >
+              <span class="material-symbols-outlined text-sm" data-icon="push_pin">push_pin</span>
+            </div>
+          </div>
+          <p class="font-quote-text italic text-stone-800 mb-8 leading-relaxed">
+            "I still look for your car in every parking lot, even though I know you moved three
+            states away and drives something different now."
+          </p>
+          <div class="flex justify-between items-center pt-6 border-t border-[#F5EFE6]">
+            <span class="font-label-caps text-[#C8BFB8]">@clara_writes</span>
+            <div class="flex gap-4">
+              <button
+                class="material-symbols-outlined text-stone-400 text-lg hover:text-[#FF6B2B]"
+                data-icon="favorite"
+              >
+                favorite
+              </button>
+              <button
+                class="material-symbols-outlined text-stone-400 text-lg hover:text-[#FF6B2B]"
+                data-icon="share"
+              >
+                share
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- 2. ANONYMOUS -->
+        <div
+          class="masonry-item bg-white rounded-xl p-8 shadow-[0_4px_20px_rgba(26,26,24,0.06)] hover:translate-y-[-2px] transition-all"
+        >
+          <p class="font-body-lg text-stone-700 mb-8 leading-relaxed">
+            I told my mother I was happy today. It was easier than explaining the hollow feeling
+            that comes when the sun sets. Some lies are just kinder versions of the truth.
+          </p>
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-[#F5EFE6] rounded-full flex items-center justify-center">
+              <span class="material-symbols-outlined text-stone-500 text-sm" data-icon="person_off"
+                >person_off</span
+              >
+            </div>
+            <span class="font-label-caps text-stone-500">Anonymous</span>
+          </div>
+        </div>
+        <!-- 3. REFLECTION (Tall) -->
+        <div
+          class="masonry-item bg-white rounded-xl p-8 shadow-[0_4px_20px_rgba(26,26,24,0.06)] hover:translate-y-[-2px] transition-all"
+        >
+          <div class="flex justify-end mb-4">
+            <div class="px-2 py-1 bg-[#EAE2D5] rounded text-[10px] font-label-caps text-stone-600">
+              POSTMARK: 11.24.23
+            </div>
+          </div>
+          <p class="font-body-md text-stone-800 mb-6 leading-relaxed">
+            In the end, we will not remember the grand arguments or the dramatic departures. We will
+            remember the way the light hit the kitchen table on a Tuesday morning while we drank
+            coffee in silence.
+          </p>
+          <p class="font-body-md text-stone-800 mb-8 leading-relaxed">
+            That silence was once comfortable. Now, it's a ghost. I wonder if you still use that
+            chipped blue mug, or if it broke like everything else we tried to hold onto too tightly.
+            I saw a bird today that looked like the one you pointed out in the park three years ago.
+            It didn't sing.
+          </p>
+          <div class="flex justify-between items-center pt-6 border-t border-[#F5EFE6]">
+            <span class="font-label-caps text-[#FF6B2B]">@morning_light</span>
+            <span class="material-symbols-outlined text-stone-400" data-icon="more_horiz"
+              >more_horiz</span
+            >
+          </div>
+        </div>
+        <!-- 4. IMAGE CARD -->
+        <div
+          class="masonry-item relative rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(26,26,24,0.06)] hover:translate-y-[-2px] transition-all aspect-[4/5] flex flex-col justify-end p-8"
+        >
+          <div class="absolute inset-0 z-0">
+            <img
+              alt="Warm golden hour archive atmosphere"
+              class="w-full h-full object-cover"
+              data-alt="A dusty sunlit attic with rays of golden light illuminating swirling dust motes and stacks of old vintage letters"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6VNa-sTwlqz5A7m3Hpk2G0OCibyVNiICSJB-NEzKLOlXiuM4XQE0KSNGOcxz4MoF0RqDyNpJESAXkuCTTZtA1g6EsY-AlOlL_aNkPFVBG-kstPfAggVP2lWq_oyE0T2R8Z50vcn87DnkG_-HsJDg-QHSE6tBR0XpVixrWcSo9s0L6pB2oR9lPRv8FxeB5szIMgbrH1Kw9viCfstJD1gb2fKkQCKscPDuokli2gA-jHt1w_ylRnMufPln3wWqBG6UVAdhvJSVpGpc"
+            />
+            <div class="absolute inset-0 bg-black/40"></div>
+          </div>
+          <div class="relative z-10">
+            <p class="font-display-serif italic text-2xl text-white mb-6 leading-tight">
+              "The silence between us has grown its own language, and I've forgotten how to
+              translate it."
+            </p>
+            <div class="flex items-center gap-3">
+              <div
+                class="w-6 h-6 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 overflow-hidden"
+              >
+                <img
+                  alt="Author avatar"
+                  class="w-full h-full object-cover"
+                  data-alt="Portrait of a young creative person with glasses in soft lighting"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFK7k6Osz_2RVrPwtbA6h08m-fDXyBF-MeIASR450LoOCx7X2C8j6UQqvEL91ANH6EwmlkP7RHohESp8c1lfSQqH_EsSVai3yl9jKByVzlnXyUILsNs4rTzYgMLyHSZl3yVhWV_EQbtiNOFYOuBeEuCDnJ8TDAR1tGdENuTLisfISe0ViJjwTrDCBOST4M90TrLi5bhDmSIJd1ARA2Vb230xeGzGroWAgsucIXVO48HOKxLgKi7eP9RlVtFu3Cjh2cnnfzx1ktIVc"
+                />
+              </div>
+              <span class="font-label-caps text-white/90">@the_attic_dweller</span>
+            </div>
+          </div>
+        </div>
+        <!-- 5. TRENDING -->
+        <div
+          class="masonry-item bg-white rounded-xl p-8 shadow-[0_4px_20px_rgba(26,26,24,0.06)] hover:translate-y-[-2px] transition-all"
+        >
+          <p class="font-quote-text text-stone-800 mb-8 leading-relaxed">
+            "Maybe we are just two stars that were never meant to form a constellation, only to pass
+            by and witness each other's light for a brief second."
+          </p>
+          <div class="flex flex-col gap-4">
+            <div class="inline-flex items-center gap-2 text-[#FF6B2B]">
+              <span
+                class="material-symbols-outlined text-sm"
+                data-icon="trending_up"
+                data-weight="fill"
+                >trending_up</span
+              >
+              <span class="font-label-caps">TRENDING</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="font-label-caps text-stone-400">@cosmic_dust</span>
+              <div class="flex gap-2">
+                <span class="text-xs text-stone-400 font-body-md">1.2k reads</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 6. POETRY -->
+        <div
+          class="masonry-item bg-white rounded-xl p-10 shadow-[0_4px_20px_rgba(26,26,24,0.06)] hover:translate-y-[-2px] transition-all text-center"
+        >
+          <span class="material-symbols-outlined text-[#EAE2D5] mb-6" data-icon="ink_pen"
+            >ink_pen</span
+          >
+          <p class="font-display-serif italic text-[22px] text-stone-900 leading-loose mb-10">
+            You were the ink,<br />
+            I was the page,<br />
+            Now the story is finished,<br />
+            And the paper is starting<br />
+            To yellow with age.
+          </p>
+          <div class="font-label-caps text-stone-400 border-t border-[#F5EFE6] pt-6">
+            @ink_and_stains
+          </div>
+        </div>
+        <!-- 7. EDITOR PREVIEW -->
+        <div
+          class="masonry-item parchment-texture rounded-xl p-8 shadow-[0_4px_20px_rgba(26,26,24,0.06)] border border-[#EAE2D5] hover:rotate-1 transition-transform cursor-pointer"
+        >
+          <div class="flex justify-between items-start mb-6">
+            <span class="material-symbols-outlined text-[#FF6B2B]" data-icon="music_note"
+              >music_note</span
+            >
+            <span class="font-label-caps text-[#C8BFB8]">Listening: Claire de Lune</span>
+          </div>
+          <p
+            class="font-serif text-stone-700 text-lg leading-relaxed mb-8 opacity-80"
+            style="font-family: &quot;Courier New&quot;, Courier, monospace"
+          >
+            some days I write to remember.<br />
+            most days I write because if I don't,<br />
+            the words will turn into stones<br />
+            and I will sink.
+          </p>
+          <div class="flex items-center justify-between">
+            <span class="font-label-caps text-stone-500">@soul_pages</span>
+            <span class="material-symbols-outlined text-stone-300" data-icon="edit">edit</span>
+          </div>
+        </div>
+      </div>
+    </main>
+    <!-- Floating Action Button -->
+    <button
+      class="fixed bottom-8 right-8 w-14 h-14 bg-[#FF6B2B] rounded-full flex items-center justify-center text-white shadow-[0_4px_15px_rgba(255,107,43,0.4)] hover:scale-110 active:scale-95 transition-all z-50"
+    >
+      <span class="material-symbols-outlined text-2xl" data-icon="edit">edit</span>
+    </button>
+    <!-- BottomNavBar (Mobile Only) -->
+    <footer
+      class="md:hidden fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-md border-t border-[#EAE2D5] flex justify-around items-center px-4 py-3 pb-safe z-50 shadow-[0_-4px_15px_rgba(0,0,0,0.03)]"
+    >
+      <div class="flex flex-col items-center justify-center text-stone-400">
+        <span class="material-symbols-outlined" data-icon="auto_stories">auto_stories</span>
+        <span class="font-label-caps text-[10px] mt-1">Archive</span>
+      </div>
+      <div class="flex flex-col items-center justify-center text-[#FF6B2B] font-bold">
+        <span class="material-symbols-outlined" data-icon="explore" data-weight="fill"
+          >explore</span
+        >
+        <span class="font-label-caps text-[10px] mt-1">Explore</span>
+      </div>
+      <div class="flex flex-col items-center justify-center text-stone-400">
+        <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+        <span class="font-label-caps text-[10px] mt-1">Notifications</span>
+      </div>
+      <div class="flex flex-col items-center justify-center text-stone-400">
+        <span class="material-symbols-outlined" data-icon="person">person</span>
+        <span class="font-label-caps text-[10px] mt-1">Profile</span>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -25,10 +25,7 @@ const ExplorePage = () => {
   const [topWriters, setTopWriters] = useState([]);
   const [topLoading, setTopLoading] = useState(true);
 
-  const breakpointCols = useMemo(
-    () => ({ default: 3, 1100: 2, 700: 1 }),
-    []
-  );
+  const breakpointCols = useMemo(() => ({ default: 3, 1100: 2, 700: 1 }), []);
 
   // Top posts + trending tags load
   useEffect(() => {
@@ -64,9 +61,7 @@ const ExplorePage = () => {
           entry.score += (post.reactionCount || 0) + (post.viewCount || 0) / 5;
           writerMap.set(id, entry);
         });
-        setTopWriters(
-          [...writerMap.values()].sort((a, b) => b.score - a.score).slice(0, 6)
-        );
+        setTopWriters([...writerMap.values()].sort((a, b) => b.score - a.score).slice(0, 6));
       } finally {
         if (!cancelled) setTopLoading(false);
       }
@@ -132,12 +127,13 @@ const ExplorePage = () => {
           <span className="auth-eyebrow">The shelf at large</span>
           <h1 className="library-title">Explore the Archives</h1>
           <p className="library-sub">
-            Wander the stacks. Find writers, themes, and notes that have caught
-            the most light.
+            Wander the stacks. Find writers, themes, and notes that have caught the most light.
           </p>
 
           <form className="search-form explore-search" onSubmit={onSearch}>
-            <span className="explore-search-glyph" aria-hidden="true">⌕</span>
+            <span className="explore-search-glyph" aria-hidden="true">
+              ⌕
+            </span>
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -179,8 +175,7 @@ const ExplorePage = () => {
             ) : (
               <span>
                 {results.posts.length} note
-                {results.posts.length === 1 ? "" : "s"} for{" "}
-                <strong>"{activeQuery}"</strong>
+                {results.posts.length === 1 ? "" : "s"} for <strong>"{activeQuery}"</strong>
               </span>
             )}
           </div>
@@ -251,11 +246,7 @@ const ExplorePage = () => {
                 <li key={u._id}>
                   <Link to={`/profile/${u._id}`} className="writer-row">
                     {u.avatarUrl ? (
-                      <img
-                        src={u.avatarUrl}
-                        alt=""
-                        className="nav-avatar writer-avatar"
-                      />
+                      <img src={u.avatarUrl} alt="" className="nav-avatar writer-avatar" />
                     ) : (
                       <span className="writer-avatar writer-avatar-fallback">
                         {(u.username || "?")[0].toUpperCase()}
@@ -264,10 +255,7 @@ const ExplorePage = () => {
                     <span>
                       <strong>@{u.username}</strong>
                       {u.profile?.displayName && (
-                        <span className="muted">
-                          {" "}
-                          · {u.profile.displayName}
-                        </span>
+                        <span className="muted"> · {u.profile.displayName}</span>
                       )}
                     </span>
                   </Link>
@@ -285,11 +273,7 @@ const ExplorePage = () => {
                 <li key={u._id}>
                   <Link to={`/profile/${u._id}`} className="writer-row">
                     {u.avatarUrl ? (
-                      <img
-                        src={u.avatarUrl}
-                        alt=""
-                        className="nav-avatar writer-avatar"
-                      />
+                      <img src={u.avatarUrl} alt="" className="nav-avatar writer-avatar" />
                     ) : (
                       <span className="writer-avatar writer-avatar-fallback">
                         {(u.username || "?")[0].toUpperCase()}
@@ -306,8 +290,7 @@ const ExplorePage = () => {
         <div className="panel side-panel quote-panel">
           <p className="quote-mark">"</p>
           <p className="quote-body">
-            Some letters were never meant to be sent. They were meant to be
-            kept.
+            Some letters were never meant to be sent. They were meant to be kept.
           </p>
           <span className="quote-attr">— the archivist</span>
         </div>

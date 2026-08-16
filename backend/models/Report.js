@@ -10,14 +10,14 @@ const reportSchema = new Schema(
   {
     reporterId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     targetType: { type: String, enum: ["post", "user"], required: true },
-    targetId:   { type: Schema.Types.ObjectId, required: true, refPath: "targetType" },
-    reason:     {
+    targetId: { type: Schema.Types.ObjectId, required: true, refPath: "targetType" },
+    reason: {
       type: String,
       enum: ["spam", "harassment", "hate", "self-harm", "nsfw", "impersonation", "other"],
       required: true,
     },
-    note:       { type: String, maxlength: 500, default: "" },
-    status:     {
+    note: { type: String, maxlength: 500, default: "" },
+    status: {
       type: String,
       enum: ["open", "resolved", "dismissed"],
       default: "open",

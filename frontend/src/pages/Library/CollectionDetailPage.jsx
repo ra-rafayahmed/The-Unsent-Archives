@@ -74,7 +74,9 @@ const CollectionDetailPage = () => {
         <h1 className="library-title">{collection.name}</h1>
         <p className="library-sub">{collection.description || "A curated stack of notes."}</p>
         <div className="collection-meta">
-          <span>{noteCount} {noteCount === 1 ? "note" : "notes"}</span>
+          <span>
+            {noteCount} {noteCount === 1 ? "note" : "notes"}
+          </span>
           <span className="meta-dot">·</span>
           <span>
             Curated by{" "}
@@ -95,7 +97,11 @@ const CollectionDetailPage = () => {
       {(collection.postIds || []).length === 0 ? (
         <div className="empty-state">
           <h3>No notes on this shelf yet</h3>
-          <p>{isOwner ? "Save notes from any reader to start filling this stack." : "Check back later — the shelf is fresh."}</p>
+          <p>
+            {isOwner
+              ? "Save notes from any reader to start filling this stack."
+              : "Check back later — the shelf is fresh."}
+          </p>
         </div>
       ) : (
         <Masonry

@@ -8,8 +8,7 @@ const config = require("../config");
 const RESET_TOKEN_TTL_MS = 30 * 60 * 1000; // 30 minutes
 const BACKUP_CODE_COUNT = 8;
 
-const hashResetToken = (rawToken) =>
-  crypto.createHash("sha256").update(rawToken).digest("hex");
+const hashResetToken = (rawToken) => crypto.createHash("sha256").update(rawToken).digest("hex");
 
 const hashBackupCode = (raw) =>
   crypto.createHash("sha256").update(raw.toLowerCase().replace(/-/g, "")).digest("hex");
@@ -92,15 +91,18 @@ const login = asyncHandler(async (req, res, next) => {
 
   // Find user and explicitly select passwordHash
   const user = await User.findOne({ email }).select("+passwordHash");
-  
+
   if (!user || !(await user.comparePassword(password))) {
     return next(new ApiError(401, "Invalid email or password"));
   }
 
   if (!user.isActive || user.isSuspended) {
-    return next(new ApiError(403, user.isSuspended
-      ? "This account has been suspended"
-      : "This account has been deactivated"));
+    return next(
+      new ApiError(
+        403,
+        user.isSuspended ? "This account has been suspended" : "This account has been deactivated"
+      )
+    );
   }
 
   const token = generateToken(user._id, user.username, user.email, user.role);
@@ -123,7 +125,7 @@ const login = asyncHandler(async (req, res, next) => {
 // @access  Private
 const getMe = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user.id).populate("tagInterests", "name slug");
-  
+
   if (!user) {
     return next(new ApiError(404, "User not found"));
   }
@@ -146,8 +148,7 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
   // Always respond the same way to avoid leaking which emails are registered.
   const genericResponse = {
     status: "success",
-    message:
-      "If an account exists for that email, a reset link has been generated.",
+    message: "If an account exists for that email, a reset link has been generated.",
   };
 
   if (!user || !user.isActive) {

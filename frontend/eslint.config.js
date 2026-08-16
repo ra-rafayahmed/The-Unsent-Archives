@@ -5,7 +5,14 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import prettier from "eslint-config-prettier";
 
 export default [
-  { ignores: ["dist/**", "node_modules/**", "coverage/**", "stitch_remix_of_the_unsent_archives_feed/**"] },
+  {
+    ignores: [
+      "dist/**",
+      "node_modules/**",
+      "coverage/**",
+      "stitch_remix_of_the_unsent_archives_feed/**",
+    ],
+  },
   js.configs.recommended,
   {
     files: ["**/*.{js,jsx}"],

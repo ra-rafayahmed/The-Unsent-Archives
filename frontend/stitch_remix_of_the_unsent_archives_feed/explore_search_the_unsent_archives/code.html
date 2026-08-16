@@ -1,511 +1,777 @@
-<!DOCTYPE html>
+<!doctype html>
 
-<html lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Explore | The Unsent Archives</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&amp;family=Work+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        .masonry-grid {
-            column-count: 2;
-            column-gap: 24px;
-        }
-        .masonry-item {
-            break-inside: avoid;
-            margin-bottom: 24px;
-        }
-        ::-webkit-scrollbar {
-            height: 4px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #EAE2D5;
-            border-radius: 10px;
-        }
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Explore | The Unsent Archives</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&amp;family=Work+Sans:wght@400;500;600&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+      }
+      .masonry-grid {
+        column-count: 2;
+        column-gap: 24px;
+      }
+      .masonry-item {
+        break-inside: avoid;
+        margin-bottom: 24px;
+      }
+      ::-webkit-scrollbar {
+        height: 4px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #eae2d5;
+        border-radius: 10px;
+      }
     </style>
-<script id="tailwind-config">
-        tailwind.config = {
-          darkMode: "class",
-          theme: {
-            extend: {
-              "colors": {
-                      "tertiary-container": "#989999",
-                      "surface-container": "#f0edea",
-                      "outline": "#8d7167",
-                      "on-surface-variant": "#594138",
-                      "on-secondary-fixed-variant": "#494640",
-                      "tertiary-fixed-dim": "#c6c6c7",
-                      "secondary": "#615e57",
-                      "on-primary": "#ffffff",
-                      "tertiary-fixed": "#e2e2e2",
-                      "surface-bright": "#fcf9f5",
-                      "primary-fixed-dim": "#ffb59a",
-                      "on-secondary-container": "#67645d",
-                      "secondary-fixed": "#e7e2d9",
-                      "inverse-surface": "#31302e",
-                      "on-tertiary-fixed": "#1a1c1c",
-                      "inverse-on-surface": "#f3f0ec",
-                      "on-surface": "#1c1c1a",
-                      "surface-container-highest": "#e5e2de",
-                      "primary-fixed": "#ffdbce",
-                      "on-error": "#ffffff",
-                      "surface-variant": "#e5e2de",
-                      "surface-tint": "#a83900",
-                      "surface-container-high": "#ebe8e4",
-                      "primary-container": "#ff6b2b",
-                      "primary": "#a83900",
-                      "inverse-primary": "#ffb59a",
-                      "error": "#ba1a1a",
-                      "secondary-fixed-dim": "#cbc6bd",
-                      "error-container": "#ffdad6",
-                      "on-primary-fixed": "#380d00",
-                      "tertiary": "#5d5f5f",
-                      "surface-container-low": "#f6f3ef",
-                      "surface-container-lowest": "#ffffff",
-                      "secondary-container": "#e7e2d9",
-                      "on-primary-container": "#5c1c00",
-                      "surface": "#fcf9f5",
-                      "on-secondary-fixed": "#1d1b16",
-                      "surface-dim": "#dcdad6",
-                      "on-tertiary-fixed-variant": "#454747",
-                      "on-tertiary-container": "#2f3132",
-                      "on-primary-fixed-variant": "#802a00",
-                      "outline-variant": "#e2bfb3",
-                      "on-error-container": "#93000a",
-                      "on-tertiary": "#ffffff",
-                      "on-secondary": "#ffffff",
-                      "on-background": "#1c1c1a",
-                      "background": "#fcf9f5"
-              },
-              "borderRadius": {
-                      "DEFAULT": "0.25rem",
-                      "lg": "0.5rem",
-                      "xl": "12px",
-                      "full": "9999px"
-              },
-              "spacing": {
-                      "stack-md": "24px",
-                      "stack-lg": "48px",
-                      "stack-sm": "12px",
-                      "base": "8px",
-                      "margin-mobile": "20px",
-                      "container-max": "1120px",
-                      "margin-desktop": "64px",
-                      "gutter": "24px"
-              },
-              "fontFamily": {
-                      "label-caps": ["Work Sans"],
-                      "body-md": ["Work Sans"],
-                      "headline-lg": ["Newsreader"],
-                      "display-serif": ["Newsreader"],
-                      "body-lg": ["Work Sans"],
-                      "ui-button": ["Work Sans"],
-                      "quote-text": ["Newsreader"],
-                      "headline-md": ["Newsreader"]
-              },
-              "fontSize": {
-                      "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.08em", "fontWeight": "600"}],
-                      "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
-                      "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "500"}],
-                      "display-serif": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "600"}],
-                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
-                      "ui-button": ["14px", {"lineHeight": "1", "letterSpacing": "0.01em", "fontWeight": "500"}],
-                      "quote-text": ["20px", {"lineHeight": "1.6", "fontWeight": "400"}],
-                      "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}]
-              }
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary-container": "#989999",
+              "surface-container": "#f0edea",
+              outline: "#8d7167",
+              "on-surface-variant": "#594138",
+              "on-secondary-fixed-variant": "#494640",
+              "tertiary-fixed-dim": "#c6c6c7",
+              secondary: "#615e57",
+              "on-primary": "#ffffff",
+              "tertiary-fixed": "#e2e2e2",
+              "surface-bright": "#fcf9f5",
+              "primary-fixed-dim": "#ffb59a",
+              "on-secondary-container": "#67645d",
+              "secondary-fixed": "#e7e2d9",
+              "inverse-surface": "#31302e",
+              "on-tertiary-fixed": "#1a1c1c",
+              "inverse-on-surface": "#f3f0ec",
+              "on-surface": "#1c1c1a",
+              "surface-container-highest": "#e5e2de",
+              "primary-fixed": "#ffdbce",
+              "on-error": "#ffffff",
+              "surface-variant": "#e5e2de",
+              "surface-tint": "#a83900",
+              "surface-container-high": "#ebe8e4",
+              "primary-container": "#ff6b2b",
+              primary: "#a83900",
+              "inverse-primary": "#ffb59a",
+              error: "#ba1a1a",
+              "secondary-fixed-dim": "#cbc6bd",
+              "error-container": "#ffdad6",
+              "on-primary-fixed": "#380d00",
+              tertiary: "#5d5f5f",
+              "surface-container-low": "#f6f3ef",
+              "surface-container-lowest": "#ffffff",
+              "secondary-container": "#e7e2d9",
+              "on-primary-container": "#5c1c00",
+              surface: "#fcf9f5",
+              "on-secondary-fixed": "#1d1b16",
+              "surface-dim": "#dcdad6",
+              "on-tertiary-fixed-variant": "#454747",
+              "on-tertiary-container": "#2f3132",
+              "on-primary-fixed-variant": "#802a00",
+              "outline-variant": "#e2bfb3",
+              "on-error-container": "#93000a",
+              "on-tertiary": "#ffffff",
+              "on-secondary": "#ffffff",
+              "on-background": "#1c1c1a",
+              background: "#fcf9f5",
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "12px",
+              full: "9999px",
+            },
+            spacing: {
+              "stack-md": "24px",
+              "stack-lg": "48px",
+              "stack-sm": "12px",
+              base: "8px",
+              "margin-mobile": "20px",
+              "container-max": "1120px",
+              "margin-desktop": "64px",
+              gutter: "24px",
+            },
+            fontFamily: {
+              "label-caps": ["Work Sans"],
+              "body-md": ["Work Sans"],
+              "headline-lg": ["Newsreader"],
+              "display-serif": ["Newsreader"],
+              "body-lg": ["Work Sans"],
+              "ui-button": ["Work Sans"],
+              "quote-text": ["Newsreader"],
+              "headline-md": ["Newsreader"],
+            },
+            fontSize: {
+              "label-caps": [
+                "12px",
+                { lineHeight: "1", letterSpacing: "0.08em", fontWeight: "600" },
+              ],
+              "body-md": ["16px", { lineHeight: "1.5", fontWeight: "400" }],
+              "headline-lg": ["32px", { lineHeight: "1.2", fontWeight: "500" }],
+              "display-serif": [
+                "48px",
+                { lineHeight: "1.1", letterSpacing: "-0.02em", fontWeight: "600" },
+              ],
+              "body-lg": ["18px", { lineHeight: "1.6", fontWeight: "400" }],
+              "ui-button": [
+                "14px",
+                { lineHeight: "1", letterSpacing: "0.01em", fontWeight: "500" },
+              ],
+              "quote-text": ["20px", { lineHeight: "1.6", fontWeight: "400" }],
+              "headline-md": ["24px", { lineHeight: "1.3", fontWeight: "500" }],
             },
           },
-        }
+        },
+      };
     </script>
-</head>
-<body class="bg-[#F5EFE6] text-on-surface font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
-<!-- TopNavBar -->
-<header class="bg-[#F5EFE6] dark:bg-stone-900 border-b border-stone-200 dark:border-stone-800 sticky top-0 z-[100] transition-all">
-<div class="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto">
-<a class="text-2xl font-serif italic text-stone-900 dark:text-white" href="#">The Unsent Archives</a>
-<!-- Search Bar Navigation Anchor -->
-<div class="relative flex-1 max-w-xl mx-8 hidden md:block">
-<div class="relative flex items-center bg-white rounded-full ring-2 ring-[#FF6B2B] shadow-lg px-5 py-2.5 transition-shadow">
-<span class="material-symbols-outlined text-stone-400 mr-3">search</span>
-<div class="flex items-center flex-1 font-body-md text-stone-800">
-<span>letters i never</span>
-<span class="text-stone-300">...sent</span>
-</div>
-<span class="material-symbols-outlined text-stone-300 ml-2 text-sm">close</span>
-</div>
-<!-- Search Dropdown -->
-<div class="absolute top-full mt-3 w-full bg-white rounded-xl shadow-2xl border border-stone-100 overflow-hidden z-50">
-<div class="bg-primary-fixed/30 px-6 py-3 flex items-center text-on-primary-fixed">
-<span class="material-symbols-outlined mr-3 text-primary">history</span>
-<span class="font-medium">letters i never sent</span>
-</div>
-<div class="px-6 py-3 hover:bg-stone-50 flex items-center transition-colors">
-<span class="material-symbols-outlined mr-3 text-stone-400">tag</span>
-<span class="text-stone-600">Unspoken Conversations</span>
-</div>
-<div class="px-6 py-3 hover:bg-stone-50 flex items-center transition-colors">
-<span class="material-symbols-outlined mr-3 text-stone-400">person</span>
-<span class="text-stone-600">The Anonymous Curator</span>
-</div>
-<div class="px-6 py-3 hover:bg-stone-50 flex items-center transition-colors border-t border-stone-50">
-<span class="material-symbols-outlined mr-3 text-stone-400">north_west</span>
-<span class="text-stone-400 italic">letters I never gave you</span>
-</div>
-<div class="px-6 py-4 bg-stone-50/50 flex gap-2">
-<span class="px-3 py-1 bg-[#EAE2D5] rounded-full text-[10px] font-label-caps uppercase text-stone-600">Recent: Family</span>
-<span class="px-3 py-1 bg-[#EAE2D5] rounded-full text-[10px] font-label-caps uppercase text-stone-600">Recent: 3am thoughts</span>
-</div>
-</div>
-</div>
-<div class="flex items-center gap-6">
-<nav class="hidden md:flex gap-8 text-stone-500 font-serif">
-<a class="text-[#FF6B2B] font-bold" href="#">Explore</a>
-<a class="hover:text-[#FF6B2B] transition-all" href="#">Library</a>
-</nav>
-<span class="material-symbols-outlined text-stone-800 dark:text-stone-100 cursor-pointer">account_circle</span>
-</div>
-</div>
-</header>
-<main class="max-w-7xl mx-auto px-6 py-12 pb-32">
-<!-- Trending Tags Pill Strip -->
-<section class="mb-12 flex items-center gap-4 overflow-x-auto no-scrollbar pb-2">
-<div class="flex items-center gap-2 px-4 py-2 bg-primary-container text-white rounded-full whitespace-nowrap shadow-sm hover:opacity-90 cursor-pointer transition-all">
-<span class="font-label-caps text-[11px]">TRENDING: REGRET</span>
-<span class="material-symbols-outlined text-sm">trending_up</span>
-</div>
-<div class="flex items-center gap-2 px-4 py-2 bg-white text-stone-700 border border-stone-200 rounded-full whitespace-nowrap hover:border-primary transition-all cursor-pointer">
-<span class="font-label-caps text-[11px]">FIRST LOVE</span>
-<span class="material-symbols-outlined text-sm">trending_up</span>
-</div>
-<div class="flex items-center gap-2 px-4 py-2 bg-white text-stone-700 border border-stone-200 rounded-full whitespace-nowrap hover:border-primary transition-all cursor-pointer">
-<span class="font-label-caps text-[11px]">PARIS 2014</span>
-<span class="material-symbols-outlined text-sm">trending_up</span>
-</div>
-<div class="flex items-center gap-2 px-4 py-2 bg-white text-stone-700 border border-stone-200 rounded-full whitespace-nowrap hover:border-primary transition-all cursor-pointer">
-<span class="font-label-caps text-[11px]">SISTERHOOD</span>
-<span class="material-symbols-outlined text-sm">trending_up</span>
-</div>
-</section>
-<!-- Best Match Banner -->
-<section class="mb-12">
-<div class="bg-white border-l-[3px] border-[#FF6B2B] p-8 rounded-r-xl shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
-<div class="absolute top-4 right-6 text-stone-300 flex items-center gap-1 opacity-50">
-<span class="material-symbols-outlined text-sm">history_edu</span>
-<span class="font-label-caps text-[10px]">BEST MATCH</span>
-</div>
-<p class="font-quote-text text-xl md:text-2xl text-stone-800 italic leading-relaxed max-w-3xl">
-                    "I still look for your car in every parking lot. I have a dozen unsent <span class="bg-[#FFE8D6] px-1 rounded-sm">letters</span> buried in my notes app, waiting for a courage that I know will never come..."
+  </head>
+  <body
+    class="bg-[#F5EFE6] text-on-surface font-body-md selection:bg-primary-fixed selection:text-on-primary-fixed"
+  >
+    <!-- TopNavBar -->
+    <header
+      class="bg-[#F5EFE6] dark:bg-stone-900 border-b border-stone-200 dark:border-stone-800 sticky top-0 z-[100] transition-all"
+    >
+      <div class="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto">
+        <a class="text-2xl font-serif italic text-stone-900 dark:text-white" href="#"
+          >The Unsent Archives</a
+        >
+        <!-- Search Bar Navigation Anchor -->
+        <div class="relative flex-1 max-w-xl mx-8 hidden md:block">
+          <div
+            class="relative flex items-center bg-white rounded-full ring-2 ring-[#FF6B2B] shadow-lg px-5 py-2.5 transition-shadow"
+          >
+            <span class="material-symbols-outlined text-stone-400 mr-3">search</span>
+            <div class="flex items-center flex-1 font-body-md text-stone-800">
+              <span>letters i never</span>
+              <span class="text-stone-300">...sent</span>
+            </div>
+            <span class="material-symbols-outlined text-stone-300 ml-2 text-sm">close</span>
+          </div>
+          <!-- Search Dropdown -->
+          <div
+            class="absolute top-full mt-3 w-full bg-white rounded-xl shadow-2xl border border-stone-100 overflow-hidden z-50"
+          >
+            <div class="bg-primary-fixed/30 px-6 py-3 flex items-center text-on-primary-fixed">
+              <span class="material-symbols-outlined mr-3 text-primary">history</span>
+              <span class="font-medium">letters i never sent</span>
+            </div>
+            <div class="px-6 py-3 hover:bg-stone-50 flex items-center transition-colors">
+              <span class="material-symbols-outlined mr-3 text-stone-400">tag</span>
+              <span class="text-stone-600">Unspoken Conversations</span>
+            </div>
+            <div class="px-6 py-3 hover:bg-stone-50 flex items-center transition-colors">
+              <span class="material-symbols-outlined mr-3 text-stone-400">person</span>
+              <span class="text-stone-600">The Anonymous Curator</span>
+            </div>
+            <div
+              class="px-6 py-3 hover:bg-stone-50 flex items-center transition-colors border-t border-stone-50"
+            >
+              <span class="material-symbols-outlined mr-3 text-stone-400">north_west</span>
+              <span class="text-stone-400 italic">letters I never gave you</span>
+            </div>
+            <div class="px-6 py-4 bg-stone-50/50 flex gap-2">
+              <span
+                class="px-3 py-1 bg-[#EAE2D5] rounded-full text-[10px] font-label-caps uppercase text-stone-600"
+                >Recent: Family</span
+              >
+              <span
+                class="px-3 py-1 bg-[#EAE2D5] rounded-full text-[10px] font-label-caps uppercase text-stone-600"
+                >Recent: 3am thoughts</span
+              >
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-6">
+          <nav class="hidden md:flex gap-8 text-stone-500 font-serif">
+            <a class="text-[#FF6B2B] font-bold" href="#">Explore</a>
+            <a class="hover:text-[#FF6B2B] transition-all" href="#">Library</a>
+          </nav>
+          <span class="material-symbols-outlined text-stone-800 dark:text-stone-100 cursor-pointer"
+            >account_circle</span
+          >
+        </div>
+      </div>
+    </header>
+    <main class="max-w-7xl mx-auto px-6 py-12 pb-32">
+      <!-- Trending Tags Pill Strip -->
+      <section class="mb-12 flex items-center gap-4 overflow-x-auto no-scrollbar pb-2">
+        <div
+          class="flex items-center gap-2 px-4 py-2 bg-primary-container text-white rounded-full whitespace-nowrap shadow-sm hover:opacity-90 cursor-pointer transition-all"
+        >
+          <span class="font-label-caps text-[11px]">TRENDING: REGRET</span>
+          <span class="material-symbols-outlined text-sm">trending_up</span>
+        </div>
+        <div
+          class="flex items-center gap-2 px-4 py-2 bg-white text-stone-700 border border-stone-200 rounded-full whitespace-nowrap hover:border-primary transition-all cursor-pointer"
+        >
+          <span class="font-label-caps text-[11px]">FIRST LOVE</span>
+          <span class="material-symbols-outlined text-sm">trending_up</span>
+        </div>
+        <div
+          class="flex items-center gap-2 px-4 py-2 bg-white text-stone-700 border border-stone-200 rounded-full whitespace-nowrap hover:border-primary transition-all cursor-pointer"
+        >
+          <span class="font-label-caps text-[11px]">PARIS 2014</span>
+          <span class="material-symbols-outlined text-sm">trending_up</span>
+        </div>
+        <div
+          class="flex items-center gap-2 px-4 py-2 bg-white text-stone-700 border border-stone-200 rounded-full whitespace-nowrap hover:border-primary transition-all cursor-pointer"
+        >
+          <span class="font-label-caps text-[11px]">SISTERHOOD</span>
+          <span class="material-symbols-outlined text-sm">trending_up</span>
+        </div>
+      </section>
+      <!-- Best Match Banner -->
+      <section class="mb-12">
+        <div
+          class="bg-white border-l-[3px] border-[#FF6B2B] p-8 rounded-r-xl shadow-sm hover:shadow-md transition-shadow relative overflow-hidden"
+        >
+          <div class="absolute top-4 right-6 text-stone-300 flex items-center gap-1 opacity-50">
+            <span class="material-symbols-outlined text-sm">history_edu</span>
+            <span class="font-label-caps text-[10px]">BEST MATCH</span>
+          </div>
+          <p
+            class="font-quote-text text-xl md:text-2xl text-stone-800 italic leading-relaxed max-w-3xl"
+          >
+            "I still look for your car in every parking lot. I have a dozen unsent
+            <span class="bg-[#FFE8D6] px-1 rounded-sm">letters</span> buried in my notes app,
+            waiting for a courage that I know will never come..."
+          </p>
+          <div class="mt-6 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center">
+              <span class="material-symbols-outlined text-stone-400">person</span>
+            </div>
+            <div>
+              <p class="text-sm font-bold text-stone-900">Anonymous Writer #8821</p>
+              <p class="text-[11px] font-label-caps text-stone-400">
+                Written 2 years ago • To: S.V.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Explore By Mood Scroll -->
+      <section class="mb-16">
+        <h3 class="font-headline-md mb-6 flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary">filter_vintage</span>
+          Explore by Mood
+        </h3>
+        <div class="flex gap-4 overflow-x-auto pb-6 -mx-2 px-2 scroll-smooth">
+          <div
+            class="flex-none w-40 h-48 bg-[#FFE8D6] rounded-xl p-5 flex flex-col justify-between shadow-sm hover:translate-y-[-4px] transition-transform cursor-pointer"
+          >
+            <span class="material-symbols-outlined text-primary text-3xl">fluid</span>
+            <div>
+              <p class="font-bold text-stone-800">Longing</p>
+              <p class="text-xs text-stone-500">12.4k entries</p>
+            </div>
+          </div>
+          <div
+            class="flex-none w-40 h-48 bg-[#EAE2D5] rounded-xl p-5 flex flex-col justify-between shadow-sm hover:translate-y-[-4px] transition-transform cursor-pointer"
+          >
+            <span class="material-symbols-outlined text-stone-600 text-3xl">cloud_queue</span>
+            <div>
+              <p class="font-bold text-stone-800">Grief</p>
+              <p class="text-xs text-stone-500">8.1k entries</p>
+            </div>
+          </div>
+          <div
+            class="flex-none w-40 h-48 bg-[#E8F1EB] rounded-xl p-5 flex flex-col justify-between shadow-sm hover:translate-y-[-4px] transition-transform cursor-pointer"
+          >
+            <span class="material-symbols-outlined text-green-700 text-3xl">wb_twilight</span>
+            <div>
+              <p class="font-bold text-stone-800">Hope</p>
+              <p class="text-xs text-stone-500">5.2k entries</p>
+            </div>
+          </div>
+          <div
+            class="flex-none w-40 h-48 bg-[#1A1C1C] text-white rounded-xl p-5 flex flex-col justify-between shadow-sm hover:translate-y-[-4px] transition-transform cursor-pointer"
+          >
+            <span class="material-symbols-outlined text-primary-fixed-dim text-3xl"
+              >nights_stay</span
+            >
+            <div>
+              <p class="font-bold">3am</p>
+              <p class="text-xs opacity-60">15.9k entries</p>
+            </div>
+          </div>
+          <div
+            class="flex-none w-40 h-48 bg-[#FFF9E6] rounded-xl p-5 flex flex-col justify-between shadow-sm hover:translate-y-[-4px] transition-transform cursor-pointer"
+          >
+            <span class="material-symbols-outlined text-amber-600 text-3xl"
+              >volunteer_activism</span
+            >
+            <div>
+              <p class="font-bold text-stone-800">Gratitude</p>
+              <p class="text-xs text-stone-500">3.8k entries</p>
+            </div>
+          </div>
+          <div
+            class="flex-none w-40 h-48 bg-[#FDE8E8] rounded-xl p-5 flex flex-col justify-between shadow-sm hover:translate-y-[-4px] transition-transform cursor-pointer"
+          >
+            <span class="material-symbols-outlined text-red-700 text-3xl">favorite</span>
+            <div>
+              <p class="font-bold text-stone-800">Love</p>
+              <p class="text-xs text-stone-500">22.1k entries</p>
+            </div>
+          </div>
+          <div
+            class="flex-none w-40 h-48 bg-[#F0F0F0] rounded-xl p-5 flex flex-col justify-between shadow-sm hover:translate-y-[-4px] transition-transform cursor-pointer"
+          >
+            <span class="material-symbols-outlined text-stone-400 text-3xl">wind_power</span>
+            <div>
+              <p class="font-bold text-stone-800">Letting Go</p>
+              <p class="text-xs text-stone-500">9.4k entries</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Hybrid Split Layout -->
+      <div class="flex flex-col lg:flex-row gap-12">
+        <!-- Left: Results Grid (65%) -->
+        <div class="lg:w-[65%]">
+          <h3 class="font-headline-md mb-8">Search Results</h3>
+          <div class="masonry-grid">
+            <!-- Note Card 1 -->
+            <div class="masonry-item group cursor-pointer">
+              <div
+                class="bg-white p-6 rounded-xl shadow-[0_4px_20px_rgba(26,26,24,0.06)] hover:translate-y-[-2px] transition-all relative"
+              >
+                <div class="flex justify-end mb-4">
+                  <span
+                    class="w-8 h-8 rounded-full border-2 border-dashed border-stone-200 flex items-center justify-center text-[10px] text-stone-300 font-label-caps"
+                    >OCT 12</span
+                  >
+                </div>
+                <p class="font-quote-text text-stone-800 mb-6 line-clamp-4">
+                  I found the scarf you left. It still smells like that cheap coffee shop we used to
+                  frequent on Tuesdays. I thought about washing it, but I couldn't bring myself to
+                  erase you yet.
                 </p>
-<div class="mt-6 flex items-center gap-4">
-<div class="w-10 h-10 rounded-full bg-stone-100 flex items-center justify-center">
-<span class="material-symbols-outlined text-stone-400">person</span>
-</div>
-<div>
-<p class="text-sm font-bold text-stone-900">Anonymous Writer #8821</p>
-<p class="text-[11px] font-label-caps text-stone-400">Written 2 years ago • To: S.V.</p>
-</div>
-</div>
-</div>
-</section>
-<!-- Explore By Mood Scroll -->
-<section class="mb-16">
-<h3 class="font-headline-md mb-6 flex items-center gap-2">
-<span class="material-symbols-outlined text-primary">filter_vintage</span>
-                Explore by Mood
-            </h3>
-<div class="flex gap-4 overflow-x-auto pb-6 -mx-2 px-2 scroll-smooth">
-<div class="flex-none w-40 h-48 bg-[#FFE8D6] rounded-xl p-5 flex flex-col justify-between shadow-sm hover:translate-y-[-4px] transition-transform cursor-pointer">
-<span class="material-symbols-outlined text-primary text-3xl">fluid</span>
-<div>
-<p class="font-bold text-stone-800">Longing</p>
-<p class="text-xs text-stone-500">12.4k entries</p>
-</div>
-</div>
-<div class="flex-none w-40 h-48 bg-[#EAE2D5] rounded-xl p-5 flex flex-col justify-between shadow-sm hover:translate-y-[-4px] transition-transform cursor-pointer">
-<span class="material-symbols-outlined text-stone-600 text-3xl">cloud_queue</span>
-<div>
-<p class="font-bold text-stone-800">Grief</p>
-<p class="text-xs text-stone-500">8.1k entries</p>
-</div>
-</div>
-<div class="flex-none w-40 h-48 bg-[#E8F1EB] rounded-xl p-5 flex flex-col justify-between shadow-sm hover:translate-y-[-4px] transition-transform cursor-pointer">
-<span class="material-symbols-outlined text-green-700 text-3xl">wb_twilight</span>
-<div>
-<p class="font-bold text-stone-800">Hope</p>
-<p class="text-xs text-stone-500">5.2k entries</p>
-</div>
-</div>
-<div class="flex-none w-40 h-48 bg-[#1A1C1C] text-white rounded-xl p-5 flex flex-col justify-between shadow-sm hover:translate-y-[-4px] transition-transform cursor-pointer">
-<span class="material-symbols-outlined text-primary-fixed-dim text-3xl">nights_stay</span>
-<div>
-<p class="font-bold">3am</p>
-<p class="text-xs opacity-60">15.9k entries</p>
-</div>
-</div>
-<div class="flex-none w-40 h-48 bg-[#FFF9E6] rounded-xl p-5 flex flex-col justify-between shadow-sm hover:translate-y-[-4px] transition-transform cursor-pointer">
-<span class="material-symbols-outlined text-amber-600 text-3xl">volunteer_activism</span>
-<div>
-<p class="font-bold text-stone-800">Gratitude</p>
-<p class="text-xs text-stone-500">3.8k entries</p>
-</div>
-</div>
-<div class="flex-none w-40 h-48 bg-[#FDE8E8] rounded-xl p-5 flex flex-col justify-between shadow-sm hover:translate-y-[-4px] transition-transform cursor-pointer">
-<span class="material-symbols-outlined text-red-700 text-3xl">favorite</span>
-<div>
-<p class="font-bold text-stone-800">Love</p>
-<p class="text-xs text-stone-500">22.1k entries</p>
-</div>
-</div>
-<div class="flex-none w-40 h-48 bg-[#F0F0F0] rounded-xl p-5 flex flex-col justify-between shadow-sm hover:translate-y-[-4px] transition-transform cursor-pointer">
-<span class="material-symbols-outlined text-stone-400 text-3xl">wind_power</span>
-<div>
-<p class="font-bold text-stone-800">Letting Go</p>
-<p class="text-xs text-stone-500">9.4k entries</p>
-</div>
-</div>
-</div>
-</section>
-<!-- Hybrid Split Layout -->
-<div class="flex flex-col lg:flex-row gap-12">
-<!-- Left: Results Grid (65%) -->
-<div class="lg:w-[65%]">
-<h3 class="font-headline-md mb-8">Search Results</h3>
-<div class="masonry-grid">
-<!-- Note Card 1 -->
-<div class="masonry-item group cursor-pointer">
-<div class="bg-white p-6 rounded-xl shadow-[0_4px_20px_rgba(26,26,24,0.06)] hover:translate-y-[-2px] transition-all relative">
-<div class="flex justify-end mb-4">
-<span class="w-8 h-8 rounded-full border-2 border-dashed border-stone-200 flex items-center justify-center text-[10px] text-stone-300 font-label-caps">OCT 12</span>
-</div>
-<p class="font-quote-text text-stone-800 mb-6 line-clamp-4">I found the scarf you left. It still smells like that cheap coffee shop we used to frequent on Tuesdays. I thought about washing it, but I couldn't bring myself to erase you yet.</p>
-<div class="flex items-center justify-between">
-<span class="bg-stone-100 text-[10px] font-label-caps px-2 py-1 rounded text-stone-500">UNREQUITED</span>
-<div class="flex gap-3 text-stone-400">
-<span class="material-symbols-outlined text-sm">favorite</span>
-<span class="material-symbols-outlined text-sm">bookmark</span>
-</div>
-</div>
-</div>
-</div>
-<!-- Note Card 2 (With Image) -->
-<div class="masonry-item group cursor-pointer">
-<div class="bg-white rounded-xl shadow-[0_4px_20px_rgba(26,26,24,0.06)] hover:translate-y-[-2px] transition-all overflow-hidden">
-<div class="h-40 bg-stone-200 relative">
-<img class="w-full h-full object-cover opacity-80" data-alt="Close-up of a vintage typewriter on a wooden desk with soft morning light hitting the keys" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCweMaHqvnke1y42QmkcNCsDR7uA2Pez9ztUPY12IYEXjiO34vNJy8XdRdQ8v2VXx6qu42MWvZ8j5g7njFrHJYG_fyQJGuOinnk7QhSp48Az16MwBYhDmM5U7qReoOX5cF5Tl5xuIcMRmbrZHdsnSADjC5oM9tYgGBK8UD03rDDsKzR4xG2ZVgC1s1o_O8bUF6fvpiTXqS2IKFZEww_e5kvVfssnkGbq9XTDn2p75YXG40CttdSNxt26vonmCKpygjk3w09XaXKKrs"/>
-<div class="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent"></div>
-</div>
-<div class="p-6 pt-0 relative -mt-8">
-<p class="font-quote-text text-stone-800 mb-4 italic">To the father I never really knew...</p>
-<p class="text-sm text-stone-600 line-clamp-3">You left before I could learn the shape of your laugh. I've spent twenty years building a version of you from old polaroids and my mother's silence.</p>
-<div class="mt-4 flex items-center justify-between">
-<span class="bg-stone-100 text-[10px] font-label-caps px-2 py-1 rounded text-stone-500">FAMILY</span>
-<span class="text-[10px] font-label-caps text-stone-400">1.2k reads</span>
-</div>
-</div>
-</div>
-</div>
-<!-- Note Card 3 -->
-<div class="masonry-item group cursor-pointer">
-<div class="bg-white p-6 rounded-xl shadow-[0_4px_20px_rgba(26,26,24,0.06)] hover:translate-y-[-2px] transition-all border-t-2 border-primary">
-<p class="font-quote-text text-stone-800 mb-6">Dear Future Me: I hope you finally stopped checking his social media at 2 AM. I hope you found that peace we were so desperate for.</p>
-<div class="flex items-center justify-between">
-<span class="bg-stone-100 text-[10px] font-label-caps px-2 py-1 rounded text-stone-500">GROWTH</span>
-<div class="flex gap-2">
-<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
-<span class="w-1.5 h-1.5 rounded-full bg-stone-200"></span>
-</div>
-</div>
-</div>
-</div>
-<!-- Note Card 4 (With Texture) -->
-<div class="masonry-item group cursor-pointer">
-<div class="bg-white p-6 rounded-xl shadow-[0_4px_20px_rgba(26,26,24,0.06)] hover:translate-y-[-2px] transition-all bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]">
-<div class="mb-4">
-<span class="material-symbols-outlined text-stone-200 text-4xl">format_quote</span>
-</div>
-<p class="font-quote-text text-stone-800 mb-4">I'm sorry I didn't say it when I had the chance. The words felt too heavy for my mouth, so I let them drown instead.</p>
-<div class="flex items-center gap-2">
-<div class="h-px flex-1 bg-stone-100"></div>
-<span class="text-[10px] font-label-caps text-stone-300">ANON</span>
-</div>
-</div>
-</div>
-</div>
-</div>
-<!-- Right: Secondary Widgets (35%) -->
-<div class="lg:w-[35%] space-y-8">
-<!-- Writers Section -->
-<div class="bg-white rounded-xl shadow-[0_4px_20px_rgba(26,26,24,0.06)] p-6">
-<div class="flex justify-between items-center mb-6">
-<h4 class="font-headline-md text-lg">Featured Writers</h4>
-<a class="text-primary font-label-caps text-[10px]" href="#">SEE ALL</a>
-</div>
-<div class="space-y-4">
-<div class="flex items-center justify-between group">
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 rounded-full bg-stone-100 border border-stone-100 overflow-hidden">
-<img class="w-full h-full object-cover" data-alt="Portrait of a creative woman with glasses in a library" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvJGk90qV1LMplXr9xQNtudZ5rndNQVLs7HG3sNgwmUZBd0wBPPHgCegFFF3VT6KFNfgNgGexnFaR7UfCp_4Mcg9R6Es6o0T52nHQNzV4TNszTx3-QFWlzXQctYnCVgyQf0van7UUg4jwAQ18WL5-NdU2GPFwaxqCiyF5fy1kPSJT98QNew3he0Nf1cAlFZlir4i3GZh3E1BmyZKQhCrUpNs1PVMYHTlFlz5D-SVVjgp3vqEyuksPaVyCDPJN_lQClLq835mXGXqs"/>
-</div>
-<div>
-<p class="text-sm font-bold">LoomingShadow</p>
-<p class="text-[10px] text-stone-400">142 Archives</p>
-</div>
-</div>
-<button class="px-3 py-1.5 rounded-full border border-primary text-primary text-[10px] font-label-caps hover:bg-primary hover:text-white transition-all">FOLLOW</button>
-</div>
-<div class="flex items-center justify-between group">
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 rounded-full bg-stone-100 border border-stone-100 overflow-hidden">
-<img class="w-full h-full object-cover" data-alt="Portrait of a young man thinking in a quiet study environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBS-TAdGoCXp2xiJR0L0Sv0vVm7OaqkKf9ClWaosa8P8nvFyQuoE2UG6oAkMh7k3lZ2DbN8RTL3TYiPbwuKgK6RUseUWDUTK1WBc1anQdg71Sjw8K62rWkUmucRzt-k35CQxu16SyFR2zwCltmjxUU5Jiw8DwHWZAFfiUzNZ4Bos_wp4qzQuQeC7ghE3gPpu3J2XzrwpPUPNyn3Iq3PsdLYXYGvPzAq0TfBevhQgQYXMDgedUpve1YFjMK90G03AE1Rml_F0glelPA"/>
-</div>
-<div>
-<p class="text-sm font-bold">Echo_Station</p>
-<p class="text-[10px] text-stone-400">89 Archives</p>
-</div>
-</div>
-<button class="px-3 py-1.5 rounded-full border border-primary text-primary text-[10px] font-label-caps hover:bg-primary hover:text-white transition-all">FOLLOW</button>
-</div>
-</div>
-</div>
-<!-- Collections Mosaic -->
-<div class="bg-white rounded-xl shadow-[0_4px_20px_rgba(26,26,24,0.06)] p-6">
-<h4 class="font-headline-md text-lg mb-6">Curated Collections</h4>
-<div class="space-y-6">
-<div class="flex gap-4 group cursor-pointer">
-<div class="grid grid-cols-2 gap-0.5 w-16 h-16 rounded-lg overflow-hidden flex-none">
-<div class="bg-stone-300"><img data-alt="Abstract textured paper" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDojq7kDXXgjAKhwPQs-mOtnX4LfP3GHTDe2-JkecchQ8N9h69-IM7Gekuf_0-ER3HOvcWoQY58MFMHhMjT0AF7ofonLCii7zUR3SmveSHq4p9l_eYUcnyQc92_fk5BPrqnPpBq6CJrzOGy2tdhNilsfWfwX7Y8mm-dCHkqFwJkAi1xy0m10Ak-5mnDvSqfstEBu3wAtxCz_swPIi6nrKfdKYGGPR7GXYJV6ORQf--6pqkhZduDDnMTrCXef2jztDf7IbIk9QKWRNo"/></div>
-<div class="bg-stone-400"><img data-alt="Abstract water surface" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBS3rtCV8bSdOAulrPK7CoVmjfhS8AFIeMlsoIN7COYtu_k9CFmoyTJqY4EE7A6GkJci2py9_LjMbRlI5HK3SKQTSrj0nuWyNQ6XQx_0bFTLJNyTdk9tGwQP2O5PmUcm7j5RiVPeUB85UmAGJstUX461u1nQdb5rXDkp2YK930_8gQOtDWnRQu0UnVRawGAobTTUnX8JyzZ2aP0nmoFyoXVCsgZeDGvicC7W0HG_gioH5dDzJHw31EsvpLrRB5DwaxsDKM8nYitUKk"/></div>
-<div class="bg-stone-200"><img data-alt="Abstract mountain range" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmxA_pBfvyl9TFHv32RoPc1UtXIvBtKdoPgZusIiy65zGDCszW1QxMzuSIGeL6nTi92-ta_NCEJjbR0etSlZtVyEb92o9NPs9ux4MgYqq980wIXpGYqYzbTmaP7qxx9L9YVe3uooaGOgpiryFn4QaBu1vKn5mwwERoTzqlRcVgWR6bESsZ0-lJ-VzY5pTnnMLtavEtKdqM0Ycov2CG6mXnLpe2Ckpp0m63yn7TRt4CJbQoHmpoXfaQlZvXD3lXFJE4ItSmAumZ0Q8"/></div>
-<div class="bg-stone-500"><img data-alt="Abstract forest silhouette" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbKJxF_y9EPtA1zv98CbRLZI712gSt9ViXonUtspwG3D0J2fN1swvC89fdIa35jsTYcXAQPK49IWy8lluE20QPMpoIfN_NRajh-vKZ1vJRVI9pwZlAmzIMrFtHg8J83NCYHd06KuPircMl3CiLo7bNrTkf2yKVXvPTkJMKHU_40gt4yN1A-173waWgxaSRXByhBYlIGcwX2GT6zfILHLZ11oMs9M6wQcSCWroAJ41L5tOSB1_HpZQa1b2xHBZxO8n0iPlIpvIRwyE"/></div>
-</div>
-<div>
-<p class="text-sm font-bold group-hover:text-primary transition-colors">Letters to the Ocean</p>
-<p class="text-xs text-stone-500">24 pieces • Curated by Archive-X</p>
-</div>
-</div>
-<div class="flex gap-4 group cursor-pointer">
-<div class="grid grid-cols-2 gap-0.5 w-16 h-16 rounded-lg overflow-hidden flex-none">
-<div class="bg-stone-100"></div>
-<div class="bg-[#FF6B2B]"></div>
-<div class="bg-stone-900"></div>
-<div class="bg-stone-200"></div>
-</div>
-<div>
-<p class="text-sm font-bold group-hover:text-primary transition-colors">3AM Desperation</p>
-<p class="text-xs text-stone-500">112 pieces • Curated by NightOwl</p>
-</div>
-</div>
-</div>
-</div>
-<!-- Popular Tags Pill Cloud -->
-<div class="bg-white rounded-xl shadow-[0_4px_20px_rgba(26,26,24,0.06)] p-6">
-<h4 class="font-headline-md text-lg mb-6">Discover Tags</h4>
-<div class="flex flex-wrap gap-2">
-<span class="px-3 py-1 bg-stone-50 border border-stone-100 rounded-full text-[11px] font-label-caps text-stone-600 hover:border-primary transition-colors cursor-pointer">HEARTBREAK</span>
-<span class="px-3 py-1 bg-stone-50 border border-stone-100 rounded-full text-[11px] font-label-caps text-stone-600 hover:border-primary transition-colors cursor-pointer">TO MY EX</span>
-<span class="px-3 py-1 bg-stone-50 border border-stone-100 rounded-full text-[11px] font-label-caps text-stone-600 hover:border-primary transition-colors cursor-pointer">MISSING YOU</span>
-<span class="px-3 py-1 bg-stone-50 border border-stone-100 rounded-full text-[11px] font-label-caps text-stone-600 hover:border-primary transition-colors cursor-pointer">DEATH</span>
-<span class="px-3 py-1 bg-stone-50 border border-stone-100 rounded-full text-[11px] font-label-caps text-stone-600 hover:border-primary transition-colors cursor-pointer">CLOSURE</span>
-<span class="px-3 py-1 bg-stone-50 border border-stone-100 rounded-full text-[11px] font-label-caps text-stone-600 hover:border-primary transition-colors cursor-pointer">NEW BEGINNINGS</span>
-</div>
-</div>
-</div>
-</div>
-<!-- Suggested Writers Horizontal Scroll -->
-<section class="mt-20">
-<h3 class="font-headline-md mb-8">Voices You Might Recognize</h3>
-<div class="flex gap-6 overflow-x-auto pb-8 -mx-2 px-2 scroll-smooth no-scrollbar">
-<!-- Writer Card 1 -->
-<div class="flex-none w-64 bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group border border-stone-100">
-<div class="h-[70px] bg-stone-900 flex items-center justify-center p-2">
-<p class="text-[8px] text-stone-500 leading-none opacity-40 font-serif">I NEVER TOLD YOU HOW MUCH I LOVED THE WAY YOU SAID MY NAME IN THE MORNING BEFORE THE COFFEE WAS READY AND THE WORLD STARTED CALLING FOR US</p>
-</div>
-<div class="px-5 pb-5 flex flex-col items-center -mt-8">
-<div class="w-16 h-16 rounded-full border-4 border-white overflow-hidden bg-stone-100 shadow-sm mb-3">
-<img class="w-full h-full object-cover" data-alt="Writer profile portrait with warm bokeh background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwMUvEJVKfNFEtfVEHOF4-LVxA7HljcRIX-Fh3qAeq9ZNM1sM5hKUE5G-g73KqKZZXEFWuYpnk5g_S_nG2fQz6T_wLayA6dZW0i2DUR2xzVYjQ22UsWV6Esbmy9hdtyL2fK9Nzg20Jp1uA5NjKo2UjtkxXkxArfhbaMB8h0_qkU6kaueMHViIbDkT09z-rDQvHjZlz8pVIALFCwmzCXTpTSO2re5fGtvjO-H8fwA3iiQXOpZj2pHrFwVKy1mZEy8xKKg8T-MeFT-k"/>
-</div>
-<p class="font-bold text-stone-900">Velvet_Words</p>
-<p class="text-[10px] text-stone-400 font-label-caps mb-4">MEMBER SINCE 2021</p>
-<button class="w-full py-2 bg-primary text-white text-[11px] font-label-caps rounded-full hover:opacity-90 transition-opacity">FOLLOW</button>
-</div>
-</div>
-<!-- Writer Card 2 -->
-<div class="flex-none w-64 bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group border border-stone-100">
-<div class="h-[70px] bg-primary flex items-center justify-center p-2 overflow-hidden">
-<p class="text-[8px] text-white leading-none opacity-40 font-serif uppercase">The letters are still there. The box is still under the bed. The weight is still in my chest. The silence is still deafening.</p>
-</div>
-<div class="px-5 pb-5 flex flex-col items-center -mt-8">
-<div class="w-16 h-16 rounded-full border-4 border-white overflow-hidden bg-stone-100 shadow-sm mb-3">
-<img class="w-full h-full object-cover" data-alt="Portrait of a contemplative male writer" src="https://lh3.googleusercontent.com/aida-public/AB6AXuClLEacRXQhDqx9etoU134eHFQ73jauFQjXr97-wOsZ-FqenCDs5SzLeqSZW_MjqexzVfG2vV6ezrvuhVvhhLzDsWXqCTtr7Zi_Si_mYOLJ90BRQrffSaYq-Uh9m47Z4msgI8raraLEam1Z2O38-ngLbe-Lc8l9oStwpXEVps9e2Q-sPS7MY587__N36zsWUg8I6XzlIQ98xNRcjEAvqnhkskIxcB9YKU7Vw66q_VPMxMeCOZZu_IxhBFz_9fOop0W_uxA-0RgHcWU"/>
-</div>
-<p class="font-bold text-stone-900">Postmark_Null</p>
-<p class="text-[10px] text-stone-400 font-label-caps mb-4">MEMBER SINCE 2023</p>
-<button class="w-full py-2 bg-primary text-white text-[11px] font-label-caps rounded-full hover:opacity-90 transition-opacity">FOLLOW</button>
-</div>
-</div>
-<!-- Writer Card 3 -->
-<div class="flex-none w-64 bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group border border-stone-100">
-<div class="h-[70px] bg-stone-200 flex items-center justify-center p-2">
-<p class="text-[8px] text-stone-400 leading-none opacity-60 font-serif">WHERE DO ALL THE WORDS GO WHEN THEY AREN'T SPOKEN? DO THEY CLUSTER IN THE CORNERS OF THE ROOM LIKE DUST BUNNIES OR DO THEY FLOAT AWAY?</p>
-</div>
-<div class="px-5 pb-5 flex flex-col items-center -mt-8">
-<div class="w-16 h-16 rounded-full border-4 border-white overflow-hidden bg-stone-100 shadow-sm mb-3">
-<img class="w-full h-full object-cover" data-alt="Portrait of a young woman looking off-camera thoughtfully" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqqXSp81g92ky-RceNuhlTK9jv9GBn9_w9Hm9tEvnVh31M2ILKeA2Bhv6HqPrF3EkWjr3-m554R079TF4C3IHNyyfd4MyE-MpyS45mvQYYHjGzUPj-aWaowSBgyeGo6b7mgaR6ZrRRANDQwXJIgkXYRQnwfTI0LYTs7HQ4JdwO_wto5LyDw0l1ByN9NXmiBVy3TBavQbhwE9vYVZ1EFd2PKvuabG3r6ImWQR-gqw1u6-JDBl6c0d3FO9QozaxykopUS0RtqmuZaRM"/>
-</div>
-<p class="font-bold text-stone-900">Ink_Stains_01</p>
-<p class="text-[10px] text-stone-400 font-label-caps mb-4">MEMBER SINCE 2022</p>
-<button class="w-full py-2 bg-primary text-white text-[11px] font-label-caps rounded-full hover:opacity-90 transition-opacity">FOLLOW</button>
-</div>
-</div>
-<!-- Writer Card 4 -->
-<div class="flex-none w-64 bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group border border-stone-100">
-<div class="h-[70px] bg-[#EAE2D5] flex items-center justify-center p-2">
-<p class="text-[8px] text-stone-800 leading-none opacity-30 font-serif">TUESDAY. 4:12 PM. THE RAIN IS HITTING THE WINDOW AND I AM THINKING ABOUT THE WAY YOU USED TO DRINK TEA WITH TOO MUCH HONEY.</p>
-</div>
-<div class="px-5 pb-5 flex flex-col items-center -mt-8">
-<div class="w-16 h-16 rounded-full border-4 border-white overflow-hidden bg-stone-100 shadow-sm mb-3">
-<img class="w-full h-full object-cover" data-alt="Portrait of an older man with glasses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC60V22KofsYZdn4L3qOrGcUzQxaEX6u-oR8QAWXiB1L22GW9NPKq7DSHHL1eqDtTutOCUJUQ63sl405xjSbzNb3nM0kE6QaPHPygL2eP3j1QTWfeobXx0qnFTxb6Q-IfpqCFzHe60PTUQSF00_cxSRy0LOKVi-NL-P7F7FJNDTwhpjrZ2seMMC69rd4g0aCC00Nt3WU4pfc70ZON6EkZNMsRNyt7J1dcPkvMtktQyR2NgzkOiDc78YjUCqHoourZJeqycmSeCGXAI"/>
-</div>
-<p class="font-bold text-stone-900">Old_Soul_Archives</p>
-<p class="text-[10px] text-stone-400 font-label-caps mb-4">MEMBER SINCE 2020</p>
-<button class="w-full py-2 bg-primary text-white text-[11px] font-label-caps rounded-full hover:opacity-90 transition-opacity">FOLLOW</button>
-</div>
-</div>
-</div>
-</section>
-</main>
-<!-- BottomNavBar (Mobile Only) -->
-<nav class="md:hidden fixed bottom-0 left-0 w-full bg-white/90 dark:bg-stone-950/90 backdrop-blur-md border-t border-stone-100 dark:border-stone-800 shadow-[0_-4px_20px_rgba(26,26,24,0.06)] z-50 flex justify-around items-center px-4 py-3 pb-safe-offset-2">
-<a class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-600" href="#">
-<span class="material-symbols-outlined">auto_stories</span>
-<span class="font-serif text-[11px] font-medium tracking-wide">Home</span>
-</a>
-<a class="flex flex-col items-center justify-center text-[#FF6B2B] scale-110 translate-y-[-2px] transition-transform duration-200" href="#">
-<span class="material-symbols-outlined">search</span>
-<span class="font-serif text-[11px] font-medium tracking-wide">Explore</span>
-</a>
-<a class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-600" href="#">
-<div class="bg-primary-container p-2 rounded-full -mt-8 shadow-lg text-white">
-<span class="material-symbols-outlined">edit_note</span>
-</div>
-<span class="font-serif text-[11px] font-medium tracking-wide mt-1">Write</span>
-</a>
-<a class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-600" href="#">
-<span class="material-symbols-outlined">inventory_2</span>
-<span class="font-serif text-[11px] font-medium tracking-wide">Library</span>
-</a>
-</nav>
-<!-- Floating Action Button (Desktop Only) -->
-<button class="hidden md:flex fixed bottom-8 right-8 w-14 h-14 bg-primary text-white rounded-full items-center justify-center shadow-xl hover:scale-110 transition-transform group">
-<span class="material-symbols-outlined">edit_note</span>
-<span class="absolute right-full mr-4 bg-stone-900 text-white text-xs px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Write a letter</span>
-</button>
-</body></html>
+                <div class="flex items-center justify-between">
+                  <span
+                    class="bg-stone-100 text-[10px] font-label-caps px-2 py-1 rounded text-stone-500"
+                    >UNREQUITED</span
+                  >
+                  <div class="flex gap-3 text-stone-400">
+                    <span class="material-symbols-outlined text-sm">favorite</span>
+                    <span class="material-symbols-outlined text-sm">bookmark</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Note Card 2 (With Image) -->
+            <div class="masonry-item group cursor-pointer">
+              <div
+                class="bg-white rounded-xl shadow-[0_4px_20px_rgba(26,26,24,0.06)] hover:translate-y-[-2px] transition-all overflow-hidden"
+              >
+                <div class="h-40 bg-stone-200 relative">
+                  <img
+                    class="w-full h-full object-cover opacity-80"
+                    data-alt="Close-up of a vintage typewriter on a wooden desk with soft morning light hitting the keys"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCweMaHqvnke1y42QmkcNCsDR7uA2Pez9ztUPY12IYEXjiO34vNJy8XdRdQ8v2VXx6qu42MWvZ8j5g7njFrHJYG_fyQJGuOinnk7QhSp48Az16MwBYhDmM5U7qReoOX5cF5Tl5xuIcMRmbrZHdsnSADjC5oM9tYgGBK8UD03rDDsKzR4xG2ZVgC1s1o_O8bUF6fvpiTXqS2IKFZEww_e5kvVfssnkGbq9XTDn2p75YXG40CttdSNxt26vonmCKpygjk3w09XaXKKrs"
+                  />
+                  <div
+                    class="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent"
+                  ></div>
+                </div>
+                <div class="p-6 pt-0 relative -mt-8">
+                  <p class="font-quote-text text-stone-800 mb-4 italic">
+                    To the father I never really knew...
+                  </p>
+                  <p class="text-sm text-stone-600 line-clamp-3">
+                    You left before I could learn the shape of your laugh. I've spent twenty years
+                    building a version of you from old polaroids and my mother's silence.
+                  </p>
+                  <div class="mt-4 flex items-center justify-between">
+                    <span
+                      class="bg-stone-100 text-[10px] font-label-caps px-2 py-1 rounded text-stone-500"
+                      >FAMILY</span
+                    >
+                    <span class="text-[10px] font-label-caps text-stone-400">1.2k reads</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Note Card 3 -->
+            <div class="masonry-item group cursor-pointer">
+              <div
+                class="bg-white p-6 rounded-xl shadow-[0_4px_20px_rgba(26,26,24,0.06)] hover:translate-y-[-2px] transition-all border-t-2 border-primary"
+              >
+                <p class="font-quote-text text-stone-800 mb-6">
+                  Dear Future Me: I hope you finally stopped checking his social media at 2 AM. I
+                  hope you found that peace we were so desperate for.
+                </p>
+                <div class="flex items-center justify-between">
+                  <span
+                    class="bg-stone-100 text-[10px] font-label-caps px-2 py-1 rounded text-stone-500"
+                    >GROWTH</span
+                  >
+                  <div class="flex gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-stone-200"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Note Card 4 (With Texture) -->
+            <div class="masonry-item group cursor-pointer">
+              <div
+                class="bg-white p-6 rounded-xl shadow-[0_4px_20px_rgba(26,26,24,0.06)] hover:translate-y-[-2px] transition-all bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]"
+              >
+                <div class="mb-4">
+                  <span class="material-symbols-outlined text-stone-200 text-4xl"
+                    >format_quote</span
+                  >
+                </div>
+                <p class="font-quote-text text-stone-800 mb-4">
+                  I'm sorry I didn't say it when I had the chance. The words felt too heavy for my
+                  mouth, so I let them drown instead.
+                </p>
+                <div class="flex items-center gap-2">
+                  <div class="h-px flex-1 bg-stone-100"></div>
+                  <span class="text-[10px] font-label-caps text-stone-300">ANON</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Right: Secondary Widgets (35%) -->
+        <div class="lg:w-[35%] space-y-8">
+          <!-- Writers Section -->
+          <div class="bg-white rounded-xl shadow-[0_4px_20px_rgba(26,26,24,0.06)] p-6">
+            <div class="flex justify-between items-center mb-6">
+              <h4 class="font-headline-md text-lg">Featured Writers</h4>
+              <a class="text-primary font-label-caps text-[10px]" href="#">SEE ALL</a>
+            </div>
+            <div class="space-y-4">
+              <div class="flex items-center justify-between group">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 rounded-full bg-stone-100 border border-stone-100 overflow-hidden"
+                  >
+                    <img
+                      class="w-full h-full object-cover"
+                      data-alt="Portrait of a creative woman with glasses in a library"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvJGk90qV1LMplXr9xQNtudZ5rndNQVLs7HG3sNgwmUZBd0wBPPHgCegFFF3VT6KFNfgNgGexnFaR7UfCp_4Mcg9R6Es6o0T52nHQNzV4TNszTx3-QFWlzXQctYnCVgyQf0van7UUg4jwAQ18WL5-NdU2GPFwaxqCiyF5fy1kPSJT98QNew3he0Nf1cAlFZlir4i3GZh3E1BmyZKQhCrUpNs1PVMYHTlFlz5D-SVVjgp3vqEyuksPaVyCDPJN_lQClLq835mXGXqs"
+                    />
+                  </div>
+                  <div>
+                    <p class="text-sm font-bold">LoomingShadow</p>
+                    <p class="text-[10px] text-stone-400">142 Archives</p>
+                  </div>
+                </div>
+                <button
+                  class="px-3 py-1.5 rounded-full border border-primary text-primary text-[10px] font-label-caps hover:bg-primary hover:text-white transition-all"
+                >
+                  FOLLOW
+                </button>
+              </div>
+              <div class="flex items-center justify-between group">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 rounded-full bg-stone-100 border border-stone-100 overflow-hidden"
+                  >
+                    <img
+                      class="w-full h-full object-cover"
+                      data-alt="Portrait of a young man thinking in a quiet study environment"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuBS-TAdGoCXp2xiJR0L0Sv0vVm7OaqkKf9ClWaosa8P8nvFyQuoE2UG6oAkMh7k3lZ2DbN8RTL3TYiPbwuKgK6RUseUWDUTK1WBc1anQdg71Sjw8K62rWkUmucRzt-k35CQxu16SyFR2zwCltmjxUU5Jiw8DwHWZAFfiUzNZ4Bos_wp4qzQuQeC7ghE3gPpu3J2XzrwpPUPNyn3Iq3PsdLYXYGvPzAq0TfBevhQgQYXMDgedUpve1YFjMK90G03AE1Rml_F0glelPA"
+                    />
+                  </div>
+                  <div>
+                    <p class="text-sm font-bold">Echo_Station</p>
+                    <p class="text-[10px] text-stone-400">89 Archives</p>
+                  </div>
+                </div>
+                <button
+                  class="px-3 py-1.5 rounded-full border border-primary text-primary text-[10px] font-label-caps hover:bg-primary hover:text-white transition-all"
+                >
+                  FOLLOW
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- Collections Mosaic -->
+          <div class="bg-white rounded-xl shadow-[0_4px_20px_rgba(26,26,24,0.06)] p-6">
+            <h4 class="font-headline-md text-lg mb-6">Curated Collections</h4>
+            <div class="space-y-6">
+              <div class="flex gap-4 group cursor-pointer">
+                <div
+                  class="grid grid-cols-2 gap-0.5 w-16 h-16 rounded-lg overflow-hidden flex-none"
+                >
+                  <div class="bg-stone-300">
+                    <img
+                      data-alt="Abstract textured paper"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuDojq7kDXXgjAKhwPQs-mOtnX4LfP3GHTDe2-JkecchQ8N9h69-IM7Gekuf_0-ER3HOvcWoQY58MFMHhMjT0AF7ofonLCii7zUR3SmveSHq4p9l_eYUcnyQc92_fk5BPrqnPpBq6CJrzOGy2tdhNilsfWfwX7Y8mm-dCHkqFwJkAi1xy0m10Ak-5mnDvSqfstEBu3wAtxCz_swPIi6nrKfdKYGGPR7GXYJV6ORQf--6pqkhZduDDnMTrCXef2jztDf7IbIk9QKWRNo"
+                    />
+                  </div>
+                  <div class="bg-stone-400">
+                    <img
+                      data-alt="Abstract water surface"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuBS3rtCV8bSdOAulrPK7CoVmjfhS8AFIeMlsoIN7COYtu_k9CFmoyTJqY4EE7A6GkJci2py9_LjMbRlI5HK3SKQTSrj0nuWyNQ6XQx_0bFTLJNyTdk9tGwQP2O5PmUcm7j5RiVPeUB85UmAGJstUX461u1nQdb5rXDkp2YK930_8gQOtDWnRQu0UnVRawGAobTTUnX8JyzZ2aP0nmoFyoXVCsgZeDGvicC7W0HG_gioH5dDzJHw31EsvpLrRB5DwaxsDKM8nYitUKk"
+                    />
+                  </div>
+                  <div class="bg-stone-200">
+                    <img
+                      data-alt="Abstract mountain range"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmxA_pBfvyl9TFHv32RoPc1UtXIvBtKdoPgZusIiy65zGDCszW1QxMzuSIGeL6nTi92-ta_NCEJjbR0etSlZtVyEb92o9NPs9ux4MgYqq980wIXpGYqYzbTmaP7qxx9L9YVe3uooaGOgpiryFn4QaBu1vKn5mwwERoTzqlRcVgWR6bESsZ0-lJ-VzY5pTnnMLtavEtKdqM0Ycov2CG6mXnLpe2Ckpp0m63yn7TRt4CJbQoHmpoXfaQlZvXD3lXFJE4ItSmAumZ0Q8"
+                    />
+                  </div>
+                  <div class="bg-stone-500">
+                    <img
+                      data-alt="Abstract forest silhouette"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbKJxF_y9EPtA1zv98CbRLZI712gSt9ViXonUtspwG3D0J2fN1swvC89fdIa35jsTYcXAQPK49IWy8lluE20QPMpoIfN_NRajh-vKZ1vJRVI9pwZlAmzIMrFtHg8J83NCYHd06KuPircMl3CiLo7bNrTkf2yKVXvPTkJMKHU_40gt4yN1A-173waWgxaSRXByhBYlIGcwX2GT6zfILHLZ11oMs9M6wQcSCWroAJ41L5tOSB1_HpZQa1b2xHBZxO8n0iPlIpvIRwyE"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <p class="text-sm font-bold group-hover:text-primary transition-colors">
+                    Letters to the Ocean
+                  </p>
+                  <p class="text-xs text-stone-500">24 pieces • Curated by Archive-X</p>
+                </div>
+              </div>
+              <div class="flex gap-4 group cursor-pointer">
+                <div
+                  class="grid grid-cols-2 gap-0.5 w-16 h-16 rounded-lg overflow-hidden flex-none"
+                >
+                  <div class="bg-stone-100"></div>
+                  <div class="bg-[#FF6B2B]"></div>
+                  <div class="bg-stone-900"></div>
+                  <div class="bg-stone-200"></div>
+                </div>
+                <div>
+                  <p class="text-sm font-bold group-hover:text-primary transition-colors">
+                    3AM Desperation
+                  </p>
+                  <p class="text-xs text-stone-500">112 pieces • Curated by NightOwl</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Popular Tags Pill Cloud -->
+          <div class="bg-white rounded-xl shadow-[0_4px_20px_rgba(26,26,24,0.06)] p-6">
+            <h4 class="font-headline-md text-lg mb-6">Discover Tags</h4>
+            <div class="flex flex-wrap gap-2">
+              <span
+                class="px-3 py-1 bg-stone-50 border border-stone-100 rounded-full text-[11px] font-label-caps text-stone-600 hover:border-primary transition-colors cursor-pointer"
+                >HEARTBREAK</span
+              >
+              <span
+                class="px-3 py-1 bg-stone-50 border border-stone-100 rounded-full text-[11px] font-label-caps text-stone-600 hover:border-primary transition-colors cursor-pointer"
+                >TO MY EX</span
+              >
+              <span
+                class="px-3 py-1 bg-stone-50 border border-stone-100 rounded-full text-[11px] font-label-caps text-stone-600 hover:border-primary transition-colors cursor-pointer"
+                >MISSING YOU</span
+              >
+              <span
+                class="px-3 py-1 bg-stone-50 border border-stone-100 rounded-full text-[11px] font-label-caps text-stone-600 hover:border-primary transition-colors cursor-pointer"
+                >DEATH</span
+              >
+              <span
+                class="px-3 py-1 bg-stone-50 border border-stone-100 rounded-full text-[11px] font-label-caps text-stone-600 hover:border-primary transition-colors cursor-pointer"
+                >CLOSURE</span
+              >
+              <span
+                class="px-3 py-1 bg-stone-50 border border-stone-100 rounded-full text-[11px] font-label-caps text-stone-600 hover:border-primary transition-colors cursor-pointer"
+                >NEW BEGINNINGS</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Suggested Writers Horizontal Scroll -->
+      <section class="mt-20">
+        <h3 class="font-headline-md mb-8">Voices You Might Recognize</h3>
+        <div class="flex gap-6 overflow-x-auto pb-8 -mx-2 px-2 scroll-smooth no-scrollbar">
+          <!-- Writer Card 1 -->
+          <div
+            class="flex-none w-64 bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group border border-stone-100"
+          >
+            <div class="h-[70px] bg-stone-900 flex items-center justify-center p-2">
+              <p class="text-[8px] text-stone-500 leading-none opacity-40 font-serif">
+                I NEVER TOLD YOU HOW MUCH I LOVED THE WAY YOU SAID MY NAME IN THE MORNING BEFORE THE
+                COFFEE WAS READY AND THE WORLD STARTED CALLING FOR US
+              </p>
+            </div>
+            <div class="px-5 pb-5 flex flex-col items-center -mt-8">
+              <div
+                class="w-16 h-16 rounded-full border-4 border-white overflow-hidden bg-stone-100 shadow-sm mb-3"
+              >
+                <img
+                  class="w-full h-full object-cover"
+                  data-alt="Writer profile portrait with warm bokeh background"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwMUvEJVKfNFEtfVEHOF4-LVxA7HljcRIX-Fh3qAeq9ZNM1sM5hKUE5G-g73KqKZZXEFWuYpnk5g_S_nG2fQz6T_wLayA6dZW0i2DUR2xzVYjQ22UsWV6Esbmy9hdtyL2fK9Nzg20Jp1uA5NjKo2UjtkxXkxArfhbaMB8h0_qkU6kaueMHViIbDkT09z-rDQvHjZlz8pVIALFCwmzCXTpTSO2re5fGtvjO-H8fwA3iiQXOpZj2pHrFwVKy1mZEy8xKKg8T-MeFT-k"
+                />
+              </div>
+              <p class="font-bold text-stone-900">Velvet_Words</p>
+              <p class="text-[10px] text-stone-400 font-label-caps mb-4">MEMBER SINCE 2021</p>
+              <button
+                class="w-full py-2 bg-primary text-white text-[11px] font-label-caps rounded-full hover:opacity-90 transition-opacity"
+              >
+                FOLLOW
+              </button>
+            </div>
+          </div>
+          <!-- Writer Card 2 -->
+          <div
+            class="flex-none w-64 bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group border border-stone-100"
+          >
+            <div class="h-[70px] bg-primary flex items-center justify-center p-2 overflow-hidden">
+              <p class="text-[8px] text-white leading-none opacity-40 font-serif uppercase">
+                The letters are still there. The box is still under the bed. The weight is still in
+                my chest. The silence is still deafening.
+              </p>
+            </div>
+            <div class="px-5 pb-5 flex flex-col items-center -mt-8">
+              <div
+                class="w-16 h-16 rounded-full border-4 border-white overflow-hidden bg-stone-100 shadow-sm mb-3"
+              >
+                <img
+                  class="w-full h-full object-cover"
+                  data-alt="Portrait of a contemplative male writer"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuClLEacRXQhDqx9etoU134eHFQ73jauFQjXr97-wOsZ-FqenCDs5SzLeqSZW_MjqexzVfG2vV6ezrvuhVvhhLzDsWXqCTtr7Zi_Si_mYOLJ90BRQrffSaYq-Uh9m47Z4msgI8raraLEam1Z2O38-ngLbe-Lc8l9oStwpXEVps9e2Q-sPS7MY587__N36zsWUg8I6XzlIQ98xNRcjEAvqnhkskIxcB9YKU7Vw66q_VPMxMeCOZZu_IxhBFz_9fOop0W_uxA-0RgHcWU"
+                />
+              </div>
+              <p class="font-bold text-stone-900">Postmark_Null</p>
+              <p class="text-[10px] text-stone-400 font-label-caps mb-4">MEMBER SINCE 2023</p>
+              <button
+                class="w-full py-2 bg-primary text-white text-[11px] font-label-caps rounded-full hover:opacity-90 transition-opacity"
+              >
+                FOLLOW
+              </button>
+            </div>
+          </div>
+          <!-- Writer Card 3 -->
+          <div
+            class="flex-none w-64 bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group border border-stone-100"
+          >
+            <div class="h-[70px] bg-stone-200 flex items-center justify-center p-2">
+              <p class="text-[8px] text-stone-400 leading-none opacity-60 font-serif">
+                WHERE DO ALL THE WORDS GO WHEN THEY AREN'T SPOKEN? DO THEY CLUSTER IN THE CORNERS OF
+                THE ROOM LIKE DUST BUNNIES OR DO THEY FLOAT AWAY?
+              </p>
+            </div>
+            <div class="px-5 pb-5 flex flex-col items-center -mt-8">
+              <div
+                class="w-16 h-16 rounded-full border-4 border-white overflow-hidden bg-stone-100 shadow-sm mb-3"
+              >
+                <img
+                  class="w-full h-full object-cover"
+                  data-alt="Portrait of a young woman looking off-camera thoughtfully"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqqXSp81g92ky-RceNuhlTK9jv9GBn9_w9Hm9tEvnVh31M2ILKeA2Bhv6HqPrF3EkWjr3-m554R079TF4C3IHNyyfd4MyE-MpyS45mvQYYHjGzUPj-aWaowSBgyeGo6b7mgaR6ZrRRANDQwXJIgkXYRQnwfTI0LYTs7HQ4JdwO_wto5LyDw0l1ByN9NXmiBVy3TBavQbhwE9vYVZ1EFd2PKvuabG3r6ImWQR-gqw1u6-JDBl6c0d3FO9QozaxykopUS0RtqmuZaRM"
+                />
+              </div>
+              <p class="font-bold text-stone-900">Ink_Stains_01</p>
+              <p class="text-[10px] text-stone-400 font-label-caps mb-4">MEMBER SINCE 2022</p>
+              <button
+                class="w-full py-2 bg-primary text-white text-[11px] font-label-caps rounded-full hover:opacity-90 transition-opacity"
+              >
+                FOLLOW
+              </button>
+            </div>
+          </div>
+          <!-- Writer Card 4 -->
+          <div
+            class="flex-none w-64 bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group border border-stone-100"
+          >
+            <div class="h-[70px] bg-[#EAE2D5] flex items-center justify-center p-2">
+              <p class="text-[8px] text-stone-800 leading-none opacity-30 font-serif">
+                TUESDAY. 4:12 PM. THE RAIN IS HITTING THE WINDOW AND I AM THINKING ABOUT THE WAY YOU
+                USED TO DRINK TEA WITH TOO MUCH HONEY.
+              </p>
+            </div>
+            <div class="px-5 pb-5 flex flex-col items-center -mt-8">
+              <div
+                class="w-16 h-16 rounded-full border-4 border-white overflow-hidden bg-stone-100 shadow-sm mb-3"
+              >
+                <img
+                  class="w-full h-full object-cover"
+                  data-alt="Portrait of an older man with glasses"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuC60V22KofsYZdn4L3qOrGcUzQxaEX6u-oR8QAWXiB1L22GW9NPKq7DSHHL1eqDtTutOCUJUQ63sl405xjSbzNb3nM0kE6QaPHPygL2eP3j1QTWfeobXx0qnFTxb6Q-IfpqCFzHe60PTUQSF00_cxSRy0LOKVi-NL-P7F7FJNDTwhpjrZ2seMMC69rd4g0aCC00Nt3WU4pfc70ZON6EkZNMsRNyt7J1dcPkvMtktQyR2NgzkOiDc78YjUCqHoourZJeqycmSeCGXAI"
+                />
+              </div>
+              <p class="font-bold text-stone-900">Old_Soul_Archives</p>
+              <p class="text-[10px] text-stone-400 font-label-caps mb-4">MEMBER SINCE 2020</p>
+              <button
+                class="w-full py-2 bg-primary text-white text-[11px] font-label-caps rounded-full hover:opacity-90 transition-opacity"
+              >
+                FOLLOW
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <!-- BottomNavBar (Mobile Only) -->
+    <nav
+      class="md:hidden fixed bottom-0 left-0 w-full bg-white/90 dark:bg-stone-950/90 backdrop-blur-md border-t border-stone-100 dark:border-stone-800 shadow-[0_-4px_20px_rgba(26,26,24,0.06)] z-50 flex justify-around items-center px-4 py-3 pb-safe-offset-2"
+    >
+      <a
+        class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-600"
+        href="#"
+      >
+        <span class="material-symbols-outlined">auto_stories</span>
+        <span class="font-serif text-[11px] font-medium tracking-wide">Home</span>
+      </a>
+      <a
+        class="flex flex-col items-center justify-center text-[#FF6B2B] scale-110 translate-y-[-2px] transition-transform duration-200"
+        href="#"
+      >
+        <span class="material-symbols-outlined">search</span>
+        <span class="font-serif text-[11px] font-medium tracking-wide">Explore</span>
+      </a>
+      <a
+        class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-600"
+        href="#"
+      >
+        <div class="bg-primary-container p-2 rounded-full -mt-8 shadow-lg text-white">
+          <span class="material-symbols-outlined">edit_note</span>
+        </div>
+        <span class="font-serif text-[11px] font-medium tracking-wide mt-1">Write</span>
+      </a>
+      <a
+        class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-600"
+        href="#"
+      >
+        <span class="material-symbols-outlined">inventory_2</span>
+        <span class="font-serif text-[11px] font-medium tracking-wide">Library</span>
+      </a>
+    </nav>
+    <!-- Floating Action Button (Desktop Only) -->
+    <button
+      class="hidden md:flex fixed bottom-8 right-8 w-14 h-14 bg-primary text-white rounded-full items-center justify-center shadow-xl hover:scale-110 transition-transform group"
+    >
+      <span class="material-symbols-outlined">edit_note</span>
+      <span
+        class="absolute right-full mr-4 bg-stone-900 text-white text-xs px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
+        >Write a letter</span
+      >
+    </button>
+  </body>
+</html>
