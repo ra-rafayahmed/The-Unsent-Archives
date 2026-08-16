@@ -46,7 +46,20 @@ CI runs exactly these, plus `npm run build` for the frontend and a
 | change a Mongo schema or trigger   | `backend/models/*` and update `docs/schema.md` / `features.md` |
 | add a page or component            | `frontend/src/pages/*` or `src/components/*` plus a `*.test.jsx` next to it |
 | add an env var                     | `backend/config/index.js`, `backend/.env.example`, README table, `docker-compose.yml` |
-| add a dependency                   | `npm install` in the right package and commit the lockfile   |
+| add a dependency                   | `npm install` in the right package and commit the lockfile — then run `npx -y npm@10 install --package-lock-only` before committing (see note below) |
+
+## Lockfile gotcha (Windows + npm 11)
+
+npm 11 on Windows writes a lockfile that omits the peer deps of some
+platform-optional packages (`@emnapi/*` via `@napi-rs/wasm-runtime`); `npm ci`
+on Linux/CI then fails with "package.json and package-lock.json are not in
+sync". After any `npm install`, normalise the lockfile with:
+
+```bash
+npx -y npm@10 install --package-lock-only --ignore-scripts
+```
+
+The result is a superset that both npm 10 and 11 accept.
 
 ## Testing conventions
 
