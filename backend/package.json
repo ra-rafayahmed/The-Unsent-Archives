@@ -20,7 +20,6 @@
     "joi": "^17.13.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.3.4",
-    "morgan": "^1.10.0",
     "multer": "^2.1.1",
     "pino": "^10.3.1",
     "pino-http": "^11.0.0"
