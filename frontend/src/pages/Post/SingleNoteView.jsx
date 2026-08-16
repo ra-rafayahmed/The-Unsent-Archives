@@ -4,42 +4,7 @@ import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import { getPostTextStyle } from "../../utils/postStyle";
 import ReportDialog from "../../components/ReportDialog";
-
-const hexToRgb = (hex = "") => {
-  const v = String(hex || "").replace("#", "");
-  if (!/^[0-9a-fA-F]{6}$/.test(v)) return null;
-  return {
-    r: parseInt(v.slice(0, 2), 16),
-    g: parseInt(v.slice(2, 4), 16),
-    b: parseInt(v.slice(4, 6), 16),
-  };
-};
-
-const getLuminance = (hex) => {
-  const rgb = hexToRgb(hex);
-  if (!rgb) return 1;
-  return (0.2126 * rgb.r + 0.7152 * rgb.g + 0.0722 * rgb.b) / 255;
-};
-
-const lighten = (hex, amount) => {
-  const rgb = hexToRgb(hex);
-  if (!rgb) return hex;
-  const m = (c) => Math.round(c + (255 - c) * amount);
-  return `rgb(${m(rgb.r)}, ${m(rgb.g)}, ${m(rgb.b)})`;
-};
-
-const darken = (hex, amount) => {
-  const rgb = hexToRgb(hex);
-  if (!rgb) return hex;
-  const m = (c) => Math.round(c * (1 - amount));
-  return `rgb(${m(rgb.r)}, ${m(rgb.g)}, ${m(rgb.b)})`;
-};
-
-const rgba = (hex, a) => {
-  const rgb = hexToRgb(hex);
-  if (!rgb) return `rgba(0,0,0,${a})`;
-  return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${a})`;
-};
+import { buildNoteTheme } from "../../utils/color";
 
 const SingleNoteView = () => {
   const { id } = useParams();
@@ -128,23 +93,10 @@ const SingleNoteView = () => {
 
   const postTextStyle = useMemo(() => getPostTextStyle(post?.style || {}), [post]);
 
-  const noteBg = post?.style?.background || "#fbf6e9";
-  const isDarkTheme = useMemo(() => getLuminance(noteBg) < 0.4, [noteBg]);
-
-  const themeVars = useMemo(() => {
-    const text = post?.style?.textColor || (isDarkTheme ? "#f5ecd8" : "#1c130a");
-    return {
-      "--note-bg": noteBg,
-      "--note-text": text,
-      "--note-surface": isDarkTheme ? lighten(noteBg, 0.06) : darken(noteBg, 0.03),
-      "--note-surface-soft": isDarkTheme ? lighten(noteBg, 0.12) : darken(noteBg, 0.06),
-      "--note-border": isDarkTheme ? rgba("#ffffff", 0.12) : rgba("#000000", 0.1),
-      "--note-muted": isDarkTheme ? rgba("#f5ecd8", 0.62) : rgba("#1c130a", 0.55),
-      "--note-accent": isDarkTheme ? "#e7b35a" : "#9a3412",
-      "--note-glow-a": isDarkTheme ? rgba(noteBg, 0.55) : rgba("#f1c97a", 0.45),
-      "--note-glow-b": isDarkTheme ? rgba("#e7b35a", 0.18) : rgba("#d2521a", 0.18),
-    };
-  }, [noteBg, isDarkTheme, post?.style?.textColor]);
+  const { isDark: isDarkTheme, vars: themeVars } = useMemo(
+    () => buildNoteTheme(post?.style?.background, post?.style?.textColor),
+    [post?.style?.background, post?.style?.textColor]
+  );
 
   useEffect(() => {
     if (!audioRef.current || spotifyTrackId) return;
