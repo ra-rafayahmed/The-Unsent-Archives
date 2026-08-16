@@ -40,7 +40,7 @@ jobs:
         env:
           CI: true
           MONGOMS_DOWNLOAD_DIR: ${{ github.workspace }}/.mongodb-binaries
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: backend-coverage
@@ -65,14 +65,14 @@ jobs:
       - run: npm run lint
       - run: npm run format:check
       - run: npm run test:coverage
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: frontend-coverage
           path: frontend/coverage/lcov.info
           retention-days: 7
       - run: npm run build
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: frontend-dist
           path: frontend/dist
