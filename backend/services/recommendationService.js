@@ -15,6 +15,7 @@
 
 const mongoose = require("mongoose");
 const { Post, Reaction, Follow, User, Recommendation } = require("../models");
+const logger = require("../utils/logger");
 
 // -- Tuning constants ------------------------------------------------------
 
@@ -218,7 +219,7 @@ const refreshRecommendations = async (userId, limit = DEFAULT_LIMIT) => {
       { upsert: true, setDefaultsOnInsert: true }
     );
   } catch (err) {
-    console.error("[recs] failed to persist recommendation cache:", err.message);
+    logger.warn({ err }, "[recs] failed to persist recommendation cache");
   }
 
   return hydrateRanked(ranked);
@@ -328,7 +329,7 @@ const logEngagement = async (userId, postId, engagement) => {
 
     await profile.save();
   } catch (err) {
-    console.error("[recs] logEngagement failed:", err.message);
+    logger.warn({ err }, "[recs] logEngagement failed");
   }
 };
 

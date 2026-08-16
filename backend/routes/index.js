@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
+router.use("/health", require("./healthRoutes"));
 router.use("/auth", require("./authRoutes"));
 router.use("/users", require("./userRoutes"));
 router.use("/posts", require("./postRoutes"));

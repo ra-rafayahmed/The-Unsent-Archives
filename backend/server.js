@@ -1,5 +1,6 @@
 const app = require("./app");
 const config = require("./config");
+const logger = require("./utils/logger");
 const { connectDB } = require("./models/connection");
 
 let server;
@@ -8,7 +9,7 @@ async function startServer() {
   await connectDB();
   
   server = app.listen(config.port, () => {
-    console.log(`🚀 Server running in ${config.env} mode on port ${config.port}`);
+    logger.info({ env: config.env, port: config.port }, "Server started");
   });
 }
 
@@ -16,8 +17,7 @@ startServer();
 
 // Handle unhandled promise rejections
 process.on("unhandledRejection", (err) => {
-  console.error("❌ UNHANDLED REJECTION! 💥 Shutting down...");
-  console.error(err.name, err.message);
+  logger.fatal({ err }, "Unhandled promise rejection — shutting down");
   if (server) {
     server.close(() => {
       process.exit(1);
@@ -29,7 +29,6 @@ process.on("unhandledRejection", (err) => {
 
 // Handle uncaught exceptions
 process.on("uncaughtException", (err) => {
-  console.error("❌ UNCAUGHT EXCEPTION! 💥 Shutting down...");
-  console.error(err.name, err.message);
+  logger.fatal({ err }, "Uncaught exception — shutting down");
   process.exit(1);
 });

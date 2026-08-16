@@ -2,6 +2,7 @@ const { Collection, Post, AnalyticsEvent } = require("../models");
 const asyncHandler = require("../utils/asyncHandler");
 const ApiError = require("../utils/ApiError");
 const RecommendationService = require("../services/recommendationService");
+const logger = require("../utils/logger");
 
 // @desc    Create a collection
 // @route   POST /api/collections
@@ -153,7 +154,9 @@ const addPost = asyncHandler(async (req, res, next) => {
     postId: postId,
     actorId: req.user.id,
     eventType: "save",
-  }).catch(console.error);
+  }).catch((err) =>
+    logger.warn({ err, postId, userId: req.user.id }, "failed to log save analytics event")
+  );
 
   // Feed the recommender
   RecommendationService.logEngagement(req.user.id, postId, "save");

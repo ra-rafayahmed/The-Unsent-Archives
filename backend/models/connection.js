@@ -4,6 +4,7 @@
 // Models are registered via the barrel import so all indexes are created on startup.
 
 const mongoose = require("mongoose");
+const logger = require("../utils/logger");
 
 // Import models so Mongoose registers them (and creates indexes) on connect
 require("../models");
@@ -11,7 +12,7 @@ require("../models");
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
-  console.error("❌  MONGODB_URI is not set in your .env file");
+  logger.fatal("MONGODB_URI is not set in your .env file");
   process.exit(1);
 }
 
@@ -31,20 +32,20 @@ const options = {
 async function connectDB() {
   try {
     await mongoose.connect(MONGODB_URI, options);
-    console.log("🍃 Connected to MongoDB Atlas");
+    logger.info("Connected to MongoDB");
   } catch (err) {
-    console.error("❌  MongoDB connection error:", err.message);
+    logger.fatal({ err }, "MongoDB connection error");
     process.exit(1);
   }
 }
 
 // ── Event listeners ───────────────────────────────────────────────────────────
 mongoose.connection.on("disconnected", () =>
-  console.warn("⚠️   MongoDB disconnected — attempting reconnect...")
+  logger.warn("MongoDB disconnected — attempting reconnect...")
 );
 
 mongoose.connection.on("reconnected", () =>
-  console.log("🔁 MongoDB reconnected")
+  logger.info("MongoDB reconnected")
 );
 
 // ── Graceful shutdown ─────────────────────────────────────────────────────────
@@ -52,7 +53,7 @@ mongoose.connection.on("reconnected", () =>
 // SIGTERM (e.g. from a Docker/Heroku shutdown signal).
 async function closeDB() {
   await mongoose.connection.close();
-  console.log("🛑 MongoDB connection closed");
+  logger.info("MongoDB connection closed");
 }
 
 process.on("SIGINT",  async () => { await closeDB(); process.exit(0); });

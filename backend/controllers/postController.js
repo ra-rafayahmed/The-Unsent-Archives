@@ -2,6 +2,7 @@ const { Post, Tag, SearchIndex, Collection, Reaction, AnalyticsEvent } = require
 const asyncHandler = require("../utils/asyncHandler");
 const ApiError = require("../utils/ApiError");
 const RecommendationService = require("../services/recommendationService");
+const logger = require("../utils/logger");
 
 const normalizePostInput = (body) => {
   const normalizedVisibility = body.visibility === "anonymous" ? "public" : body.visibility;
@@ -130,7 +131,9 @@ const getPost = asyncHandler(async (req, res, next) => {
     actorId: req.user ? req.user.id : null,
     eventType: "view",
     ipHash: req.ip, // Hashing IP is better for privacy
-  }).catch(console.error);
+  }).catch((err) =>
+    logger.warn({ err, postId: post._id, userId: req.user?.id }, "failed to log view analytics event")
+  );
   
   // Atomically increment views
   Post.findByIdAndUpdate(post._id, { $inc: { viewCount: 1 } }).exec();
@@ -265,7 +268,9 @@ const repost = asyncHandler(async (req, res, next) => {
     postId: originalPost._id,
     actorId: req.user.id,
     eventType: "share",
-  }).catch(console.error);
+  }).catch((err) =>
+    logger.warn({ err, postId: originalPost._id, userId: req.user.id }, "failed to log share analytics event")
+  );
 
   res.status(201).json({
     status: "success",
