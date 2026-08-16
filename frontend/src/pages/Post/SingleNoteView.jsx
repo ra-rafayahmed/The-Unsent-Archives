@@ -5,72 +5,31 @@ import { useAuth } from "../../context/AuthContext";
 import { getPostTextStyle } from "../../utils/postStyle";
 import ReportDialog from "../../components/ReportDialog";
 import { buildNoteTheme } from "../../utils/color";
+import usePost from "../../hooks/usePost";
 
 const SingleNoteView = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user, isAuthenticated, isAdmin } = useAuth();
   const audioRef = useRef(null);
-  const [post, setPost] = useState(null);
+  const {
+    post,
+    reactions,
+    collections,
+    selectedCollectionId,
+    setSelectedCollectionId,
+    isFollowing,
+    setIsFollowing,
+    loadError,
+    reloadPost,
+    reloadReactions,
+  } = usePost(id, user);
   const [commentsText, setCommentsText] = useState("");
   const [commentAnon, setCommentAnon] = useState(false);
-  const [reactions, setReactions] = useState({});
-  const [collections, setCollections] = useState([]);
-  const [selectedCollectionId, setSelectedCollectionId] = useState("");
-  const [isFollowing, setIsFollowing] = useState(false);
   const [isFollowLoading, setIsFollowLoading] = useState(false);
   const [reporting, setReporting] = useState(false);
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
-
-  const loadPost = async () => {
-    const { data } = await api.get(`/posts/${id}`);
-    setPost(data.post);
-  };
-
-  const loadReactions = async () => {
-    const { data } = await api.get(`/posts/${id}/reactions`);
-    setReactions(data.reactions || {});
-  };
-
-  const loadCollections = async () => {
-    if (!user?.id) return;
-
-    const { data } = await api.get(`/users/${user.id}/collections`);
-    const rows = data.collections || [];
-    setCollections(rows);
-    if (rows.length > 0 && !selectedCollectionId) {
-      setSelectedCollectionId(rows[0]._id);
-    }
-  };
-
-  useEffect(() => {
-    loadPost();
-    loadReactions();
-    api.post("/events", { type: "view", postId: id }).catch(() => {});
-  }, [id]);
-
-  useEffect(() => {
-    loadCollections().catch(() => {});
-  }, [user?.id]);
-
-  useEffect(() => {
-    const loadFollowStatus = async () => {
-      if (!user?.id || !post?.authorId?._id || post?.isAnonymous || post.authorId._id === user.id) {
-        setIsFollowing(false);
-        return;
-      }
-
-      try {
-        const { data } = await api.get(`/users/${post.authorId._id}/follow/status`);
-        setIsFollowing(Boolean(data.isFollowing));
-      } catch {
-        setIsFollowing(false);
-      }
-    };
-
-    loadFollowStatus();
-  }, [post?.authorId?._id, post?.isAnonymous, user?.id]);
 
   const image = useMemo(() => post?.media?.find((m) => m.type === "image"), [post]);
   const audio = useMemo(() => post?.media?.find((m) => m.type === "audio"), [post]);
@@ -127,7 +86,7 @@ const SingleNoteView = () => {
 
     try {
       await api.post(`/posts/${id}/reactions`, { type });
-      await loadReactions();
+      await reloadReactions();
     } catch (err) {
       setError(err?.response?.data?.message || "Could not update reaction");
     }
@@ -144,7 +103,7 @@ const SingleNoteView = () => {
       });
       setCommentsText("");
       setCommentAnon(false);
-      await loadPost();
+      await reloadPost();
     } catch (err) {
       setError(err?.response?.data?.message || "Could not add comment");
     }
@@ -155,7 +114,7 @@ const SingleNoteView = () => {
     setError("");
     try {
       await api.delete(`/posts/${id}/comments/${commentId}`);
-      await loadPost();
+      await reloadPost();
     } catch (err) {
       setError(err?.response?.data?.message || "Could not delete comment");
     }
@@ -209,7 +168,9 @@ const SingleNoteView = () => {
     navigate("/");
   };
 
-  if (!post) return <div className="panel">Loading note...</div>;
+  if (!post) {
+    return <div className="panel">{loadError ? loadError : "Loading note..."}</div>;
+  }
 
   const visibleAuthorName = post?.isAnonymous ? "Anonymous" : post?.authorId?.username;
   const visibleAuthorId = post?.isAnonymous ? null : post?.authorId?._id;
