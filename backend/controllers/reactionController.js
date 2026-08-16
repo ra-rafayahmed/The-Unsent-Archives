@@ -22,10 +22,9 @@ const addReaction = asyncHandler(async (req, res, next) => {
   }
 
   try {
+    // Reaction.post("save") atomically bumps Post.reactionCount — do not
+    // increment it here as well or every reaction is counted twice.
     const newReaction = await Reaction.create({ postId, userId, type });
-
-    // Atomically increment post reaction count
-    await Post.findByIdAndUpdate(postId, { $inc: { reactionCount: 1 } });
 
     // Feed the recommender (best-effort, fire-and-forget)
     RecommendationService.logEngagement(userId, postId, "react");
