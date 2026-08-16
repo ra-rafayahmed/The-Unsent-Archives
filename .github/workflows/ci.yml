@@ -35,9 +35,15 @@ jobs:
           MONGOMS_DISABLE_POSTINSTALL: "1"
       - run: npm run lint
       - run: npm run format:check
-      - run: npm test
+      - run: npm run test:coverage
         env:
           CI: true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-coverage
+          path: backend/coverage/lcov.info
+          retention-days: 7
 
   frontend:
     name: Frontend · lint, test, build
@@ -55,7 +61,13 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run format:check
-      - run: npm test
+      - run: npm run test:coverage
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: frontend-coverage
+          path: frontend/coverage/lcov.info
+          retention-days: 7
       - run: npm run build
       - uses: actions/upload-artifact@v4
         with:

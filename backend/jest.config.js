@@ -7,6 +7,11 @@ module.exports = {
   testTimeout: 30000,
   clearMocks: true,
   coverageDirectory: "coverage",
+  coverageReporters: ["text", "text-summary", "lcov"],
+  // Ratchet: raise these as coverage grows; CI fails below them.
+  coverageThreshold: {
+    global: { statements: 60, branches: 40, functions: 50, lines: 60 },
+  },
   collectCoverageFrom: [
     "controllers/**/*.js",
     "middleware/**/*.js",

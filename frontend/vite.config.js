@@ -19,6 +19,8 @@ export default defineConfig({
       reporter: ["text", "lcov"],
       include: ["src/**/*.{js,jsx}"],
       exclude: ["src/main.jsx", "src/test/**"],
+      // Ratchet: raise these as coverage grows; CI fails below them.
+      thresholds: { statements: 35, branches: 28, functions: 30, lines: 35 },
     },
   },
 });
