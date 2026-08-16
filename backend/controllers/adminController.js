@@ -3,8 +3,6 @@ const {
   User,
   Post,
   Reaction,
-  AnalyticsEvent,
-  SearchIndex,
   Collection,
   Follow,
   MediaAsset,

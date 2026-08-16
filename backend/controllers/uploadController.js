@@ -13,7 +13,7 @@ const uploadMedia = asyncHandler(async (req, res, next) => {
     return next(new ApiError(400, "File is required"));
   }
 
-  const safeOriginal = (req.file.originalname || "upload").replace(/[^\w.\-]/g, "_");
+  const safeOriginal = (req.file.originalname || "upload").replace(/[^\w.-]/g, "_");
   const ext = path.extname(safeOriginal).toLowerCase();
   const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`;
 
@@ -32,7 +32,8 @@ const uploadMedia = asyncHandler(async (req, res, next) => {
 
   // Strip the binary out of the response payload so we don't ship Mongo Buffer
   // metadata back to the browser.
-  const { data: _omit, ...assetView } = asset.toObject();
+  const assetView = asset.toObject();
+  delete assetView.data;
 
   res.status(201).json({
     status: "success",

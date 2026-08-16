@@ -8,7 +8,11 @@
     "dev": "nodemon server.js",
     "test": "cross-env NODE_ENV=test jest --runInBand",
     "test:watch": "cross-env NODE_ENV=test jest --runInBand --watch",
-    "test:coverage": "cross-env NODE_ENV=test jest --runInBand --coverage"
+    "test:coverage": "cross-env NODE_ENV=test jest --runInBand --coverage",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -25,11 +29,17 @@
     "pino-http": "^11.0.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "cross-env": "^10.1.0",
+    "eslint": "^10.8.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-jest": "^29.16.1",
+    "globals": "^17.11.0",
     "jest": "^30.4.2",
     "mongodb-memory-server": "^11.2.0",
     "nodemon": "^3.1.0",
     "pino-pretty": "^13.1.3",
+    "prettier": "^3.9.6",
     "supertest": "^7.2.2"
   },
   "engines": {

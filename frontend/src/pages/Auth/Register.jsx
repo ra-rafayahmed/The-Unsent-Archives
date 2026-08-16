@@ -2,10 +2,9 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import DoodleBackdrop from "../../components/decor/Doodles";
-import api from "../../api/axios";
 
 const Register = () => {
-  const { register, updateCurrentUser } = useAuth();
+  const { register } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ username: "", email: "", password: "" });
   const [error, setError] = useState("");
@@ -36,7 +35,9 @@ const Register = () => {
     if (!backupCodes) return;
     try {
       await navigator.clipboard.writeText(backupCodes.join("\n"));
-    } catch {}
+    } catch {
+      // clipboard unavailable — user can still download the codes
+    }
   };
 
   const downloadCodes = () => {

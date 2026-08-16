@@ -340,7 +340,9 @@ const AdminDashboard = () => {
                 onClick={async () => {
                   try {
                     await navigator.clipboard.writeText(issued.resetLink);
-                  } catch {}
+                  } catch {
+                    // clipboard unavailable (insecure context / permissions) — ignore
+                  }
                 }}
               >
                 Copy link
