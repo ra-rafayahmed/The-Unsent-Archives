@@ -55,3 +55,6 @@ backend/uploads/
 
 # Test artifacts
 coverage/
+
+# CI cache of the mongodb-memory-server binary
+.mongodb-binaries/

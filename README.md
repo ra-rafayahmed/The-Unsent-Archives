@@ -32,8 +32,8 @@ docker compose up --build
 | API     | http://localhost:5000/api/health |
 | MongoDB | mongodb://localhost:27017 (internal to the compose network) |
 
-Set `JWT_SECRET` / `ADMIN_EMAILS` in your shell (or a root `.env`) before
-`docker compose up` to override the dev defaults.
+Copy [`.env.example`](.env.example) to `.env` at the repo root to set
+`JWT_SECRET` / `ADMIN_EMAILS` for compose; otherwise dev defaults are used.
 
 ### Option B — Local Node
 
@@ -77,7 +77,16 @@ All backend settings come from environment variables (see
 
 ## Scripts
 
-Run from `backend/` or `frontend/` respectively.
+From the **repo root** (fans out to both packages):
+
+```bash
+npm run install:all   # npm ci in backend/ and frontend/
+npm test              # backend Jest suite, then frontend Vitest suite
+npm run lint          # ESLint both
+npm run build         # vite build
+```
+
+Or run from `backend/` or `frontend/` respectively:
 
 | Script                  | backend                                          | frontend                       |
 | ----------------------- | ------------------------------------------------ | ------------------------------ |
