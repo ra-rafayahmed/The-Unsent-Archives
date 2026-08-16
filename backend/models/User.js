@@ -1,5 +1,9 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const config = require("../config");
+
+// Cheap rounds under test keep the suite fast; production stays at 12.
+const BCRYPT_ROUNDS = config.env === "test" ? 4 : 12;
 
 const backupCodeSchema = new mongoose.Schema(
   {
@@ -71,7 +75,7 @@ const userSchema = new mongoose.Schema(
 // TRIGGER: pre-save → hash password whenever it changes
 userSchema.pre("save", async function (next) {
   if (!this.isModified("passwordHash")) return next();
-  this.passwordHash = await bcrypt.hash(this.passwordHash, 12);
+  this.passwordHash = await bcrypt.hash(this.passwordHash, BCRYPT_ROUNDS);
   next();
 });
 
