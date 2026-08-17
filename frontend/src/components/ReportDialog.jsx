@@ -1,5 +1,6 @@
 import { useState } from "react";
 import api from "../api/axios";
+import { toUserMessage } from "../utils/apiError";
 
 const REASONS = [
   { id: "spam", label: "Spam or scam" },
@@ -28,7 +29,7 @@ const ReportDialog = ({ open, onClose, targetType, targetId, targetLabel }) => {
       await api.post("/reports", { targetType, targetId, reason, note });
       setDone(true);
     } catch (err) {
-      setError(err?.response?.data?.message || "Could not file report");
+      setError(toUserMessage(err, "Could not file report"));
     } finally {
       setBusy(false);
     }

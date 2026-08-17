@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import api from "../api/axios";
+import { toUserMessage } from "../utils/apiError";
 
 /**
  * Loads everything the single-note page needs for post `id`:
@@ -46,7 +47,7 @@ export default function usePost(id, user) {
     let cancelled = false;
     setError("");
     Promise.all([reloadPost(), reloadReactions()]).catch((err) => {
-      if (!cancelled) setError(err?.response?.data?.message || "Could not load this note");
+      if (!cancelled) setError(toUserMessage(err, "Could not load this note"));
     });
     api.post("/events", { type: "view", postId: id }).catch(() => {});
     return () => {

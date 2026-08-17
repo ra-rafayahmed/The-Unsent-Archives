@@ -4,6 +4,7 @@ import Masonry from "react-masonry-css";
 import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import NoteCard from "../../components/cards/NoteCard";
+import { toUserMessage } from "../../utils/apiError";
 
 const CollectionDetailPage = () => {
   const { id } = useParams();
@@ -21,7 +22,7 @@ const CollectionDetailPage = () => {
       const { data } = await api.get(`/collections/${id}`);
       setCollection(data.collection);
     } catch (err) {
-      setError(err?.response?.data?.message || "Failed to load collection");
+      setError(toUserMessage(err, "Failed to load collection"));
     } finally {
       setLoading(false);
     }
@@ -48,7 +49,7 @@ const CollectionDetailPage = () => {
       }));
       setStatus("Post removed from collection");
     } catch (err) {
-      setError(err?.response?.data?.message || "Could not remove post");
+      setError(toUserMessage(err, "Could not remove post"));
     }
   };
 

@@ -6,6 +6,7 @@ import { getPostTextStyle } from "../../utils/postStyle";
 import ReportDialog from "../../components/ReportDialog";
 import { buildNoteTheme } from "../../utils/color";
 import usePost from "../../hooks/usePost";
+import { toUserMessage } from "../../utils/apiError";
 
 const SingleNoteView = () => {
   const { id } = useParams();
@@ -88,7 +89,7 @@ const SingleNoteView = () => {
       await api.post(`/posts/${id}/reactions`, { type });
       await reloadReactions();
     } catch (err) {
-      setError(err?.response?.data?.message || "Could not update reaction");
+      setError(toUserMessage(err, "Could not update reaction"));
     }
   };
 
@@ -105,7 +106,7 @@ const SingleNoteView = () => {
       setCommentAnon(false);
       await reloadPost();
     } catch (err) {
-      setError(err?.response?.data?.message || "Could not add comment");
+      setError(toUserMessage(err, "Could not add comment"));
     }
   };
 
@@ -116,7 +117,7 @@ const SingleNoteView = () => {
       await api.delete(`/posts/${id}/comments/${commentId}`);
       await reloadPost();
     } catch (err) {
-      setError(err?.response?.data?.message || "Could not delete comment");
+      setError(toUserMessage(err, "Could not delete comment"));
     }
   };
 
@@ -129,7 +130,7 @@ const SingleNoteView = () => {
       await api.post(`/collections/${selectedCollectionId}/posts`, { postId: id });
       setStatus("Saved to collection");
     } catch (err) {
-      setError(err?.response?.data?.message || "Could not save post to collection");
+      setError(toUserMessage(err, "Could not save post to collection"));
     }
   };
 
@@ -150,7 +151,7 @@ const SingleNoteView = () => {
         setIsFollowing(true);
       }
     } catch (err) {
-      setError(err?.response?.data?.message || "Could not update follow status");
+      setError(toUserMessage(err, "Could not update follow status"));
     } finally {
       setIsFollowLoading(false);
     }

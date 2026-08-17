@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import api from "../api/axios";
+import { toUserMessage } from "../utils/apiError";
 
 /**
  * Data + mutations for the profile page of `userId`.
@@ -58,7 +59,7 @@ export default function useUserProfile(userId, { own = false, viewer = null } = 
           setIsFollowing(false);
         }
       } catch (err) {
-        if (!cancelled) setLoadError(err?.response?.data?.message || "Could not load profile");
+        if (!cancelled) setLoadError(toUserMessage(err, "Could not load profile"));
       }
     };
 
@@ -93,7 +94,7 @@ export default function useUserProfile(userId, { own = false, viewer = null } = 
         setStatus("Profile updated");
         return data.user;
       } catch (err) {
-        setError(err?.response?.data?.message || "Could not update profile");
+        setError(toUserMessage(err, "Could not update profile"));
         return null;
       }
     },
@@ -113,7 +114,7 @@ export default function useUserProfile(userId, { own = false, viewer = null } = 
         setStatus("Avatar uploaded. Save profile to apply.");
         return data.asset?.url || "";
       } catch (err) {
-        setError(err?.response?.data?.message || "Avatar upload failed");
+        setError(toUserMessage(err, "Avatar upload failed"));
         return "";
       } finally {
         setIsUploadingAvatar(false);
@@ -142,7 +143,7 @@ export default function useUserProfile(userId, { own = false, viewer = null } = 
         setStatus("Following");
       }
     } catch (err) {
-      setError(err?.response?.data?.message || "Could not update follow status");
+      setError(toUserMessage(err, "Could not update follow status"));
     } finally {
       setIsFollowLoading(false);
     }

@@ -90,8 +90,14 @@ describe("CollectionDetailPage", () => {
     expect(await screen.findByText("Collection is private")).toBeInTheDocument();
   });
 
-  it("falls back to a generic load error", async () => {
+  it("says the server is unreachable when the request never got a response", async () => {
     api.get.mockRejectedValueOnce(new Error("offline"));
+    render();
+    expect(await screen.findByText(/Cannot reach the server/)).toBeInTheDocument();
+  });
+
+  it("falls back to a generic load error when an HTTP failure carries no detail", async () => {
+    api.get.mockRejectedValueOnce({ response: { status: 400, data: {} } });
     render();
     expect(await screen.findByText("Failed to load collection")).toBeInTheDocument();
   });
@@ -167,10 +173,10 @@ describe("CollectionDetailPage", () => {
     expect(screen.getByText("2 notes")).toBeInTheDocument();
   });
 
-  it("falls back to a generic removal error", async () => {
+  it("falls back to a generic removal error when the failure carries no detail", async () => {
     authState.user = { id: "o1" };
     mockGet(collection());
-    api.delete.mockRejectedValueOnce(new Error("boom"));
+    api.delete.mockRejectedValueOnce({ response: { status: 400, data: {} } });
     render();
     await screen.findByText("note p1");
 
