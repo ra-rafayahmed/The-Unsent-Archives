@@ -6,6 +6,31 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.2.0] — 2026-08-17
+
+### Added
+
+- `App.test.jsx` and `NoteComments` tests; 33 frontend suites / 289 tests.
+- CI annotates the failing vitest output on the commit, so a CI-only failure
+  is diagnosable without downloading the job log.
+
+### Changed
+
+- **Requires Node 22 LTS.** jsdom 30 (via undici 8) needs
+  `worker_threads.markAsUncloneable`, absent on Node 20; CI, both Dockerfiles
+  and every `engines` field move to 22, which also clears GitHub's Node 20
+  deprecation warning.
+- Dependencies: mongoose 8 -> 9, joi 17 -> 18, dotenv 16 -> 17, jsdom 29 -> 30,
+  nginx 1.27 -> 1.31. Mongoose 9 no longer passes `next` to schema middleware,
+  so the five hooks in User, Post, Report and Recommendation were migrated to
+  the async/return form.
+- Routes are code-split with `React.lazy`: the entry bundle drops from
+  743.98 kB to 248.84 kB (gzip 220.74 -> 79.03 kB) and no chunk trips Vite's
+  500 kB warning — recharts now loads only with `/analytics`.
+- `NoteComments` extracted from `SingleNoteView` (423 -> 348 LOC).
+
+[1.2.0]: https://github.com/ra-rafayahmed/The-Unsent-Archives/compare/v1.1.0...v1.2.0
+
 ## [1.1.0] — 2026-08-17
 
 Test breadth, observability, boundary validation, and a batch of bug fixes
@@ -110,5 +135,5 @@ buildable and testable from a fresh clone.
 - `npm audit fix` applied in both packages (0 known vulnerabilities).
 
 [1.0.0]: https://github.com/ra-rafayahmed/The-Unsent-Archives/releases/tag/v1.0.0
-[Unreleased]: https://github.com/ra-rafayahmed/The-Unsent-Archives/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/ra-rafayahmed/The-Unsent-Archives/compare/v1.2.0...HEAD
 [1.1.0]: https://github.com/ra-rafayahmed/The-Unsent-Archives/compare/v1.0.0...v1.1.0
