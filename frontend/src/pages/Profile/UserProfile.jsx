@@ -1,100 +1,57 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import Masonry from "react-masonry-css";
-import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import NoteCard from "../../components/cards/NoteCard";
 import ReportDialog from "../../components/ReportDialog";
+import useUserProfile from "../../hooks/useUserProfile";
 
 const UserProfile = ({ own = false }) => {
   const { id } = useParams();
   const { user, updateCurrentUser } = useAuth();
   const userId = own ? user?.id : id;
 
-  const [profile, setProfile] = useState(null);
-  const [posts, setPosts] = useState([]);
-  const [publicCollections, setPublicCollections] = useState([]);
+  const {
+    profile,
+    posts,
+    collections: publicCollections,
+    isFollowing,
+    isFollowLoading,
+    isUploadingAvatar,
+    status,
+    error,
+    loadError,
+    clearMessages,
+    deletePost: deletePostById,
+    saveProfile: persistProfile,
+    uploadAvatar: uploadAvatarFile,
+    toggleFollow,
+  } = useUserProfile(userId, { own, viewer: user });
+
   const [reporting, setReporting] = useState(false);
-  const [form, setForm] = useState({
-    bio: "",
-    displayName: "",
-    avatarUrl: "",
-  });
+  const [form, setForm] = useState({ bio: "", displayName: "", avatarUrl: "" });
   const [editing, setEditing] = useState(false);
-  const [status, setStatus] = useState("");
-  const [error, setError] = useState("");
-  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
-  const [isFollowing, setIsFollowing] = useState(false);
-  const [isFollowLoading, setIsFollowLoading] = useState(false);
 
+  // Seed the edit form whenever a (new) profile arrives.
   useEffect(() => {
-    const load = async () => {
-      if (!userId) return;
-
-      const [pRes, postRes, colRes] = await Promise.all([
-        api.get(`/users/${userId}`),
-        api.get(`/users/${userId}/posts`),
-        api.get(`/users/${userId}/collections`),
-      ]);
-
-      setProfile(pRes.data.user);
-      setPosts(postRes.data.posts || []);
-      setPublicCollections(
-        (colRes.data.collections || []).filter((c) => c.visibility === "public" || own)
-      );
-      setForm({
-        bio: pRes.data.user.bio || "",
-        displayName: pRes.data.user.profile?.displayName || "",
-        avatarUrl: pRes.data.user.avatarUrl || "",
-      });
-
-      if (!own && user?.id && pRes.data.user?._id !== user.id) {
-        try {
-          const followRes = await api.get(`/users/${userId}/follow/status`);
-          setIsFollowing(Boolean(followRes.data.isFollowing));
-        } catch {
-          setIsFollowing(false);
-        }
-      }
-    };
-
-    load();
-  }, [userId, own, user?.id]);
+    if (!profile) return;
+    setForm({
+      bio: profile.bio || "",
+      displayName: profile.profile?.displayName || "",
+      avatarUrl: profile.avatarUrl || "",
+    });
+  }, [profile]);
 
   const deletePost = async (postId) => {
     if (!window.confirm("Delete this post?")) return;
-    await api.delete(`/posts/${postId}`);
-    setPosts((prev) => prev.filter((p) => p._id !== postId));
+    await deletePostById(postId);
   };
 
   const saveProfile = async () => {
-    if (!userId) return;
-
-    setError("");
-    setStatus("");
-
-    try {
-      const payload = {
-        bio: form.bio,
-        avatarUrl: form.avatarUrl,
-        profile: {
-          ...(profile?.profile || {}),
-          displayName: form.displayName,
-        },
-      };
-
-      const { data } = await api.put(`/users/${userId}`, payload);
-      setProfile(data.user);
-
-      if (own) {
-        updateCurrentUser(data.user);
-      }
-
-      setEditing(false);
-      setStatus("Profile updated");
-    } catch (err) {
-      setError(err?.response?.data?.message || "Could not update profile");
-    }
+    const updated = await persistProfile(form);
+    if (!updated) return;
+    if (own) updateCurrentUser(updated);
+    setEditing(false);
   };
 
   const cancelEdit = () => {
@@ -104,63 +61,19 @@ const UserProfile = ({ own = false }) => {
       avatarUrl: profile?.avatarUrl || "",
     });
     setEditing(false);
-    setError("");
-    setStatus("");
+    clearMessages();
   };
 
   const uploadAvatar = async (event) => {
     const file = event.target.files?.[0];
-    if (!file) return;
-
-    setError("");
-    setStatus("");
-    setIsUploadingAvatar(true);
-
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      const { data } = await api.post("/uploads", formData);
-
-      setForm((prev) => ({ ...prev, avatarUrl: data.asset?.url || "" }));
-      setStatus("Avatar uploaded. Save profile to apply.");
-    } catch (err) {
-      setError(err?.response?.data?.message || "Avatar upload failed");
-    } finally {
-      setIsUploadingAvatar(false);
-      event.target.value = "";
-    }
+    const url = await uploadAvatarFile(file);
+    if (url) setForm((prev) => ({ ...prev, avatarUrl: url }));
+    event.target.value = "";
   };
 
-  const toggleFollow = async () => {
-    if (!userId || !user?.id || own) return;
-
-    setError("");
-    setStatus("");
-    setIsFollowLoading(true);
-
-    try {
-      if (isFollowing) {
-        await api.delete(`/users/${userId}/follow`);
-        setIsFollowing(false);
-        setProfile((prev) => ({
-          ...prev,
-          followerCount: Math.max(0, (prev?.followerCount || 0) - 1),
-        }));
-        setStatus("Unfollowed");
-      } else {
-        await api.post(`/users/${userId}/follow`);
-        setIsFollowing(true);
-        setProfile((prev) => ({ ...prev, followerCount: (prev?.followerCount || 0) + 1 }));
-        setStatus("Following");
-      }
-    } catch (err) {
-      setError(err?.response?.data?.message || "Could not update follow status");
-    } finally {
-      setIsFollowLoading(false);
-    }
-  };
-
-  if (!profile) return <div className="panel">Loading profile...</div>;
+  if (!profile) {
+    return <div className="panel">{loadError ? loadError : "Loading profile..."}</div>;
+  }
 
   const displayName = profile.profile?.displayName || profile.username;
   const avatar = (editing ? form.avatarUrl : profile.avatarUrl) || "";
@@ -294,10 +207,11 @@ const UserProfile = ({ own = false }) => {
                     Cancel
                   </button>
                 </div>
-                {status ? <p className="manuscript-flash">{status}</p> : null}
-                {error ? <p className="error">{error}</p> : null}
               </div>
             ) : null}
+
+            {status ? <p className="manuscript-flash">{status}</p> : null}
+            {error ? <p className="error">{error}</p> : null}
           </div>
         </div>
 
