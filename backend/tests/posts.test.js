@@ -226,3 +226,119 @@ describe("comments", () => {
     expect((await Post.findById(post._id)).comments).toHaveLength(0);
   });
 });
+
+describe("tag usage counters", () => {
+  const usage = async () =>
+    Object.fromEntries((await Tag.find({}).sort({ slug: 1 })).map((t) => [t.slug, t.usageCount]));
+
+  const publish = (token, body) =>
+    request(app)
+      .post("/api/posts")
+      .set(authHeader(token))
+      .send({ content: "note", ...body });
+
+  it("counts each tag once when a post is created", async () => {
+    const { token } = await registerUser();
+    await publish(token, { tags: ["grief", "rain"] });
+    expect(await usage()).toEqual({ grief: 1, rain: 1 });
+  });
+
+  it("does not inflate counts when a post is saved again with the same tags", async () => {
+    const { token } = await registerUser();
+    const created = await publish(token, { tags: ["grief", "rain"] });
+
+    await request(app)
+      .put(`/api/posts/${created.body.post._id}`)
+      .set(authHeader(token))
+      .send({ tags: ["grief", "rain"] });
+
+    expect(await usage()).toEqual({ grief: 1, rain: 1 });
+  });
+
+  it("moves the count when a tag is swapped out on update", async () => {
+    const { token } = await registerUser();
+    const created = await publish(token, { tags: ["grief", "rain"] });
+
+    await request(app)
+      .put(`/api/posts/${created.body.post._id}`)
+      .set(authHeader(token))
+      .send({ tags: ["rain", "hope"] });
+
+    // grief dropped, rain kept, hope added.
+    expect(await usage()).toEqual({ grief: 0, rain: 1, hope: 1 });
+  });
+
+  it("decrements exactly once when the post is deleted", async () => {
+    const { token } = await registerUser();
+    const created = await publish(token, { tags: ["grief", "rain"] });
+
+    await request(app).delete(`/api/posts/${created.body.post._id}`).set(authHeader(token));
+
+    // The controller cascade and the Post deleteOne hook must not both subtract.
+    expect(await usage()).toEqual({ grief: 0, rain: 0 });
+  });
+
+  it("keeps counts correct across two posts sharing a tag", async () => {
+    const a = await registerUser();
+    const b = await registerUser();
+    const first = await publish(a.token, { tags: ["grief"] });
+    await publish(b.token, { tags: ["grief"] });
+    expect(await usage()).toEqual({ grief: 2 });
+
+    await request(app).delete(`/api/posts/${first.body.post._id}`).set(authHeader(a.token));
+    expect(await usage()).toEqual({ grief: 1 });
+  });
+});
+
+describe("followers-only visibility", () => {
+  const setup = async () => {
+    const author = await registerUser();
+    const follower = await registerUser();
+    const stranger = await registerUser();
+    const post = await createPost(author.user.id, {
+      content: "for my readers",
+      visibility: "followers",
+    });
+    await request(app).post(`/api/users/${author.user.id}/follow`).set(authHeader(follower.token));
+    return { author, follower, stranger, post };
+  };
+
+  it("lets the author read their own followers-only post", async () => {
+    const { author, post } = await setup();
+    const res = await request(app).get(`/api/posts/${post._id}`).set(authHeader(author.token));
+    expect(res.status).toBe(200);
+    expect(res.body.post.content).toBe("for my readers");
+  });
+
+  it("lets a follower read it", async () => {
+    const { follower, post } = await setup();
+    const res = await request(app).get(`/api/posts/${post._id}`).set(authHeader(follower.token));
+    expect(res.status).toBe(200);
+  });
+
+  it("hides it from a signed-in reader who does not follow the author", async () => {
+    const { stranger, post } = await setup();
+    const res = await request(app).get(`/api/posts/${post._id}`).set(authHeader(stranger.token));
+    expect(res.status).toBe(403);
+    expect(res.body.message).toMatch(/follower/i);
+  });
+
+  it("hides it from anonymous visitors", async () => {
+    const { post } = await setup();
+    const res = await request(app).get(`/api/posts/${post._id}`);
+    expect(res.status).toBe(403);
+  });
+
+  it("stops hiding it once the reader follows the author", async () => {
+    const { author, stranger, post } = await setup();
+    expect(
+      (await request(app).get(`/api/posts/${post._id}`).set(authHeader(stranger.token))).status
+    ).toBe(403);
+
+    await request(app).post(`/api/users/${author.user.id}/follow`).set(authHeader(stranger.token));
+
+    expect(
+      (await request(app).get(`/api/posts/${post._id}`).set(authHeader(stranger.token))).status
+    ).toBe(200);
+  });
+});

@@ -1,4 +1,4 @@
-const { Post, Tag, SearchIndex, Collection, Reaction, AnalyticsEvent } = require("../models");
+const { Post, Tag, SearchIndex, AnalyticsEvent, Follow } = require("../models");
 const asyncHandler = require("../utils/asyncHandler");
 const ApiError = require("../utils/ApiError");
 const RecommendationService = require("../services/recommendationService");
@@ -21,33 +21,57 @@ const normalizePostInput = (body) => {
   };
 };
 
-// Helper to process tags: creates missing tags, increments counts, returns ObjectIds and Slugs
+// Resolve tag names to documents, creating any that are new. Deliberately does
+// NOT touch usageCount — call applyTagUsageDelta with the before/after id sets
+// so an edit cannot inflate the counter every time a post is saved.
 const processTags = async (tagNames) => {
   if (!tagNames || tagNames.length === 0) return { tagIds: [], tagSlugs: [] };
 
-  // Clean names to lower, hyphenated slugs
-  const slugs = tagNames.map((name) => name.toLowerCase().trim().replace(/\s+/g, "-"));
+  // Clean names to lower, hyphenated slugs, dropping duplicates so one post
+  // cannot count the same tag twice.
+  const seen = new Set();
+  const pairs = [];
+  for (const raw of tagNames) {
+    const slug = String(raw).toLowerCase().trim().replace(/\s+/g, "-");
+    if (!slug || seen.has(slug)) continue;
+    seen.add(slug);
+    pairs.push({ slug, name: String(raw).trim() });
+  }
 
   const tagIds = [];
-
-  for (let i = 0; i < slugs.length; i++) {
-    const slug = slugs[i];
-    const name = tagNames[i].trim();
-
-    // Find or create tag
-    let tag = await Tag.findOne({ slug });
-
-    if (tag) {
-      tag.usageCount += 1;
-      await tag.save();
-    } else {
-      tag = await Tag.create({ name, slug, usageCount: 1 });
-    }
-
+  for (const { slug, name } of pairs) {
+    // Upsert so two concurrent posts introducing the same tag cannot collide.
+    const tag = await Tag.findOneAndUpdate(
+      { slug },
+      { $setOnInsert: { name, slug } },
+      { new: true, upsert: true, setDefaultsOnInsert: true }
+    );
     tagIds.push(tag._id);
   }
 
-  return { tagIds, tagSlugs: slugs };
+  return { tagIds, tagSlugs: pairs.map((p) => p.slug) };
+};
+
+/**
+ * Move usageCount by the difference between two tag id sets: +1 for tags the
+ * post gained, -1 for tags it lost, nothing for tags it kept.
+ */
+const applyTagUsageDelta = async (previousIds = [], nextIds = []) => {
+  const before = new Set(previousIds.map(String));
+  const after = new Set(nextIds.map(String));
+
+  const added = [...after].filter((id) => !before.has(id));
+  const removed = [...before].filter((id) => !after.has(id));
+
+  await Promise.all([
+    added.length ? Tag.updateMany({ _id: { $in: added } }, { $inc: { usageCount: 1 } }) : null,
+    removed.length
+      ? Tag.updateMany(
+          { _id: { $in: removed }, usageCount: { $gt: 0 } },
+          { $inc: { usageCount: -1 } }
+        )
+      : null,
+  ]);
 };
 
 // @desc    Create a post
@@ -58,6 +82,7 @@ const createPost = asyncHandler(async (req, res, next) => {
   const { visibility, isAnonymous, tags } = normalizePostInput(req.body);
 
   const { tagIds, tagSlugs } = await processTags(tags);
+  await applyTagUsageDelta([], tagIds);
 
   const post = await Post.create({
     authorId: req.user.id,
@@ -105,7 +130,16 @@ const getPost = asyncHandler(async (req, res, next) => {
     return next(new ApiError(403, "This post is private"));
   }
 
-  // TODO: Add logic for 'followers' visibility if needed
+  // followers-only posts are readable by the author and by accounts that
+  // follow them; anyone else (including anonymous visitors) is refused.
+  if (post.visibility === "followers" && !isOwner) {
+    const follows =
+      req.user && (await Follow.exists({ followerId: req.user.id, followeeId: post.authorId._id }));
+
+    if (!follows) {
+      return next(new ApiError(403, "This post is only visible to the author's followers"));
+    }
+  }
 
   const postObj = post.toObject();
 
@@ -185,11 +219,11 @@ const updatePost = asyncHandler(async (req, res, next) => {
     }
   });
 
-  // Handle tags update (complex: requires diffing and adjusting Tag usageCounts)
+  // Retag: diff against what the post carried before so counters track reality.
   if (req.body.tags !== undefined || req.body.tagSlugs !== undefined) {
-    // Extremely simplified for this scale: we don't decrement old tags here to save time,
-    // but in a production environment, you should $inc usageCount -1 for removed tags.
+    const previousIds = [...(post.tagIds || [])];
     const { tagIds, tagSlugs } = await processTags(normalizedInput.tags);
+    await applyTagUsageDelta(previousIds, tagIds);
     post.tagIds = tagIds;
     post.tagSlugs = tagSlugs;
   }
@@ -217,21 +251,10 @@ const deletePost = asyncHandler(async (req, res, next) => {
     return next(new ApiError(403, "You can only delete your own posts"));
   }
 
-  // Cascade Deletes & Cleanups in parallel
-  const cascadeOps = [
-    post.deleteOne(),
-    Reaction.deleteMany({ postId: post._id }),
-    AnalyticsEvent.deleteMany({ postId: post._id }),
-    SearchIndex.deleteOne({ postId: post._id }),
-    Collection.updateMany(
-      { postIds: post._id },
-      { $pull: { postIds: post._id }, $inc: { postCount: -1 } }
-    ),
-    // Decrement tag usage counts
-    Tag.updateMany({ _id: { $in: post.tagIds } }, { $inc: { usageCount: -1 } }),
-  ];
-
-  await Promise.all(cascadeOps);
+  // The Post post("deleteOne") hook owns the cascade (reactions, analytics,
+  // search index, collections, tag counters, reports). Repeating it here made
+  // the one non-idempotent step — $inc usageCount -1 — run twice per delete.
+  await post.deleteOne();
 
   res.status(200).json({
     status: "success",
