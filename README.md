@@ -10,7 +10,7 @@ Database Management Systems project around MongoDB: embedded vs referenced
 documents, denormalised counters, Mongoose hooks used as write triggers, and a
 recommender that keeps per-user affinity profiles.
 
-- **Backend** — Node 20 · Express 4 · Mongoose 8 · JWT auth · Joi validation · pino logging
+- **Backend** — Node 22 · Express 5 · Mongoose 9 · JWT auth · Joi validation · pino logging
 - **Frontend** — React 19 · Vite · react-router 7 · axios · recharts
 - **Tests** — Jest + Supertest + mongodb-memory-server (API) · Vitest + Testing Library (UI)
 - **Repo** — npm workspaces monorepo (`backend`, `frontend`) with a single root lockfile
@@ -44,7 +44,7 @@ docker compose up --build
 
 ### Option B — Local Node
 
-Prerequisites: Node **20+**, npm, and a MongoDB you can reach (local
+Prerequisites: Node **22+**, npm, and a MongoDB you can reach (local
 `mongod`, `docker run -p 27017:27017 mongo:7`, or an Atlas URI).
 
 ```bash

@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # Build context is the REPO ROOT (see docker-compose.yml) — npm workspaces.
-FROM node:20-alpine AS build
+FROM node:22-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 COPY frontend/package.json ./frontend/

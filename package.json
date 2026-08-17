@@ -4,7 +4,7 @@
   "private": true,
   "description": "The Unsent Archives — root scripts that fan out to backend/ and frontend/",
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "workspaces": [
     "backend",
