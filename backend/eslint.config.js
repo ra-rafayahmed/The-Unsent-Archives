@@ -25,6 +25,12 @@ module.exports = [
     files: ["tests/**/*.js"],
     ...jest.configs["flat/recommended"],
     languageOptions: { globals: { ...globals.node, ...globals.jest } },
+    rules: {
+      ...jest.configs["flat/recommended"].rules,
+      // Some suites assert through shared helpers; teach the rule about them
+      // instead of losing the check everywhere.
+      "jest/expect-expect": ["warn", { assertFunctionNames: ["expect", "expectValidationError"] }],
+    },
   },
   prettier,
 ];

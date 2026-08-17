@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
@@ -12,24 +12,25 @@ const CollectionsBoard = () => {
   const [error, setError] = useState("");
   const [creating, setCreating] = useState(false);
   const [loadError, setLoadError] = useState("");
+  const userId = user?.id;
 
-  const load = async () => {
-    if (!user?.id) return;
+  const load = useCallback(async () => {
+    if (!userId) return;
     // Without this catch a failed request left the board showing the "no
     // shelves yet" empty state, which reads as "you have none" rather than
     // "we could not load them".
     try {
-      const { data } = await api.get(`/users/${user.id}/collections`);
+      const { data } = await api.get(`/users/${userId}/collections`);
       setCollections(data.collections || []);
       setLoadError("");
     } catch (err) {
       setLoadError(toUserMessage(err, "Could not load your shelves"));
     }
-  };
+  }, [userId]);
 
   useEffect(() => {
     load();
-  }, [user?.id]);
+  }, [load]);
 
   const create = async () => {
     if (!name.trim()) return;

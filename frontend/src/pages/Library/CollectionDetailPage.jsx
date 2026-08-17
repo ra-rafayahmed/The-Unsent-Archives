@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Masonry from "react-masonry-css";
 import api from "../../api/axios";
@@ -14,7 +14,7 @@ const CollectionDetailPage = () => {
   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
 
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true);
     setError("");
 
@@ -26,11 +26,11 @@ const CollectionDetailPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     load();
-  }, [id]);
+  }, [load]);
 
   const isOwner = useMemo(() => {
     return Boolean(collection?.ownerId?._id && user?.id && collection.ownerId._id === user.id);

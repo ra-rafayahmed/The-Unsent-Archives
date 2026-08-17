@@ -28,7 +28,12 @@ export default [
       // React-Compiler-era rule; the codebase uses the conventional
       // "call an async loader from useEffect" pattern throughout.
       "react-hooks/set-state-in-effect": "off",
-      "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+      // AuthContext deliberately exports its useAuth hook next to the provider;
+      // every consumer imports it from there (and mocks that path in tests).
+      "react-refresh/only-export-components": [
+        "warn",
+        { allowConstantExport: true, allowExportNames: ["useAuth"] },
+      ],
       "no-unused-vars": ["error", { varsIgnorePattern: "^[A-Z_]", argsIgnorePattern: "^_" }],
     },
   },
