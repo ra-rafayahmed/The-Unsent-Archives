@@ -192,9 +192,26 @@ describe("PUT /api/admin/users/:id/suspend", () => {
     expect(login.status).toBe(200);
   });
 
-  // NOTE: the endpoint does not validate `suspended`, so an empty body is read as
-  // "unsuspend" (Boolean(undefined) === false). Asserting the current behaviour.
-  it("treats a body without `suspended` as lifting the suspension", async () => {
+  it("rejects a body without `suspended` instead of lifting the suspension", async () => {
+    const admin = await registerAdmin();
+    const member = await registerUser();
+    await User.findByIdAndUpdate(member.user.id, { isSuspended: true, isActive: false });
+
+    for (const body of [{}, { suspend: true }, { suspended: "true" }, { suspended: 1 }]) {
+      const res = await request(app)
+        .put(`/api/admin/users/${member.user.id}/suspend`)
+        .set(authHeader(admin.token))
+        .send(body);
+      expect(res.status).toBe(400);
+      expect(res.body.message).toMatch(/suspended must be true or false/);
+    }
+
+    // The suspension must still be in place.
+    const stored = await User.findById(member.user.id).select("isSuspended isActive");
+    expect(stored).toMatchObject({ isSuspended: true, isActive: false });
+  });
+
+  it("lifts the suspension only when told to explicitly", async () => {
     const admin = await registerAdmin();
     const member = await registerUser();
     await User.findByIdAndUpdate(member.user.id, { isSuspended: true, isActive: false });
@@ -202,7 +219,7 @@ describe("PUT /api/admin/users/:id/suspend", () => {
     const res = await request(app)
       .put(`/api/admin/users/${member.user.id}/suspend`)
       .set(authHeader(admin.token))
-      .send({});
+      .send({ suspended: false });
     expect(res.status).toBe(200);
     expect(res.body.user).toMatchObject({ isSuspended: false, isActive: true });
   });

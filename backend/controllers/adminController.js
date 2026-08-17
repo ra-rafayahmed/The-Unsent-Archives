@@ -69,9 +69,16 @@ const setUserRole = asyncHandler(async (req, res, next) => {
 
 const suspendUser = asyncHandler(async (req, res, next) => {
   const { suspended } = req.body;
+
+  // Require the flag explicitly: Boolean(undefined) is false, so a missing or
+  // misspelled field used to silently LIFT a suspension.
+  if (typeof suspended !== "boolean") {
+    return next(new ApiError(400, "suspended must be true or false"));
+  }
+
   const user = await User.findByIdAndUpdate(
     req.params.id,
-    { isSuspended: Boolean(suspended), isActive: !suspended },
+    { isSuspended: suspended, isActive: !suspended },
     { new: true }
   ).select("_id username email role isActive isSuspended");
 
@@ -163,7 +170,6 @@ const listReports = asyncHandler(async (req, res) => {
     .populate("resolvedBy", "username");
 
   // Hydrate each report's target row with a snippet for the admin UI
-  const Post = require("../models").Post;
   const hydrated = await Promise.all(
     reports.map(async (r) => {
       const obj = r.toObject();
