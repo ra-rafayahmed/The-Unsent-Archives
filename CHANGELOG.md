@@ -6,6 +6,27 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.4.1] — 2026-08-18
+
+### Fixed
+
+- **Paginated results could repeat or drop a row.** Sorts that feed
+  `skip`/`limit` had no tiebreaker, so when the leading keys tied the order was
+  arbitrary between pages — most visibly in text search, where hits with equal
+  term frequency score identically. Every such sort (search, feed, followers,
+  tags, user posts, admin lists) now ends with `_id`. This also removes an
+  intermittently failing search test.
+
+### Changed
+
+- Root `npm test` / `test:coverage` invoke `jest` and `vitest` directly (both
+  resolve from the hoisted workspace bin) rather than delegating through
+  `npm run --workspaces`, and `test:backend` / `test:frontend` were added. The
+  per-workspace scripts are unchanged and CI exercises both paths.
+- README states the two-command clean-clone path explicitly.
+
+[1.4.1]: https://github.com/ra-rafayahmed/The-Unsent-Archives/compare/v1.4.0...v1.4.1
+
 ## [1.4.0] — 2026-08-18
 
 ### Added
@@ -190,5 +211,5 @@ buildable and testable from a fresh clone.
 - `npm audit fix` applied in both packages (0 known vulnerabilities).
 
 [1.0.0]: https://github.com/ra-rafayahmed/The-Unsent-Archives/releases/tag/v1.0.0
-[Unreleased]: https://github.com/ra-rafayahmed/The-Unsent-Archives/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/ra-rafayahmed/The-Unsent-Archives/compare/v1.4.1...HEAD
 [1.1.0]: https://github.com/ra-rafayahmed/The-Unsent-Archives/compare/v1.0.0...v1.1.0
