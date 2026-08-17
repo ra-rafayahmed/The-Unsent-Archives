@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const requestLogger = require("./middleware/requestLogger");
+const metricsCollector = require("./middleware/metricsCollector");
 const rateLimiter = require("./middleware/rateLimiter");
 const routes = require("./routes");
 const { errorHandler } = require("./middleware/errorHandler");
@@ -30,18 +31,21 @@ app.use(express.urlencoded({ extended: true }));
 // 2. Logging
 app.use(requestLogger);
 
-// 3. Rate Limiting
+// 3. Metrics (records every response, including rate-limited ones)
+app.use(metricsCollector);
+
+// 4. Rate Limiting
 app.use(rateLimiter.globalLimiter);
 
-// 4. API Routes
+// 5. API Routes
 app.use("/api", routes);
 
-// 5. 404 Handler for undefined routes
+// 6. 404 Handler for undefined routes
 app.use((req, res, next) => {
   next(new ApiError(404, `Route ${req.originalUrl} not found`));
 });
 
-// 6. Global Error Handler
+// 7. Global Error Handler
 app.use(errorHandler);
 
 module.exports = app;
