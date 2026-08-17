@@ -6,6 +6,30 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.4.0] — 2026-08-18
+
+### Added
+
+- Frontend type checking on the same opt-in `// @ts-check` ratchet as the
+  backend; `frontend/src/utils/**` is annotated and `npm run typecheck` runs
+  for both workspaces in CI.
+- `.devcontainer/` (Node 22, docker-in-docker, `npm ci` on create) for
+  one-click reproducible setup in VS Code / Codespaces.
+- `DEPENDENCIES.md` recording direct dependencies, currency and the two
+  deliberate pins (Node 22 for jsdom 30, TypeScript 6 for the JSDoc gate).
+
+### Fixed
+
+- Backend tests pin `ERROR_WEBHOOK_URL` empty, so a developer's real webhook
+  cannot receive a report from a failing test; a test asserts `fetch` is never
+  called. The suite touches no network beyond the mongod binary download.
+
+### Changed
+
+- mongoose 9.9.2 -> 9.9.3.
+
+[1.4.0]: https://github.com/ra-rafayahmed/The-Unsent-Archives/compare/v1.3.0...v1.4.0
+
 ## [1.3.0] — 2026-08-17
 
 ### Added
@@ -166,5 +190,5 @@ buildable and testable from a fresh clone.
 - `npm audit fix` applied in both packages (0 known vulnerabilities).
 
 [1.0.0]: https://github.com/ra-rafayahmed/The-Unsent-Archives/releases/tag/v1.0.0
-[Unreleased]: https://github.com/ra-rafayahmed/The-Unsent-Archives/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/ra-rafayahmed/The-Unsent-Archives/compare/v1.4.0...HEAD
 [1.1.0]: https://github.com/ra-rafayahmed/The-Unsent-Archives/compare/v1.0.0...v1.1.0
