@@ -47,24 +47,58 @@ image is Node 22 with Docker-in-Docker, and `npm ci` runs on create.
 
 ### Option B — Local Node
 
-Prerequisites: Node **22+**, npm, and a MongoDB you can reach (local
-`mongod`, `docker run -p 27017:27017 mongo:7`, or an Atlas URI).
+Prerequisites: Node **22+** and npm. Nothing else — not even a database, if all
+you want is to run the test suite.
 
 ```bash
-# 1. backend
-cd backend
-cp .env.example .env         # then edit MONGODB_URI / JWT_SECRET
-npm ci
-npm run dev                  # http://localhost:5000  (nodemon)
+git clone https://github.com/ra-rafayahmed/The-Unsent-Archives.git
+cd The-Unsent-Archives
+npm ci                       # installs BOTH workspaces (see note below)
+```
 
-# 2. frontend (new terminal)
-cd frontend
-npm ci
-npm run dev                  # http://localhost:5173
+> **One install, one lockfile.** This is an npm workspaces monorepo, so there
+> is a single `package-lock.json` at the root and `npm ci` there installs
+> `backend/` and `frontend/` together into a shared `node_modules`. There are
+> deliberately no per-package lockfiles — npm ignores them in a workspace and
+> they drift. Running `npm ci` from inside `backend/` does the same whole-repo
+> install anyway, so there is no reason to install twice.
+
+To run the app you also need a MongoDB (local `mongod`,
+`docker run -p 27017:27017 mongo:7`, or an Atlas URI):
+
+```bash
+cp backend/.env.example backend/.env   # then edit MONGODB_URI / JWT_SECRET
+npm run dev:backend                    # http://localhost:5000  (nodemon)
+npm run dev:frontend                   # http://localhost:5173  (new terminal)
 ```
 
 The frontend talks to `http://localhost:5000/api` by default; set
 `VITE_API_BASE_URL` to point elsewhere.
+
+## Running the tests
+
+The suite needs **no database, no services and no credentials**, so this works
+on a machine that has never seen the project:
+
+```bash
+npm ci && npm test
+```
+
+- **backend** — Jest + Supertest against an in-memory MongoDB
+  (`mongodb-memory-server` downloads the mongod binary once, ~100 MB, then
+  caches it under `.mongodb-binaries/`). `NODE_ENV=test` pins the JWT secret and
+  blanks `ERROR_WEBHOOK_URL`, so nothing leaves the process.
+- **frontend** — Vitest in jsdom, with `src/api/axios` mocked; no network.
+
+| Command                 | Runs                                   |
+| ----------------------- | -------------------------------------- |
+| `npm test`              | both suites (512 tests)                |
+| `npm run test:backend`  | Jest only                              |
+| `npm run test:frontend` | Vitest only                            |
+| `npm run test:coverage` | both, failing below the coverage gates |
+
+CI runs this exact two-command path on every push in a job called
+**Clean clone**, on a runner with no cache, so the claim above stays true.
 
 ---
 
@@ -101,24 +135,12 @@ npm run typecheck      # tsc --noEmit over @ts-check'd files
 npm run build          # vite build -> frontend/dist
 ```
 
-The root scripts invoke the runners directly (`jest`, `vitest`), so the whole
-project installs and tests with **two commands and no per-package steps**:
+The root scripts call `jest` and `vitest` directly (both resolve from the
+hoisted workspace bin), so there are no per-package steps. See
+[Running the tests](#running-the-tests) for what the suites need.
 
-```bash
-git clone https://github.com/ra-rafayahmed/The-Unsent-Archives.git
-cd The-Unsent-Archives
-npm ci && npm test
-```
-
-No database, no services, no credentials: the backend suite starts an in-memory
-MongoDB (the binary is downloaded once, ~100 MB, then cached) and the frontend
-suite runs in jsdom. CI runs this exact two-command path on every push in a
-job called **Clean clone**, on a runner with no cache.
-
-So the whole project installs and tests from a clean clone with just
-`npm ci && npm test` at the root — no per-package steps required.
-
-Or run from `backend/` or `frontend/` respectively:
+The same scripts also exist inside each workspace, if you prefer to run one
+package on its own:
 
 | Script                  | backend                                  | frontend               |
 | ----------------------- | ---------------------------------------- | ---------------------- |
