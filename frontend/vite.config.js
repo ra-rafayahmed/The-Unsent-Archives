@@ -20,6 +20,9 @@ export default defineConfig({
     // Never let an empty/failed collection pass as success.
     passWithNoTests: false,
     globals: true,
+    // On CI also emit GitHub Actions annotations so failures show up inline on
+    // the commit/PR instead of only inside the job log.
+    reporters: process.env.GITHUB_ACTIONS ? ["default", "github-actions"] : ["default"],
     setupFiles: ["./src/test/setup.js"],
     // The tests themselves are fast, but spinning up jsdom per file can take
     // seconds on a cold or busy machine; 5s (the default) flakes there.
