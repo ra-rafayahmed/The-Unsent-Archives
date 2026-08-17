@@ -98,13 +98,12 @@ describe("POST /api/events", () => {
     expect(res.status).toBe(400);
   });
 
-  // NOTE: the endpoint never checks that the post exists, so events can be logged
-  // against an id that was never a post. Asserting the current behaviour.
-  it("accepts an event for a postId that does not exist", async () => {
+  it("refuses to store an event for a postId that does not exist", async () => {
     const ghost = new mongoose.Types.ObjectId();
     const res = await request(app).post("/api/events").send({ postId: ghost, eventType: "view" });
-    expect(res.status).toBe(201);
-    expect(await AnalyticsEvent.countDocuments({ postId: ghost })).toBe(1);
+    expect(res.status).toBe(404);
+    // The route is open to unauthenticated clients, so nothing may be written.
+    expect(await AnalyticsEvent.countDocuments({ postId: ghost })).toBe(0);
   });
 
   // NOTE: analyticsController documents this endpoint as POST /api/analytics/events,

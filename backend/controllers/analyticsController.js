@@ -36,6 +36,13 @@ const logEvent = asyncHandler(async (req, res, next) => {
     return next(new ApiError(400, "postId and eventType/type are required"));
   }
 
+  // This route is open to unauthenticated clients, so refuse to write rows for
+  // ids that do not exist — otherwise anyone can grow the collection freely.
+  const postExists = await Post.exists({ _id: postId });
+  if (!postExists) {
+    return next(new ApiError(404, "Post not found"));
+  }
+
   // Let other controllers handle 'view' and 'save' and 'share' directly when those actions happen.
   // This endpoint is mostly useful for client-side explicit 'click' on external links, or 'report'
 
