@@ -7,9 +7,9 @@ process.env.ADMIN_EMAILS = "admin@example.com";
 // MONGODB_URI is set at runtime by tests/helpers/db.js (in-memory MongoDB).
 
 // Pin where mongodb-memory-server caches the mongod binary. Without this it
-// resolves the "project root" from cwd (which changes when tests are run via
-// the repo-root scripts) and re-downloads ~100 MB into a different folder.
+// resolves the "project root" from cwd (which changes when tests run via the
+// repo-root workspace scripts) and re-downloads ~100 MB each time. The repo
+// root is used rather than node_modules so the cache survives a reinstall.
 const path = require("path");
 process.env.MONGOMS_DOWNLOAD_DIR =
-  process.env.MONGOMS_DOWNLOAD_DIR ||
-  path.join(__dirname, "..", "..", "node_modules", ".cache", "mongodb-memory-server");
+  process.env.MONGOMS_DOWNLOAD_DIR || path.join(__dirname, "..", "..", "..", ".mongodb-binaries");

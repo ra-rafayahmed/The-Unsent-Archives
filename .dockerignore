@@ -1,0 +1,13 @@
+**/node_modules
+**/dist
+**/coverage
+.git
+.github
+.mongodb-binaries
+docs
+**/*.log
+**/.env
+**/.env.*
+!**/.env.example
+frontend/stitch_remix_of_the_unsent_archives_feed
+backend/uploads

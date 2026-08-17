@@ -5,7 +5,7 @@
 ```bash
 git clone https://github.com/ra-rafayahmed/The-Unsent-Archives.git
 cd The-Unsent-Archives
-npm ci        # root postinstall installs backend/ and frontend/ too
+npm ci        # npm workspaces: installs backend/ and frontend/ in one go
 npm test      # runs both suites
 ```
 
@@ -54,12 +54,23 @@ search tests`, `ci: cache npm`), then a blank line and a short body
 | add an env var                   | `backend/config/index.js`, `backend/.env.example`, README table, `docker-compose.yml`                                                                |
 | add a dependency                 | `npm install` in the right package and commit the lockfile — then run `npx -y npm@10 install --package-lock-only` before committing (see note below) |
 
-## Lockfile gotcha (Windows + npm 11)
+## Workspaces and the lockfile
 
-npm 11 on Windows writes a lockfile that omits the peer deps of some
-platform-optional packages (`@emnapi/*` via `@napi-rs/wasm-runtime`); `npm ci`
-on Linux/CI then fails with "package.json and package-lock.json are not in
-sync". After any `npm install`, normalise the lockfile with:
+This is an **npm workspaces** monorepo: `backend` and `frontend` are workspaces
+of the root package, and there is exactly **one** lockfile
+(`/package-lock.json`). Do not create per-package lockfiles. Install and script
+commands run from the root:
+
+```bash
+npm ci                              # both workspaces
+npm run lint  --workspace backend   # single workspace
+npm install <pkg> --workspace frontend
+```
+
+**Lockfile gotcha (Windows + npm 11):** npm 11 on Windows writes a lockfile
+that omits the peer deps of some platform-optional packages (`@emnapi/*` via
+`@napi-rs/wasm-runtime`); `npm ci` on Linux/CI then fails with "package.json
+and package-lock.json are not in sync". After any `npm install`, normalise it:
 
 ```bash
 npx -y npm@10 install --package-lock-only --ignore-scripts

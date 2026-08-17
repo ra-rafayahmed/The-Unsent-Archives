@@ -13,6 +13,7 @@ recommender that keeps per-user affinity profiles.
 - **Backend** — Node 20 · Express 4 · Mongoose 8 · JWT auth · Joi validation · pino logging
 - **Frontend** — React 19 · Vite · react-router 7 · axios · recharts
 - **Tests** — Jest + Supertest + mongodb-memory-server (API) · Vitest + Testing Library (UI)
+- **Repo** — npm workspaces monorepo (`backend`, `frontend`) with a single root lockfile
 
 ---
 
@@ -86,7 +87,7 @@ All backend settings come from environment variables (see
 From the **repo root** (fans out to both packages):
 
 ```bash
-npm ci                # installs root + backend + frontend (via postinstall)
+npm ci                # one install for both workspaces
 npm test              # backend Jest suite, then frontend Vitest suite
 npm run test:coverage # both suites with the coverage gate
 npm run lint          # ESLint both

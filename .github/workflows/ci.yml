@@ -14,32 +14,30 @@ jobs:
   backend:
     name: Backend · lint, test
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: backend/package-lock.json
+          cache-dependency-path: package-lock.json
       - name: Cache MongoDB binary for mongodb-memory-server
         uses: actions/cache@v4
         with:
           path: .mongodb-binaries
-          key: mongodb-binaries-${{ runner.os }}-${{ hashFiles('backend/package-lock.json') }}
+          key: mongodb-binaries-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
           restore-keys: mongodb-binaries-${{ runner.os }}-
+      # npm workspaces: one install at the root covers both packages.
       - run: npm ci
         env:
           MONGOMS_DISABLE_POSTINSTALL: "1"
       - run: npm audit --audit-level=high
-      - run: npm run lint
-      - run: npm run format:check
+      - run: npm run lint --workspace backend
+      - run: npm run format:check --workspace backend
       # Fails the build below the coverageThreshold in backend/jest.config.js
       # (statements 60 / branches 40 / functions 50 / lines 60).
       - name: Tests + coverage gate
-        run: npm run test:coverage
+        run: npm run test:coverage --workspace backend
         env:
           CI: true
           MONGOMS_DOWNLOAD_DIR: ${{ github.workspace }}/.mongodb-binaries
@@ -53,36 +51,48 @@ jobs:
   frontend:
     name: Frontend · lint, test, build
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: package-lock.json
       - run: npm ci
+        env:
+          MONGOMS_DISABLE_POSTINSTALL: "1"
       - run: npm audit --audit-level=high
-      - run: npm run lint
-      - run: npm run format:check
+      - run: npm run lint --workspace frontend
+      - run: npm run format:check --workspace frontend
       # Fails the build below coverage.thresholds in frontend/vite.config.js
       # (statements 44 / branches 37 / functions 38 / lines 44).
       - name: Tests + coverage gate
-        run: npm run test:coverage
+        run: npm run test:coverage --workspace frontend
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: frontend-coverage
           path: frontend/coverage/lcov.info
           retention-days: 7
-      - run: npm run build
+      - run: npm run build --workspace frontend
       - uses: actions/upload-artifact@v4
         with:
           name: frontend-dist
           path: frontend/dist
           retention-days: 7
+
+  clean-clone:
+    name: Clean clone · npm ci && npm test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      # No cache and no per-package steps: this job proves the documented
+      # two-command flow works on a machine that has never seen the project.
+      - run: npm ci
+      - run: npm test
 
   docker:
     name: Docker · compose build
