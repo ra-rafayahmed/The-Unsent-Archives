@@ -36,7 +36,10 @@ jobs:
       - run: npm audit --audit-level=high
       - run: npm run lint
       - run: npm run format:check
-      - run: npm run test:coverage
+      # Fails the build below the coverageThreshold in backend/jest.config.js
+      # (statements 60 / branches 40 / functions 50 / lines 60).
+      - name: Tests + coverage gate
+        run: npm run test:coverage
         env:
           CI: true
           MONGOMS_DOWNLOAD_DIR: ${{ github.workspace }}/.mongodb-binaries
@@ -64,7 +67,10 @@ jobs:
       - run: npm audit --audit-level=high
       - run: npm run lint
       - run: npm run format:check
-      - run: npm run test:coverage
+      # Fails the build below coverage.thresholds in frontend/vite.config.js
+      # (statements 44 / branches 37 / functions 38 / lines 44).
+      - name: Tests + coverage gate
+        run: npm run test:coverage
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -25,6 +25,12 @@ npm test
 CI runs exactly these, plus `npm run build` for the frontend and a
 `docker compose` smoke test. A PR must be green to merge.
 
+`npm run test:coverage` enforces minimum coverage (see `coverageThreshold` in
+`backend/jest.config.js` and `coverage.thresholds` in `frontend/vite.config.js`)
+and CI runs it, so a change that drops coverage below the floor fails the
+build. When a change pushes coverage meaningfully above a floor, raise that
+floor in the same PR — the numbers are a ratchet and should never go down.
+
 ## Commit discipline
 
 - **One change per commit.** A feature, a bug fix, a refactor, a formatting
@@ -34,19 +40,19 @@ CI runs exactly these, plus `npm run build` for the frontend and a
   `frontend/src/**/*.test.jsx`). Bug fixes start with a failing test.
 - **Message format:** `<area>: <imperative summary>` on the first line
   (`backend: fix reactionCount double-increment`, `frontend: add Explore
-  search tests`, `ci: cache npm`), then a blank line and a short body
-  explaining *why* when it isn't obvious.
+search tests`, `ci: cache npm`), then a blank line and a short body
+  explaining _why_ when it isn't obvious.
 - Prefer small PRs. Rebase on `main` rather than merge-committing.
 
 ## Where things go
 
-| I want to…                         | Touch                                                        |
-| ---------------------------------- | ------------------------------------------------------------ |
-| add an API endpoint                | `backend/routes/*`, `backend/controllers/*`, a Joi schema in `backend/validators/*`, and a test in `backend/tests/` |
-| change a Mongo schema or trigger   | `backend/models/*` and update `docs/schema.md` / `features.md` |
-| add a page or component            | `frontend/src/pages/*` or `src/components/*` plus a `*.test.jsx` next to it |
-| add an env var                     | `backend/config/index.js`, `backend/.env.example`, README table, `docker-compose.yml` |
-| add a dependency                   | `npm install` in the right package and commit the lockfile — then run `npx -y npm@10 install --package-lock-only` before committing (see note below) |
+| I want to…                       | Touch                                                                                                                                                |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| add an API endpoint              | `backend/routes/*`, `backend/controllers/*`, a Joi schema in `backend/validators/*`, and a test in `backend/tests/`                                  |
+| change a Mongo schema or trigger | `backend/models/*` and update `docs/schema.md` / `features.md`                                                                                       |
+| add a page or component          | `frontend/src/pages/*` or `src/components/*` plus a `*.test.jsx` next to it                                                                          |
+| add an env var                   | `backend/config/index.js`, `backend/.env.example`, README table, `docker-compose.yml`                                                                |
+| add a dependency                 | `npm install` in the right package and commit the lockfile — then run `npx -y npm@10 install --package-lock-only` before committing (see note below) |
 
 ## Lockfile gotcha (Windows + npm 11)
 
@@ -70,4 +76,4 @@ The result is a superset that both npm 10 and 11 accept.
   `vi.mock`, wrap router-dependent components with `renderWithRouter` from
   `src/test/utils.jsx`.
 - Don't assert on implementation details (class names, internal state)
-  unless that *is* the behaviour (e.g. the NoteCard variant class).
+  unless that _is_ the behaviour (e.g. the NoteCard variant class).

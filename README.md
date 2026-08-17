@@ -26,10 +26,10 @@ cd The-Unsent-Archives
 docker compose up --build
 ```
 
-| Service | URL                              |
-| ------- | -------------------------------- |
-| Web app | http://localhost:8080            |
-| API     | http://localhost:5000/api/health |
+| Service | URL                                                         |
+| ------- | ----------------------------------------------------------- |
+| Web app | http://localhost:8080                                       |
+| API     | http://localhost:5000/api/health                            |
 | MongoDB | mongodb://localhost:27017 (internal to the compose network) |
 
 Works with no configuration — compose supplies dev defaults and starts its own
@@ -94,18 +94,26 @@ npm run build         # vite build
 
 Or run from `backend/` or `frontend/` respectively:
 
-| Script                  | backend                                          | frontend                       |
-| ----------------------- | ------------------------------------------------ | ------------------------------ |
-| `npm run dev`           | API with nodemon                                 | Vite dev server                |
-| `npm start` / `build`   | `node server.js`                                 | `vite build` → `dist/`         |
-| `npm test`              | Jest + Supertest against in-memory Mongo         | Vitest (jsdom)                 |
-| `npm run test:coverage` | coverage report                                  | coverage report                |
-| `npm run lint`          | ESLint                                           | ESLint (react-hooks)           |
-| `npm run format:check`  | Prettier                                         | Prettier                       |
+| Script                  | backend                                  | frontend               |
+| ----------------------- | ---------------------------------------- | ---------------------- |
+| `npm run dev`           | API with nodemon                         | Vite dev server        |
+| `npm start` / `build`   | `node server.js`                         | `vite build` → `dist/` |
+| `npm test`              | Jest + Supertest against in-memory Mongo | Vitest (jsdom)         |
+| `npm run test:coverage` | coverage report                          | coverage report        |
+| `npm run lint`          | ESLint                                   | ESLint (react-hooks)   |
+| `npm run format:check`  | Prettier                                 | Prettier               |
 
 The backend test suite spins up **mongodb-memory-server**, so it needs no
 running database and no `.env` — `npm test` works from a fresh clone. (First
 run downloads a MongoDB binary, ~100 MB, cached afterwards.)
+
+**Coverage is gated.** `npm run test:coverage` exits non-zero below the floors
+configured in [`backend/jest.config.js`](backend/jest.config.js)
+(`coverageThreshold`: 60% statements / 40% branches / 50% functions / 60% lines)
+and [`frontend/vite.config.js`](frontend/vite.config.js)
+(`coverage.thresholds`: 44 / 37 / 38 / 44). CI runs it on every push, so
+coverage cannot silently regress. The floors are ratchets — raise them as
+suites grow, never lower them.
 
 ---
 
@@ -139,16 +147,16 @@ features.md         map of every DB-backed feature and trigger
 
 Everything is under `/api`. Full list: [`docs/api-endpoints.md`](docs/api-endpoints.md).
 
-| Area            | Routes                                                                        |
-| --------------- | ----------------------------------------------------------------------------- |
-| Health          | `GET /health`                                                                 |
-| Auth            | `/auth/register`, `/auth/login`, `/auth/me`, password reset, backup-code recovery |
-| Posts           | CRUD `/posts/:id`, `/posts/:id/comments`, `/posts/:id/reactions`, `/posts/:id/repost` |
-| Discovery       | `/feed`, `/feed/trending`, `/search`, `/tags`, `/recommendations`             |
-| Social          | `/users/:id`, `/follows`, `/collections`                                      |
-| Media           | `/uploads` (stored as binaries in MongoDB, streamed back from `/uploads/:id/file`) |
-| Moderation      | `/reports`, `/admin/*`                                                        |
-| Analytics       | `/posts/:id/analytics`, `/events`                                             |
+| Area       | Routes                                                                                |
+| ---------- | ------------------------------------------------------------------------------------- |
+| Health     | `GET /health`                                                                         |
+| Auth       | `/auth/register`, `/auth/login`, `/auth/me`, password reset, backup-code recovery     |
+| Posts      | CRUD `/posts/:id`, `/posts/:id/comments`, `/posts/:id/reactions`, `/posts/:id/repost` |
+| Discovery  | `/feed`, `/feed/trending`, `/search`, `/tags`, `/recommendations`                     |
+| Social     | `/users/:id`, `/follows`, `/collections`                                              |
+| Media      | `/uploads` (stored as binaries in MongoDB, streamed back from `/uploads/:id/file`)    |
+| Moderation | `/reports`, `/admin/*`                                                                |
+| Analytics  | `/posts/:id/analytics`, `/events`                                                     |
 
 Errors are always JSON: `{ status: "fail" | "error", statusCode, message }`.
 
