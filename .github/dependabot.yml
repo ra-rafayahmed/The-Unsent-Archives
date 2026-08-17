@@ -1,28 +1,58 @@
 version: 2
 updates:
+  # Backend npm package (backend/package.json + package-lock.json)
   - package-ecosystem: npm
     directory: /backend
     schedule:
       interval: weekly
+    open-pull-requests-limit: 5
+    labels: [dependencies, backend]
     groups:
+      # One PR for all safe updates; majors stay separate so they can be
+      # reviewed (and their breaking changes handled) one at a time.
       backend-minor-and-patch:
         update-types: [minor, patch]
+
+  # Frontend npm package (frontend/package.json + package-lock.json)
   - package-ecosystem: npm
     directory: /frontend
     schedule:
       interval: weekly
+    open-pull-requests-limit: 5
+    labels: [dependencies, frontend]
     groups:
       frontend-minor-and-patch:
         update-types: [minor, patch]
+
+  # Root package: scripts only, no dependencies — watched so it does not drift
+  # if one is ever added.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 2
+    labels: [dependencies]
+
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
+    open-pull-requests-limit: 3
+    labels: [dependencies, ci]
+    groups:
+      github-actions:
+        patterns: ["*"]
+
   - package-ecosystem: docker
     directory: /backend
     schedule:
       interval: weekly
+    open-pull-requests-limit: 2
+    labels: [dependencies, docker]
+
   - package-ecosystem: docker
     directory: /frontend
     schedule:
       interval: weekly
+    open-pull-requests-limit: 2
+    labels: [dependencies, docker]
