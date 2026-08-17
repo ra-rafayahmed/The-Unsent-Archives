@@ -32,6 +32,10 @@ jobs:
         env:
           MONGOMS_DISABLE_POSTINSTALL: "1"
       - run: npm audit --audit-level=high
+      # Root-level files (README, compose, workflows) live outside both
+      # workspaces and were previously never format-checked.
+      - name: Prettier (root-level files)
+        run: npx prettier --check "*.{json,md,yml,yaml}" ".github/**/*.{yml,yaml}"
       - run: npm run lint --workspace backend
       - run: npm run format:check --workspace backend
       # JSDoc-based checking: files opt in with `// @ts-check`, so the gate can

@@ -14,12 +14,15 @@
     "test": "npm run test --workspaces --if-present",
     "test:coverage": "npm run test:coverage --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
-    "format": "npm run format --workspaces --if-present",
-    "format:check": "npm run format:check --workspaces --if-present",
+    "format": "prettier --write \"*.{json,md,yml,yaml}\" \".github/**/*.{yml,yaml}\" && npm run format --workspaces --if-present",
+    "format:check": "prettier --check \"*.{json,md,yml,yaml}\" \".github/**/*.{yml,yaml}\" && npm run format:check --workspaces --if-present",
     "build": "npm run build --workspace frontend",
     "start": "npm run start --workspace backend",
     "dev:backend": "npm run dev --workspace backend",
     "dev:frontend": "npm run dev --workspace frontend",
     "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.6"
   }
 }
