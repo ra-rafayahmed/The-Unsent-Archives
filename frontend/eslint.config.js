@@ -36,5 +36,10 @@ export default [
     files: ["**/*.test.{js,jsx}", "src/test/**"],
     languageOptions: { globals: { ...globals.browser, ...globals.node } },
   },
+  {
+    // Build/tooling config runs in Node, not the browser.
+    files: ["*.config.js"],
+    languageOptions: { globals: { ...globals.node } },
+  },
   prettier,
 ];
