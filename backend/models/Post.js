@@ -85,7 +85,7 @@ postSchema.index({ tagSlugs: 1, createdAt: -1 }); // posts by tag
 postSchema.index({ content: "text", tagSlugs: "text" }); // full-text search
 
 // TRIGGER: pre-validate → normalize tag slugs (lowercase, kebab-case)
-postSchema.pre("validate", function (next) {
+postSchema.pre("validate", function () {
   if (Array.isArray(this.tagSlugs)) {
     this.tagSlugs = this.tagSlugs
       .filter(Boolean)
@@ -95,7 +95,6 @@ postSchema.pre("validate", function (next) {
   if (Array.isArray(this.comments) && this.comments.length > 500) {
     this.comments = this.comments.slice(-500);
   }
-  next();
 });
 
 // TRIGGER: post-save → keep the SearchIndex collection in sync with new

@@ -34,15 +34,10 @@ reportSchema.index({ reporterId: 1, targetType: 1, targetId: 1 }, { unique: fals
 
 // TRIGGER: post-save → increment the report counter on the target entity so
 // admin lists can sort by `reportCount` without an aggregation query.
-reportSchema.post("save", async function (doc, next) {
-  try {
-    if (doc.status !== "open") return next();
-    const Model = mongoose.model(doc.targetType === "user" ? "User" : "Post");
-    await Model.findByIdAndUpdate(doc.targetId, { $inc: { reportCount: 1 } });
-    next();
-  } catch (err) {
-    next(err);
-  }
+reportSchema.post("save", async function (doc) {
+  if (doc.status !== "open") return;
+  const Model = mongoose.model(doc.targetType === "user" ? "User" : "Post");
+  await Model.findByIdAndUpdate(doc.targetId, { $inc: { reportCount: 1 } });
 });
 
 module.exports = mongoose.model("Report", reportSchema);

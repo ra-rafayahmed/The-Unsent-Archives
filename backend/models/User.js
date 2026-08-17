@@ -73,18 +73,16 @@ const userSchema = new mongoose.Schema(
 );
 
 // TRIGGER: pre-save → hash password whenever it changes
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("passwordHash")) return next();
+userSchema.pre("save", async function () {
+  if (!this.isModified("passwordHash")) return;
   this.passwordHash = await bcrypt.hash(this.passwordHash, BCRYPT_ROUNDS);
-  next();
 });
 
 // TRIGGER: pre-save → keep email lowercased even on direct sets
-userSchema.pre("save", function (next) {
+userSchema.pre("save", function () {
   if (this.isModified("email") && this.email) {
     this.email = this.email.toLowerCase().trim();
   }
-  next();
 });
 
 // Instance method: compare password

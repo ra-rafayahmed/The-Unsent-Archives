@@ -69,14 +69,13 @@ const recommendationSchema = new Schema(
 // TRIGGER: pre-validate → cap engagement history so this doc can't grow forever.
 // We keep the most recent 500 events; older ones have already shaped the
 // tagInterests / followingTrend scores.
-recommendationSchema.pre("validate", function (next) {
+recommendationSchema.pre("validate", function () {
   if (Array.isArray(this.engagementHistory) && this.engagementHistory.length > 500) {
     this.engagementHistory = this.engagementHistory.slice(-500);
   }
   if (Array.isArray(this.recommendedPosts) && this.recommendedPosts.length > 200) {
     this.recommendedPosts = this.recommendedPosts.slice(0, 200);
   }
-  next();
 });
 
 module.exports = mongoose.model("Recommendation", recommendationSchema);
