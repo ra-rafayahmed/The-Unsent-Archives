@@ -1,6 +1,7 @@
 const app = require("./app");
 const config = require("./config");
 const logger = require("./utils/logger");
+const { captureException } = require("./utils/errorReporter");
 const { connectDB } = require("./models/connection");
 
 let server;
@@ -17,7 +18,7 @@ startServer();
 
 // Handle unhandled promise rejections
 process.on("unhandledRejection", (err) => {
-  logger.fatal({ err }, "Unhandled promise rejection — shutting down");
+  captureException(err, { phase: "unhandledRejection" }, "fatal");
   if (server) {
     server.close(() => {
       process.exit(1);
@@ -29,6 +30,6 @@ process.on("unhandledRejection", (err) => {
 
 // Handle uncaught exceptions
 process.on("uncaughtException", (err) => {
-  logger.fatal({ err }, "Uncaught exception — shutting down");
+  captureException(err, { phase: "uncaughtException" }, "fatal");
   process.exit(1);
 });

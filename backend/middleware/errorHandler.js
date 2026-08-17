@@ -1,4 +1,6 @@
 const config = require("../config");
+const { captureException } = require("../utils/errorReporter");
+const { normalizeRoute } = require("../utils/metrics");
 
 const errorHandler = (err, req, res, next) => {
   let { statusCode, message } = err;
@@ -32,6 +34,17 @@ const errorHandler = (err, req, res, next) => {
     } else {
       message = "Upload failed";
     }
+  }
+
+  // Unexpected failures go to the reporter; expected 4xx answers do not.
+  if (statusCode >= 500) {
+    captureException(err, {
+      route: normalizeRoute(req),
+      method: req.method,
+      statusCode,
+      requestId: req.id,
+      userId: req.user?.id,
+    });
   }
 
   res.status(statusCode).json({
