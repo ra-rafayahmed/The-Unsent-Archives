@@ -1,164 +1,51 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import api from "../../api/axios";
+import useNoteEditor from "../../hooks/useNoteEditor";
 import { BG_PRESETS, FONT_OPTIONS, getFontFamily, getPostTextStyle } from "../../utils/postStyle";
 
 const CreateNotePage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [tagsInput, setTagsInput] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
-  const [audioUrl, setAudioUrl] = useState("");
-  const [spotifyUrl, setSpotifyUrl] = useState("");
-  const [isUploadingImage, setIsUploadingImage] = useState(false);
-  const [isUploadingAudio, setIsUploadingAudio] = useState(false);
-  const [error, setError] = useState("");
-  const [form, setForm] = useState({
-    content: "",
-    visibility: "public",
-    style: {
-      font: "serif",
-      background: "#ffffff",
-      textColor: "#1c1c1a",
-      fontSize: 1.15,
-      lineHeight: 1.6,
-      letterSpacing: 0,
-      textAlign: "center",
-    },
-    media: [],
-  });
-
-  useEffect(() => {
-    const load = async () => {
-      if (!id) return;
-      const { data } = await api.get(`/posts/${id}`);
-      const p = data.post;
-      setForm({
-        content: p.content || "",
-        visibility: p.isAnonymous ? "anonymous" : p.visibility,
-        style: {
-          font: p.style?.font || "serif",
-          background: p.style?.background || "#ffffff",
-          textColor: p.style?.textColor || "#1c1c1a",
-          fontSize: Number(p.style?.fontSize) || 1.15,
-          lineHeight: Number(p.style?.lineHeight) || 1.6,
-          letterSpacing: Number(p.style?.letterSpacing) || 0,
-          textAlign: p.style?.textAlign || "center",
-        },
-        media: p.media || [],
-      });
-
-      const imageMedia = (p.media || []).find((m) => m.type === "image");
-      const audioMedia = (p.media || []).find((m) => m.type === "audio");
-      setImageUrl(imageMedia?.url || "");
-      const existingAudioUrl = audioMedia?.url || "";
-      const isSpotify = /spotify\.com\/track\//i.test(existingAudioUrl);
-      setSpotifyUrl(isSpotify ? existingAudioUrl : "");
-      setAudioUrl(isSpotify ? "" : existingAudioUrl);
-      setTagsInput((p.tagSlugs || []).join(", "));
-    };
-
-    load();
-  }, [id]);
+  const {
+    form,
+    setField,
+    setStyleField,
+    tagsInput,
+    setTagsInput,
+    imageUrl,
+    setImageUrl,
+    audioUrl,
+    setAudioUrl,
+    spotifyUrl,
+    setSpotifyUrl,
+    isUploadingImage,
+    isUploadingAudio,
+    error,
+    isEditing,
+    uploadImage,
+    uploadAudio,
+    saveNote,
+  } = useNoteEditor(id);
 
   const charCount = useMemo(() => form.content.length, [form.content]);
 
   const save = async () => {
-    setError("");
-
-    const media = [];
-
-    if (imageUrl.trim()) {
-      media.push({
-        url: imageUrl.trim(),
-        type: "image",
-      });
-    }
-
-    if (spotifyUrl.trim()) {
-      media.push({
-        url: spotifyUrl.trim(),
-        type: "audio",
-      });
-    } else if (audioUrl.trim()) {
-      media.push({
-        url: audioUrl.trim(),
-        type: "audio",
-      });
-    }
-
-    const payload = {
-      ...form,
-      media,
-      tagSlugs: tagsInput
-        .split(",")
-        .map((t) => t.trim().toLowerCase())
-        .filter(Boolean),
-    };
-
-    try {
-      if (id) {
-        await api.put(`/posts/${id}`, payload);
-      } else {
-        await api.post("/posts", payload);
-      }
-
-      navigate("/");
-    } catch (err) {
-      setError(err?.response?.data?.message || "Could not save note");
-    }
+    if (await saveNote()) navigate("/");
   };
 
-  const uploadMediaFile = async (file, mediaType) => {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    // Do NOT set Content-Type manually — axios will set the correct
-    // multipart boundary automatically. Setting it strips the boundary.
-    const { data } = await api.post("/uploads", formData);
-
-    const uploaded = data.asset;
-
-    if (mediaType === "image") {
-      setImageUrl(uploaded.url);
-    } else {
-      setAudioUrl(uploaded.url);
-      setSpotifyUrl("");
-    }
-  };
-
+  // The file input is reset either way so picking the same file again re-fires change.
   const onImageFileChange = async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
-    setError("");
-    setIsUploadingImage(true);
-
-    try {
-      await uploadMediaFile(file, "image");
-    } catch (err) {
-      setError(err?.response?.data?.message || "Image upload failed");
-    } finally {
-      setIsUploadingImage(false);
-      event.target.value = "";
-    }
+    await uploadImage(file);
+    event.target.value = "";
   };
 
   const onAudioFileChange = async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
-    setError("");
-    setIsUploadingAudio(true);
-
-    try {
-      await uploadMediaFile(file, "audio");
-    } catch (err) {
-      setError(err?.response?.data?.message || "Audio upload failed");
-    } finally {
-      setIsUploadingAudio(false);
-      event.target.value = "";
-    }
+    await uploadAudio(file);
+    event.target.value = "";
   };
 
   const previewFontFamily = useMemo(() => {
@@ -174,10 +61,7 @@ const CreateNotePage = () => {
 
         <label>
           Visibility
-          <select
-            value={form.visibility}
-            onChange={(e) => setForm((f) => ({ ...f, visibility: e.target.value }))}
-          >
+          <select value={form.visibility} onChange={(e) => setField("visibility", e.target.value)}>
             <option value="public">Public</option>
             <option value="anonymous">Anonymous</option>
             <option value="private">Private</option>
@@ -186,12 +70,7 @@ const CreateNotePage = () => {
 
         <label>
           Font
-          <select
-            value={form.style.font}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, style: { ...f.style, font: e.target.value } }))
-            }
-          >
+          <select value={form.style.font} onChange={(e) => setStyleField("font", e.target.value)}>
             {FONT_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
@@ -205,9 +84,7 @@ const CreateNotePage = () => {
           <input
             type="color"
             value={form.style.textColor}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, style: { ...f.style, textColor: e.target.value } }))
-            }
+            onChange={(e) => setStyleField("textColor", e.target.value)}
           />
         </label>
 
@@ -219,9 +96,7 @@ const CreateNotePage = () => {
             max="2.2"
             step="0.05"
             value={form.style.fontSize}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, style: { ...f.style, fontSize: Number(e.target.value) } }))
-            }
+            onChange={(e) => setStyleField("fontSize", Number(e.target.value))}
           />
         </label>
 
@@ -233,9 +108,7 @@ const CreateNotePage = () => {
             max="2.2"
             step="0.05"
             value={form.style.lineHeight}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, style: { ...f.style, lineHeight: Number(e.target.value) } }))
-            }
+            onChange={(e) => setStyleField("lineHeight", Number(e.target.value))}
           />
         </label>
 
@@ -247,12 +120,7 @@ const CreateNotePage = () => {
             max="0.18"
             step="0.01"
             value={form.style.letterSpacing}
-            onChange={(e) =>
-              setForm((f) => ({
-                ...f,
-                style: { ...f.style, letterSpacing: Number(e.target.value) },
-              }))
-            }
+            onChange={(e) => setStyleField("letterSpacing", Number(e.target.value))}
           />
         </label>
 
@@ -260,9 +128,7 @@ const CreateNotePage = () => {
           Text alignment
           <select
             value={form.style.textAlign}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, style: { ...f.style, textAlign: e.target.value } }))
-            }
+            onChange={(e) => setStyleField("textAlign", e.target.value)}
           >
             <option value="left">Left</option>
             <option value="center">Center</option>
@@ -280,7 +146,7 @@ const CreateNotePage = () => {
                 type="button"
                 className={form.style.background === bg ? "swatch active" : "swatch"}
                 style={{ background: bg }}
-                onClick={() => setForm((f) => ({ ...f, style: { ...f.style, background: bg } }))}
+                onClick={() => setStyleField("background", bg)}
               />
             ))}
           </div>
@@ -364,7 +230,7 @@ const CreateNotePage = () => {
         </label>
 
         <button type="button" className="primary-btn" onClick={save}>
-          {id ? "Update" : "Publish"}
+          {isEditing ? "Update" : "Publish"}
         </button>
         {error ? <p className="error">{error}</p> : null}
       </aside>
@@ -384,7 +250,7 @@ const CreateNotePage = () => {
             color: form.style.textColor,
           }}
           value={form.content}
-          onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}
+          onChange={(e) => setField("content", e.target.value)}
           placeholder="Write your unsent archive..."
           maxLength={5000}
         />
