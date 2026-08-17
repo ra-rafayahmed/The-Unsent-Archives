@@ -216,20 +216,24 @@ describe("HomePage", () => {
     expect(await screen.findByText("The shelf is quiet")).toBeInTheDocument();
   });
 
-  // NOTE: HomePage's loader (`load` in the mount effect) uses try/finally with no
-  // `catch`, so a failed feed request only clears the loading flag: the user sees
-  // the generic "shelf is quiet" empty state with no error message, and the
-  // rejection escapes as an unhandled promise rejection. This asserts the current
-  // behaviour; the local `unhandledRejection` listener is what keeps that escaped
-  // rejection from being reported as a suite-level error.
-  it("falls back to the empty state when the feed request fails", async () => {
-    const onRejection = () => {};
-    process.on("unhandledRejection", onRejection);
-    api.get.mockRejectedValue({ response: { status: 500 } });
+  it("reports a failed feed request instead of showing the empty state", async () => {
+    api.get.mockRejectedValue({ response: { status: 500, data: {} } });
     renderHome();
 
-    expect(await screen.findByText("The shelf is quiet")).toBeInTheDocument();
-    expect(screen.queryByText(/went wrong/i)).not.toBeInTheDocument();
-    process.off("unhandledRejection", onRejection);
+    expect(await screen.findByRole("alert")).toBeInTheDocument();
+    expect(screen.getByText(/server had a problem/i)).toBeInTheDocument();
+    expect(screen.queryByText("The shelf is quiet")).not.toBeInTheDocument();
+  });
+
+  it("retries the feed when 'Try again' is pressed", async () => {
+    api.get.mockRejectedValueOnce({ response: { status: 500, data: {} } });
+    renderHome();
+    await screen.findByRole("alert");
+
+    api.get.mockResolvedValue({ data: { posts: [post("a")] } });
+    fireEvent.click(screen.getByRole("button", { name: "Try again" }));
+
+    expect(await screen.findByText("note a")).toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 });

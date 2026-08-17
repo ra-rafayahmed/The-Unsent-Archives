@@ -4,6 +4,7 @@ import Masonry from "react-masonry-css";
 import api from "../../api/axios";
 import NoteCard from "../../components/cards/NoteCard";
 import { useAuth } from "../../context/AuthContext";
+import { toUserMessage } from "../../utils/apiError";
 
 const FEED_FILTERS = [
   { id: "ForYou", label: "For you" },
@@ -19,6 +20,9 @@ const HomePage = () => {
   const [activeFilter, setActiveFilter] = useState(isAuthenticated ? "ForYou" : "All");
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [loadError, setLoadError] = useState("");
+  // Bumped by "Try again"; setting the same filter again would not re-run the effect.
+  const [reloadToken, setReloadToken] = useState(0);
 
   const filters = useMemo(
     () =>
@@ -53,7 +57,14 @@ const HomePage = () => {
       setLoading(true);
       try {
         const next = await fetchFeed();
-        if (!cancelled) setPosts(next);
+        if (!cancelled) {
+          setPosts(next);
+          setLoadError("");
+        }
+      } catch (err) {
+        // Without this the rejection escaped unhandled and the reader saw the
+        // "shelf is quiet" empty state, indistinguishable from an empty feed.
+        if (!cancelled) setLoadError(toUserMessage(err, "Could not load the feed"));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -64,7 +75,7 @@ const HomePage = () => {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeFilter, isAuthenticated]);
+  }, [activeFilter, isAuthenticated, reloadToken]);
 
   const refreshForYou = async () => {
     if (activeFilter !== "ForYou") return;
@@ -72,6 +83,9 @@ const HomePage = () => {
     try {
       const next = await fetchFeed({ refresh: true });
       setPosts(next);
+      setLoadError("");
+    } catch (err) {
+      setLoadError(toUserMessage(err, "Could not refresh your recommendations"));
     } finally {
       setRefreshing(false);
     }
@@ -234,6 +248,14 @@ const HomePage = () => {
             <NoteCard key={post._id} post={post} variantSeed={i} />
           ))}
         </Masonry>
+      ) : loadError ? (
+        <div className="empty-state" role="alert">
+          <h3>Could not load the feed</h3>
+          <p>{loadError}</p>
+          <button type="button" className="ghost-btn" onClick={() => setReloadToken((n) => n + 1)}>
+            Try again
+          </button>
+        </div>
       ) : (
         <div className="empty-state">
           <h3>{activeFilter === "ForYou" ? "Still learning your taste" : "The shelf is quiet"}</h3>
