@@ -70,15 +70,16 @@ The frontend talks to `http://localhost:5000/api` by default; set
 All backend settings come from environment variables (see
 [`backend/.env.example`](backend/.env.example)):
 
-| Variable         | Required | Default       | Purpose                                                          |
-| ---------------- | -------- | ------------- | ---------------------------------------------------------------- |
-| `MONGODB_URI`    | yes      | —             | Mongo connection string                                          |
-| `JWT_SECRET`     | yes      | —             | HMAC secret for access tokens                                    |
-| `JWT_EXPIRES_IN` | no       | `7d`          | Token lifetime                                                   |
-| `PORT`           | no       | `5000`        | HTTP port                                                        |
-| `NODE_ENV`       | no       | `development` | `development` \| `production` \| `test`                          |
-| `ADMIN_EMAILS`   | no       | `""`          | Comma-separated emails that get the `admin` role on registration |
-| `LOG_LEVEL`      | no       | by env        | pino level override                                              |
+| Variable            | Required | Default       | Purpose                                                          |
+| ------------------- | -------- | ------------- | ---------------------------------------------------------------- |
+| `MONGODB_URI`       | yes      | —             | Mongo connection string                                          |
+| `JWT_SECRET`        | yes      | —             | HMAC secret for access tokens                                    |
+| `JWT_EXPIRES_IN`    | no       | `7d`          | Token lifetime                                                   |
+| `PORT`              | no       | `5000`        | HTTP port                                                        |
+| `NODE_ENV`          | no       | `development` | `development` \| `production` \| `test`                          |
+| `ADMIN_EMAILS`      | no       | `""`          | Comma-separated emails that get the `admin` role on registration |
+| `LOG_LEVEL`         | no       | by env        | pino level override                                              |
+| `ERROR_WEBHOOK_URL` | no       | —             | if set, 5xx/crash reports are POSTed here as sanitised JSON      |
 
 ---
 
@@ -164,6 +165,21 @@ Everything is under `/api`. Full list: [`docs/api-endpoints.md`](docs/api-endpoi
 | Analytics  | `/posts/:id/analytics`, `/events`                                                     |
 
 Errors are always JSON: `{ status: "fail" | "error", statusCode, message }`.
+
+## Observability
+
+- `GET /api/health` — liveness/readiness with the mongoose connection state
+  (200 when connected, 503 otherwise); used by the Docker healthcheck.
+- `GET /api/metrics` — Prometheus exposition with request/error counters, a
+  latency histogram (route labels are normalised so ids do not explode
+  cardinality) and process uptime/memory gauges.
+- Structured logs via pino (`utils/logger.js`), request logs via pino-http.
+- Unexpected errors funnel through `utils/errorReporter.js`, which logs with
+  context, counts them, and forwards sanitised JSON to `ERROR_WEBHOOK_URL`
+  when configured. Keys containing password/token/secret/authorization/cookie
+  are stripped before anything leaves the process.
+- The React app is wrapped in an `ErrorBoundary`, so a render crash shows a
+  recoverable fallback instead of a blank page.
 
 ## Data model
 
