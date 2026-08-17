@@ -3,6 +3,8 @@ const router = express.Router();
 const { auth } = require("../middleware/auth");
 const RecommendationService = require("../services/recommendationService");
 const asyncHandler = require("../utils/asyncHandler");
+const validate = require("../middleware/validate");
+const { refreshRecommendationsSchema } = require("../validators/interactionValidator");
 
 // @desc    Get personalized recommendations for the signed-in user
 // @route   GET /api/recommendations
@@ -36,6 +38,7 @@ router.get(
 router.post(
   "/refresh",
   auth,
+  validate(refreshRecommendationsSchema),
   asyncHandler(async (req, res) => {
     const limit = Math.min(50, Math.max(1, parseInt(req.body.limit, 10) || 30));
     const posts = await RecommendationService.refreshRecommendations(req.user.id, limit);

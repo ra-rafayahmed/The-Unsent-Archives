@@ -3,7 +3,11 @@ const router = express.Router();
 const { auth } = require("../middleware/auth");
 const { requireAdmin } = require("../middleware/adminAuth");
 const validate = require("../middleware/validate");
-const { suspendUserSchema, setRoleSchema } = require("../validators/interactionValidator");
+const {
+  suspendUserSchema,
+  setRoleSchema,
+  resolveReportSchema,
+} = require("../validators/interactionValidator");
 const ctrl = require("../controllers/adminController");
 
 router.use(auth, requireAdmin);
@@ -19,6 +23,6 @@ router.delete("/users/:id", ctrl.deleteUserAsAdmin);
 
 router.delete("/posts/:id", ctrl.deletePostAsAdmin);
 
-router.put("/reports/:id/resolve", ctrl.resolveReport);
+router.put("/reports/:id/resolve", validate(resolveReportSchema), ctrl.resolveReport);
 
 module.exports = router;

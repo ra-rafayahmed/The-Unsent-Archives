@@ -44,7 +44,7 @@ const processTags = async (tagNames) => {
     const tag = await Tag.findOneAndUpdate(
       { slug },
       { $setOnInsert: { name, slug } },
-      { new: true, upsert: true, setDefaultsOnInsert: true }
+      { returnDocument: "after", upsert: true, setDefaultsOnInsert: true }
     );
     tagIds.push(tag._id);
   }

@@ -70,7 +70,46 @@ const setRoleSchema = Joi.object({
   role: Joi.string().valid("user", "admin").required(),
 });
 
+const resolveReportSchema = Joi.object({
+  action: Joi.string().valid("resolved", "dismissed").required().messages({
+    "any.only": "action must be resolved or dismissed",
+    "any.required": "action must be resolved or dismissed",
+  }),
+});
+
+const addPostToCollectionSchema = Joi.object({
+  postId: objectId.required().messages({ "any.required": "postId is required" }),
+});
+
+const repostSchema = Joi.object({
+  content: Joi.string().allow("").max(5000).optional(),
+  visibility: Joi.string().valid("public", "followers", "private", "anonymous").optional(),
+  isAnonymous: Joi.boolean().optional(),
+});
+
+// Mirrors the User schema's own limits so oversized input is refused at the
+// boundary rather than by Mongoose after the request is already in a handler.
+const updateProfileSchema = Joi.object({
+  bio: Joi.string().allow("").max(300).optional(),
+  avatarUrl: Joi.string().allow("").max(2000).optional(),
+  profile: Joi.object({
+    displayName: Joi.string().allow("").max(50).optional(),
+    location: Joi.string().allow("").max(100).optional(),
+    website: Joi.string().allow("").max(200).optional(),
+  }).optional(),
+  tagInterests: Joi.array().items(objectId).max(50).optional(),
+});
+
+const refreshRecommendationsSchema = Joi.object({
+  limit: Joi.number().integer().min(1).max(50).optional(),
+});
+
 module.exports = {
+  refreshRecommendationsSchema,
+  resolveReportSchema,
+  addPostToCollectionSchema,
+  repostSchema,
+  updateProfileSchema,
   REACTION_TYPES,
   reactionSchema,
   removeReactionSchema,

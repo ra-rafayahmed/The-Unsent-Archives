@@ -53,9 +53,11 @@ const setUserRole = asyncHandler(async (req, res, next) => {
     return next(new ApiError(400, "Role must be user or admin"));
   }
 
-  const user = await User.findByIdAndUpdate(req.params.id, { role }, { new: true }).select(
-    "_id username email role"
-  );
+  const user = await User.findByIdAndUpdate(
+    req.params.id,
+    { role },
+    { returnDocument: "after" }
+  ).select("_id username email role");
 
   if (!user) {
     return next(new ApiError(404, "User not found"));
@@ -79,7 +81,7 @@ const suspendUser = asyncHandler(async (req, res, next) => {
   const user = await User.findByIdAndUpdate(
     req.params.id,
     { isSuspended: suspended, isActive: !suspended },
-    { new: true }
+    { returnDocument: "after" }
   ).select("_id username email role isActive isSuspended");
 
   if (!user) return next(new ApiError(404, "User not found"));

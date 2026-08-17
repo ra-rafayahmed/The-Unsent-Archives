@@ -129,7 +129,7 @@ describe("PUT /api/users/:id", () => {
     expect(stored.tagInterests.map(String)).toEqual([String(tag._id)]);
   });
 
-  it("ignores fields that are not on the allow-list", async () => {
+  it("refuses an update carrying fields that are not on the allow-list", async () => {
     const { user, token } = await registerUser();
 
     const res = await request(app).put(`/api/users/${user.id}`).set(authHeader(token)).send({
@@ -139,14 +139,29 @@ describe("PUT /api/users/:id", () => {
       role: "admin",
       isSuspended: true,
     });
-    expect(res.status).toBe(200);
+    // Rejected outright rather than silently dropped, so a privilege-escalation
+    // attempt is visible to the caller instead of looking like it worked.
+    expect(res.status).toBe(400);
 
     const stored = await User.findById(user.id);
-    expect(stored.bio).toBe("legit");
+    expect(stored.bio).toBe("");
     expect(stored.username).toBe(user.username);
     expect(stored.email).toBe(user.email);
     expect(stored.role).toBe("user");
     expect(stored.isSuspended).toBe(false);
+  });
+
+  it("accepts the allow-listed fields on their own", async () => {
+    const { user, token } = await registerUser();
+    const res = await request(app)
+      .put(`/api/users/${user.id}`)
+      .set(authHeader(token))
+      .send({ bio: "legit", avatarUrl: "", profile: { displayName: "Dee" } });
+    expect(res.status).toBe(200);
+
+    const stored = await User.findById(user.id);
+    expect(stored.bio).toBe("legit");
+    expect(stored.profile.displayName).toBe("Dee");
   });
 
   it("returns 400 when an update fails schema validation", async () => {

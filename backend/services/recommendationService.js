@@ -296,7 +296,7 @@ const logEngagement = async (userId, postId, engagement) => {
     const profile = await Recommendation.findOneAndUpdate(
       { userId: toObjectId(userId) },
       { $setOnInsert: { userId: toObjectId(userId) } },
-      { upsert: true, new: true, setDefaultsOnInsert: true }
+      { upsert: true, returnDocument: "after", setDefaultsOnInsert: true }
     );
 
     profile.engagementHistory.push({

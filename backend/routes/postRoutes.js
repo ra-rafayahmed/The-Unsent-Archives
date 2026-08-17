@@ -5,7 +5,7 @@ const validate = require("../middleware/validate");
 const { auth } = require("../middleware/auth");
 const { optionalAuth } = require("../middleware/optionalAuth");
 const { createPostSchema, updatePostSchema } = require("../validators/postValidator");
-const { commentSchema } = require("../validators/interactionValidator");
+const { commentSchema, repostSchema } = require("../validators/interactionValidator");
 
 // Reaction routes (nesting reactions under /posts/:id/reactions)
 const reactionRoutes = require("./reactionRoutes");
@@ -17,7 +17,7 @@ router.put("/:id", auth, validate(updatePostSchema), ctrl.updatePost);
 router.delete("/:id", auth, ctrl.deletePost);
 
 // Interactions
-router.post("/:id/repost", auth, ctrl.repost);
+router.post("/:id/repost", auth, validate(repostSchema), ctrl.repost);
 router.post("/:id/comments", auth, validate(commentSchema), ctrl.addComment);
 router.delete("/:id/comments/:commentId", auth, ctrl.deleteComment);
 

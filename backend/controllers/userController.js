@@ -55,7 +55,7 @@ const updateProfile = asyncHandler(async (req, res, next) => {
   if (tagInterests !== undefined) updateData.tagInterests = tagInterests;
 
   const user = await User.findByIdAndUpdate(req.params.id, updateData, {
-    new: true,
+    returnDocument: "after",
     runValidators: true,
   }).populate("tagInterests", "name slug");
 
