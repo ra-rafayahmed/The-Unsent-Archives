@@ -13,6 +13,7 @@ import {
 } from "recharts";
 import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
+import { toUserMessage } from "../../utils/apiError";
 
 const ACCENT = "#9a3412";
 const ACCENT_STRONG = "#d2521a";
@@ -53,10 +54,14 @@ const AnalyticsDashboard = () => {
   const [selectedPostAnalytics, setSelectedPostAnalytics] = useState(null);
   const [selectedPostEvents, setSelectedPostEvents] = useState({});
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
-      if (!user?.id) return;
+      if (!user?.id) {
+        setLoading(false);
+        return;
+      }
 
       try {
         const [analyticsRes, postsRes] = await Promise.all([
@@ -72,7 +77,9 @@ const AnalyticsDashboard = () => {
           setSelectedPostId(rows[0]._id);
         }
       } catch (err) {
-        setError(err?.response?.data?.message || "Failed to load analytics");
+        setError(toUserMessage(err, "Failed to load analytics"));
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -92,7 +99,7 @@ const AnalyticsDashboard = () => {
         setSelectedPostAnalytics(analytics);
         setSelectedPostEvents(analytics?.events || {});
       } catch (err) {
-        setError(err?.response?.data?.message || "Failed to load post analytics");
+        setError(toUserMessage(err, "Failed to load post analytics"));
       }
     };
 
@@ -133,6 +140,12 @@ const AnalyticsDashboard = () => {
 
   const hasAnyData =
     (totals.totalViews || 0) + (totals.totalSaves || 0) + (totals.totalReactions || 0) > 0;
+
+  // Without this the page painted zeros and three "you have nothing" empty
+  // states before the first response landed.
+  if (loading) {
+    return <div className="panel">Reading the archive...</div>;
+  }
 
   return (
     <section className="analytics-page">

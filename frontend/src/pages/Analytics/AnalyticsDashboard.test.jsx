@@ -104,20 +104,17 @@ describe("AnalyticsDashboard", () => {
     expect(screen.getByText("Notes").previousSibling).toHaveTextContent("2");
   });
 
-  // NOTE: the component has no loading flag, so on the very first paint the totals
-  // read 0 and every "no data" empty state is briefly visible before the requests
-  // land. Asserting that current behaviour.
-  it("renders zeroed tiles and empty states before the requests resolve", async () => {
+  it("shows a loading state rather than a flash of zeros before the requests resolve", async () => {
     mockApi();
     renderDashboard();
 
-    expect(screen.getByText("Total reads").previousSibling).toHaveTextContent("0");
-    expect(screen.getByText("No data yet — share a note to start the count.")).toBeInTheDocument();
-    expect(screen.getByText("No events tracked yet.")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "No notes to analyze yet" })).toBeInTheDocument();
+    expect(screen.getByText("Reading the archive...")).toBeInTheDocument();
+    expect(screen.queryByText("Total reads")).not.toBeInTheDocument();
+    expect(screen.queryByText("No events tracked yet.")).not.toBeInTheDocument();
 
     // ...and it settles into the real numbers.
     expect(await screen.findByText("120")).toBeInTheDocument();
+    expect(screen.queryByText("Reading the archive...")).not.toBeInTheDocument();
   });
 
   it("does not call the API at all when there is no signed-in user id", async () => {
@@ -259,8 +256,15 @@ describe("AnalyticsDashboard", () => {
     expect(screen.getByText("Total reads").previousSibling).toHaveTextContent("0");
   });
 
-  it("falls back to a generic message when the dashboard load fails without one", async () => {
+  it("says the server is unreachable when the dashboard request gets no response", async () => {
     api.get.mockRejectedValue(new Error("boom"));
+    renderDashboard();
+
+    expect(await screen.findByText(/Cannot reach the server/)).toBeInTheDocument();
+  });
+
+  it("falls back to a generic message when an HTTP failure carries no detail", async () => {
+    api.get.mockRejectedValue({ response: { status: 400, data: {} } });
     renderDashboard();
 
     expect(await screen.findByText("Failed to load analytics")).toBeInTheDocument();
