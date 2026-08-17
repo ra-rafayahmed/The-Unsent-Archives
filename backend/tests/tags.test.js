@@ -130,16 +130,16 @@ describe("GET /api/tags/:slug/posts", () => {
     expect(res.body).toMatchObject({ results: 0, total: 0, pages: 0, posts: [] });
   });
 
-  // NOTE: getPostsByTag uses req.params.slug verbatim, unlike searchController which
-  // lowercases the tag filter. Stored slugs are always lowercase, so a capitalised
-  // slug in the URL silently matches nothing. Asserting today's behaviour.
-  it("does not match a slug whose casing differs from the stored slug", async () => {
+  it("matches a slug regardless of the casing used in the URL", async () => {
     const { user } = await registerUser();
-    await createPost(user.id, { tagSlugs: ["grief"] });
+    await createPost(user.id, { content: "tagged note", tagSlugs: ["grief"] });
 
-    const res = await request(app).get("/api/tags/Grief/posts");
-    expect(res.status).toBe(200);
-    expect(res.body.posts).toEqual([]);
+    // Stored slugs are always lowercase, so the URL casing must not matter.
+    for (const slug of ["grief", "Grief", "GRIEF"]) {
+      const res = await request(app).get(`/api/tags/${slug}/posts`);
+      expect(res.status).toBe(200);
+      expect(res.body.posts.map((p) => p.content)).toEqual(["tagged note"]);
+    }
   });
 
   it("paginates tagged posts", async () => {

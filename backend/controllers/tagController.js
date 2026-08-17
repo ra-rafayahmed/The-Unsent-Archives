@@ -45,7 +45,10 @@ const getTrending = asyncHandler(async (req, res, next) => {
 // @route   GET /api/tags/:slug/posts
 // @access  Public (Mixed inside)
 const getPostsByTag = asyncHandler(async (req, res, next) => {
-  const { slug } = req.params;
+  // Stored slugs are always lowercase (Post pre-validate normalises them), so
+  // normalise the incoming one too — otherwise /api/tags/Grief/posts silently
+  // returns nothing.
+  const slug = String(req.params.slug || "").toLowerCase();
   const { page, limit, skip } = getPagination(req.query.page, req.query.limit);
 
   // Only public posts
