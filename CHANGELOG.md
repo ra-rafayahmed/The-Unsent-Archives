@@ -6,6 +6,37 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.3.0] — 2026-08-17
+
+### Added
+
+- Opt-in JSDoc type checking on the backend (`npm run typecheck`, `tsc
+--noEmit`, run in CI). Files opt in with `// @ts-check`; `backend/utils/**`
+  is annotated and checked under `strict`.
+- Joi schemas for the last five body-carrying routes (profile update, repost,
+  add-post-to-collection, resolve-report, recommendations refresh). Every
+  remaining unvalidated mutating route takes no body or is a multipart upload.
+- Root-level files (README, compose, workflows) are now format-checked in CI;
+  prettier is a root devDependency and the root scripts cover those globs.
+- Coverage baseline recorded in CONTRIBUTING, measured from a fresh clone.
+
+### Fixed
+
+- **Tag counters drifted.** `updatePost` re-incremented every tag on each save
+  and never decremented removed ones (a shortcut the source admitted to), and
+  `deletePost` repeated the cascade the model hook already runs, so each delete
+  subtracted twice. Counts now move by the difference between the post's old
+  and new tag sets, and the hook owns the cascade.
+- **followers-only posts were readable by anyone** holding the post id — the
+  `TODO` in `getPost`. A Follow edge is now required unless the viewer is the
+  author.
+- Profile update rejects unknown keys instead of silently dropping them, so a
+  role/isSuspended escalation attempt fails loudly.
+- Replaced mongoose's deprecated `new: true` with `returnDocument`, which
+  warned on every `findOneAndUpdate` under Mongoose 9.
+
+[1.3.0]: https://github.com/ra-rafayahmed/The-Unsent-Archives/compare/v1.2.0...v1.3.0
+
 ## [1.2.0] — 2026-08-17
 
 ### Added
@@ -135,5 +166,5 @@ buildable and testable from a fresh clone.
 - `npm audit fix` applied in both packages (0 known vulnerabilities).
 
 [1.0.0]: https://github.com/ra-rafayahmed/The-Unsent-Archives/releases/tag/v1.0.0
-[Unreleased]: https://github.com/ra-rafayahmed/The-Unsent-Archives/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/ra-rafayahmed/The-Unsent-Archives/compare/v1.3.0...HEAD
 [1.1.0]: https://github.com/ra-rafayahmed/The-Unsent-Archives/compare/v1.0.0...v1.1.0

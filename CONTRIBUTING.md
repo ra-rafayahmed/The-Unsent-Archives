@@ -68,15 +68,17 @@ document typings that are awkward to express in JSDoc; those come later.
 
 ## Coverage baseline
 
-As of v1.2.0 (`npm run test:coverage` at the root):
+Measured on a **fresh clone** (`git clone && npm ci && npm run test:coverage`,
+exit 0, no services beyond the in-memory Mongo binary):
 
-| Package  | Statements | Branches | Functions | Lines |
-| -------- | ---------- | -------- | --------- | ----- |
-| backend  | 86.8%      | 74.4%    | 83.3%     | 89.1% |
-| frontend | 88.3%      | 82.7%    | 82.9%     | 89.8% |
+| Package  | Suites / tests | Statements | Branches | Functions | Lines |
+| -------- | -------------- | ---------- | -------- | --------- | ----- |
+| backend  | 18 / 221       | 87.0%      | 74.5%    | 83.1%     | 89.4% |
+| frontend | 33 / 289       | 88.3%      | 82.7%    | 82.9%     | 89.9% |
 
-The gates in `backend/jest.config.js` and `frontend/vite.config.js` sit just
-below these. Raise them when you push coverage meaningfully higher.
+The gates in `backend/jest.config.js` (84/71/80/86) and
+`frontend/vite.config.js` (85/79/80/86) sit just below these. Raise them when
+you push coverage meaningfully higher — they are a ratchet, never lowered.
 
 ## Workspaces and the lockfile
 
