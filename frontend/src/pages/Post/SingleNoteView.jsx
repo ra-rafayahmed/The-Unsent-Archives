@@ -4,6 +4,7 @@ import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import { getPostTextStyle } from "../../utils/postStyle";
 import ReportDialog from "../../components/ReportDialog";
+import NoteComments from "../../components/post/NoteComments";
 import { buildNoteTheme } from "../../utils/color";
 import usePost from "../../hooks/usePost";
 import { toUserMessage } from "../../utils/apiError";
@@ -319,94 +320,18 @@ const SingleNoteView = () => {
         {status ? <p className="manuscript-flash">{status}</p> : null}
         {error ? <p className="error">{error}</p> : null}
 
-        <section className="manuscript-letters">
-          <div className="manuscript-letters-head">
-            <span className="manuscript-flourish" aria-hidden="true">
-              ✒
-            </span>
-            <h3>Letters to the Writer</h3>
-          </div>
-
-          {isAuthenticated ? (
-            <>
-              <textarea
-                value={commentsText}
-                onChange={(e) => setCommentsText(e.target.value)}
-                placeholder="Write a response..."
-                className="manuscript-textarea"
-              />
-              <div className="manuscript-letter-actions">
-                <label className="manuscript-anon">
-                  <input
-                    type="checkbox"
-                    checked={commentAnon}
-                    onChange={(e) => setCommentAnon(e.target.checked)}
-                  />
-                  <span>Send anonymously</span>
-                </label>
-                <button type="button" className="primary-btn" onClick={comment}>
-                  {commentAnon ? "Send anonymously" : "Send letter"}
-                </button>
-              </div>
-            </>
-          ) : (
-            <p className="manuscript-muted">
-              <Link to="/login" className="manuscript-author-link">
-                Sign in
-              </Link>{" "}
-              to leave a letter.
-            </p>
-          )}
-
-          <div className="comment-list">
-            {(post.comments || []).map((c) => {
-              const isAnonComment = c.isAnonymous;
-              const commenterId = c.userId?._id || c.userId;
-              const commenterName = isAnonComment ? "Anonymous" : c.userId?.username || "Writer";
-              const commenterAvatar = !isAnonComment ? c.userId?.avatarUrl : null;
-              const canDeleteComment =
-                user?.id && (canEdit || (commenterId && commenterId.toString() === user.id));
-
-              return (
-                <div key={c._id} className="comment-item manuscript-comment">
-                  <div className="manuscript-comment-head">
-                    {commenterAvatar ? (
-                      <img src={commenterAvatar} alt="" className="nav-avatar" />
-                    ) : (
-                      <span className="writer-avatar writer-avatar-fallback">
-                        {(commenterName || "?")[0].toUpperCase()}
-                      </span>
-                    )}
-                    <div className="manuscript-comment-meta">
-                      {commenterId && !isAnonComment ? (
-                        <Link to={`/profile/${commenterId}`} className="manuscript-author-link">
-                          {commenterName}
-                        </Link>
-                      ) : (
-                        <strong>{commenterName}</strong>
-                      )}
-                      {isAnonComment && <span className="manuscript-anon-tag">anonymous</span>}
-                    </div>
-                    {canDeleteComment ? (
-                      <button
-                        type="button"
-                        className="manuscript-comment-del"
-                        onClick={() => deleteCommentById(c._id)}
-                        aria-label="Delete comment"
-                      >
-                        ×
-                      </button>
-                    ) : null}
-                  </div>
-                  <p>{c.text}</p>
-                </div>
-              );
-            })}
-            {(post.comments || []).length === 0 && (
-              <p className="manuscript-muted">No letters yet. Be the first to reply.</p>
-            )}
-          </div>
-        </section>
+        <NoteComments
+          comments={post.comments || []}
+          isAuthenticated={isAuthenticated}
+          viewerId={user?.id}
+          canModerate={canEdit}
+          draft={commentsText}
+          onDraftChange={setCommentsText}
+          isAnonymous={commentAnon}
+          onAnonymousChange={setCommentAnon}
+          onSubmit={comment}
+          onDelete={deleteCommentById}
+        />
       </article>
 
       <ReportDialog
