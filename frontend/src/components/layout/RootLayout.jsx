@@ -10,7 +10,10 @@ const RootLayout = () => {
 
   // Scroll to top on route change so the page-fade animation feels right.
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
+    // Feature-detect scroll-behavior support rather than testing for a window
+    // property named "instant", which never exists and always fell back to "auto".
+    const supportsScrollBehavior = "scrollBehavior" in document.documentElement.style;
+    window.scrollTo({ top: 0, behavior: supportsScrollBehavior ? "instant" : "auto" });
   }, [location.pathname]);
 
   return (

@@ -84,12 +84,26 @@ describe("RootLayout", () => {
 
   it("scrolls back to the top on mount and again on every route change", () => {
     renderShell();
-    // NOTE: `"instant" in window` is always false, so the component always asks
-    // for "auto" rather than the intended instant jump. Asserting current behaviour.
-    expect(window.scrollTo).toHaveBeenCalledWith({ top: 0, behavior: "auto" });
+    // jsdom supports scroll-behavior, so the instant jump is requested.
+    expect(window.scrollTo).toHaveBeenCalledWith({ top: 0, behavior: "instant" });
     expect(window.scrollTo).toHaveBeenCalledTimes(1);
 
     fireEvent.click(screen.getByRole("link", { name: "go to library" }));
     expect(window.scrollTo).toHaveBeenCalledTimes(2);
+  });
+
+  it("falls back to auto scrolling where scroll-behavior is unsupported", () => {
+    const style = document.documentElement.style;
+    const had = "scrollBehavior" in style;
+    if (had) delete style.scrollBehavior;
+    try {
+      renderShell();
+      expect(window.scrollTo).toHaveBeenCalledWith({
+        top: 0,
+        behavior: "scrollBehavior" in style ? "instant" : "auto",
+      });
+    } finally {
+      if (had && !("scrollBehavior" in style)) style.scrollBehavior = "";
+    }
   });
 });
