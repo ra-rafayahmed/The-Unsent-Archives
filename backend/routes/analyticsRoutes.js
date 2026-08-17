@@ -3,8 +3,10 @@ const router = express.Router();
 const ctrl = require("../controllers/analyticsController");
 const { auth } = require("../middleware/auth");
 const { optionalAuth } = require("../middleware/optionalAuth");
+const validate = require("../middleware/validate");
+const { analyticsEventSchema } = require("../validators/interactionValidator");
 
-router.post("/events", optionalAuth, ctrl.logEvent);
+router.post("/events", optionalAuth, validate(analyticsEventSchema), ctrl.logEvent);
 
 // The getPostAnalytics and getUserAnalytics are logically sub-resources to posts and users.
 // We can mount them here directly but use full paths, OR define them here and mount at root level.

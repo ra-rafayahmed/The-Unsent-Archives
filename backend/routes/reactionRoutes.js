@@ -3,9 +3,11 @@ const express = require("express");
 const router = express.Router({ mergeParams: true });
 const ctrl = require("../controllers/reactionController");
 const { auth } = require("../middleware/auth");
+const validate = require("../middleware/validate");
+const { reactionSchema, removeReactionSchema } = require("../validators/interactionValidator");
 
-router.post("/", auth, ctrl.addReaction);
-router.delete("/", auth, ctrl.removeReaction);
+router.post("/", auth, validate(reactionSchema), ctrl.addReaction);
+router.delete("/", auth, validate(removeReactionSchema), ctrl.removeReaction);
 router.get("/", ctrl.getReactions);
 
 module.exports = router;
