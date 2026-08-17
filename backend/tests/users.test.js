@@ -24,14 +24,38 @@ describe("GET /api/users/:id", () => {
     });
   });
 
-  it("hides the email address, the active flag and the password hash", async () => {
+  it("publishes only public profile fields", async () => {
     const { user } = await registerUser();
+    // Moderation state must not be discoverable by anyone who knows an id.
+    await User.findByIdAndUpdate(user.id, { reportCount: 3, isSuspended: true, role: "admin" });
+
     const res = await request(app).get(`/api/users/${user.id}`);
     expect(res.status).toBe(200);
-    expect(res.body.user.email).toBeUndefined();
-    expect(res.body.user.isActive).toBeUndefined();
-    expect(res.body.user.passwordHash).toBeUndefined();
-    expect(res.body.user.backupCodes).toBeUndefined();
+    const allowed = [
+      "_id",
+      "username",
+      "avatarUrl",
+      "bio",
+      "profile",
+      "tagInterests",
+      "createdAt",
+      "followerCount",
+      "followingCount",
+    ];
+    // No key may appear that is not deliberately published.
+    expect(Object.keys(res.body.user).filter((k) => !allowed.includes(k))).toEqual([]);
+    for (const leaked of [
+      "email",
+      "isActive",
+      "passwordHash",
+      "backupCodes",
+      "role",
+      "reportCount",
+      "isSuspended",
+      "passwordResetTokenHash",
+    ]) {
+      expect(res.body.user[leaked]).toBeUndefined();
+    }
   });
 
   it("populates tag interests with their name and slug", async () => {

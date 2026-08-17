@@ -6,16 +6,20 @@ const { getPagination } = require("../utils/pagination");
 // @desc    Get user profile by ID
 // @route   GET /api/users/:id
 // @access  Public
+// Allowlist rather than denylist: anything added to the User schema later stays
+// private until it is deliberately published here. The previous denylist only
+// stripped email/isActive and leaked role, reportCount and isSuspended.
+const PUBLIC_PROFILE_FIELDS = "username avatarUrl bio profile tagInterests createdAt";
+
 const getProfile = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.params.id).populate("tagInterests", "name slug").lean(); // Faster query, returns plain JS object
+  const user = await User.findById(req.params.id)
+    .select(PUBLIC_PROFILE_FIELDS)
+    .populate("tagInterests", "name slug")
+    .lean(); // Faster query, returns plain JS object
 
   if (!user) {
     return next(new ApiError(404, "User not found"));
   }
-
-  // Remove private fields just in case they're requested
-  delete user.email;
-  delete user.isActive;
 
   // Aggregate follower and following counts
   const [followerCount, followingCount] = await Promise.all([
@@ -146,6 +150,7 @@ const getUserCollections = asyncHandler(async (req, res, next) => {
 });
 
 module.exports = {
+  PUBLIC_PROFILE_FIELDS,
   getProfile,
   updateProfile,
   getUserPosts,
