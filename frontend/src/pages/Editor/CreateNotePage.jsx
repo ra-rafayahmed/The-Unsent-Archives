@@ -21,6 +21,7 @@ const CreateNotePage = () => {
     isUploadingImage,
     isUploadingAudio,
     error,
+    loadError,
     isEditing,
     uploadImage,
     uploadAudio,
@@ -232,6 +233,11 @@ const CreateNotePage = () => {
         <button type="button" className="primary-btn" onClick={save}>
           {isEditing ? "Update" : "Publish"}
         </button>
+        {loadError ? (
+          <p className="error" role="alert">
+            {loadError}
+          </p>
+        ) : null}
         {error ? <p className="error">{error}</p> : null}
       </aside>
 

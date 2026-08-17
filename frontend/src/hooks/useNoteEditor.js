@@ -39,6 +39,7 @@ export default function useNoteEditor(id) {
   const [imageUrl, setImageUrl] = useState("");
   const [audioUrl, setAudioUrl] = useState("");
   const [spotifyUrl, setSpotifyUrl] = useState("");
+  const [loadError, setLoadError] = useState("");
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isUploadingAudio, setIsUploadingAudio] = useState(false);
   const [error, setError] = useState("");
@@ -78,11 +79,11 @@ export default function useNoteEditor(id) {
         setAudioUrl(isSpotify ? "" : existingAudioUrl);
         setTagsInput((p.tagSlugs || []).join(", "));
       })
-      // NOTE: a failed load is deliberately silent, matching the behaviour this
-      // hook was extracted from — the composer just stays empty. See
-      // useNoteEditor.test.js ("leaves the composer empty..."). Surfacing a
-      // message here would be a behaviour change.
-      .catch(() => {});
+      .catch((err) => {
+        // A silent failure left an empty composer that would PUT a blank note
+        // over the real one if the writer pressed Update.
+        if (!cancelled) setLoadError(toUserMessage(err, "Could not load this note"));
+      });
 
     return () => {
       cancelled = true;
@@ -198,6 +199,7 @@ export default function useNoteEditor(id) {
     setAudioUrl,
     spotifyUrl,
     setSpotifyUrl,
+    loadError,
     isUploadingImage,
     isUploadingAudio,
     error,

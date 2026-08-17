@@ -116,16 +116,16 @@ describe("useNoteEditor", () => {
     expect(result.current.tagsInput).toBe("");
   });
 
-  // NOTE: current behaviour, carried over unchanged from CreateNotePage — a failed
-  // load is silent: no error is exposed and the composer stays empty, so the user
-  // could unknowingly overwrite the note with a blank one. Preserved deliberately.
-  it("leaves the composer empty and silent when the note cannot be loaded", async () => {
+  it("reports a note that could not be loaded instead of leaving a blank composer", async () => {
     api.get.mockRejectedValue({ response: { status: 404, data: { message: "Post not found" } } });
     const { result } = renderHook(() => useNoteEditor("p1"));
 
     await waitFor(() => expect(api.get).toHaveBeenCalledWith("/posts/p1"));
-    expect(result.current.error).toBe("");
+    // Otherwise pressing Update would PUT an empty note over the real one.
+    await waitFor(() => expect(result.current.loadError).toBe("Post not found"));
     expect(result.current.form.content).toBe("");
+    // The submit-error channel stays clear; this is a load failure.
+    expect(result.current.error).toBe("");
   });
 
   it("saveNote POSTs a new note with normalised tags and trimmed media", async () => {
