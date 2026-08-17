@@ -15,14 +15,14 @@ jobs:
     name: Backend · lint, test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
           cache-dependency-path: package-lock.json
       - name: Cache MongoDB binary for mongodb-memory-server
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .mongodb-binaries
           key: mongodb-binaries-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
@@ -41,7 +41,7 @@ jobs:
         env:
           CI: true
           MONGOMS_DOWNLOAD_DIR: ${{ github.workspace }}/.mongodb-binaries
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: backend-coverage
@@ -52,8 +52,8 @@ jobs:
     name: Frontend · lint, test, build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -77,14 +77,14 @@ jobs:
         run: |
           ERRS=$(grep -iE "error|cannot|failed|no test|worker|unhandled" /tmp/vitest.log | head -n 40 | sed 's/%/%25/g' | awk '{printf "%s%%0A", $0}')
           echo "::error title=vitest failure detail::${ERRS}"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: frontend-coverage
           path: frontend/coverage/lcov.info
           retention-days: 7
       - run: npm run build --workspace frontend
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: frontend-dist
           path: frontend/dist
@@ -94,8 +94,8 @@ jobs:
     name: Clean clone · npm ci && npm test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
       # No cache and no per-package steps: this job proves the documented
@@ -108,7 +108,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [backend, frontend]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: docker compose build
       - name: Smoke test the stack
         run: |
