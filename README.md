@@ -32,8 +32,14 @@ docker compose up --build
 | API     | http://localhost:5000/api/health |
 | MongoDB | mongodb://localhost:27017 (internal to the compose network) |
 
-Copy [`.env.example`](.env.example) to `.env` at the repo root to set
-`JWT_SECRET` / `ADMIN_EMAILS` for compose; otherwise dev defaults are used.
+Works with no configuration — compose supplies dev defaults and starts its own
+MongoDB. To customise (real `JWT_SECRET`, admin emails, different ports, or an
+external Atlas database), copy [`.env.example`](.env.example) to `.env` first:
+
+```bash
+cp .env.example .env      # then edit JWT_SECRET / ADMIN_EMAILS
+docker compose up --build
+```
 
 ### Option B — Local Node
 
