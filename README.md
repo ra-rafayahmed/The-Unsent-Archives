@@ -86,11 +86,15 @@ All backend settings come from environment variables (see
 From the **repo root** (fans out to both packages):
 
 ```bash
-npm run install:all   # npm ci in backend/ and frontend/
+npm ci                # installs root + backend + frontend (via postinstall)
 npm test              # backend Jest suite, then frontend Vitest suite
+npm run test:coverage # both suites with the coverage gate
 npm run lint          # ESLint both
-npm run build         # vite build
+npm run build         # vite build -> frontend/dist
 ```
+
+So the whole project installs and tests from a clean clone with just
+`npm ci && npm test` at the root — no per-package steps required.
 
 Or run from `backend/` or `frontend/` respectively:
 

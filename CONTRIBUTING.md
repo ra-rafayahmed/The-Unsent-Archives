@@ -5,8 +5,8 @@
 ```bash
 git clone https://github.com/ra-rafayahmed/The-Unsent-Archives.git
 cd The-Unsent-Archives
-(cd backend && npm ci)
-(cd frontend && npm ci)
+npm ci        # root postinstall installs backend/ and frontend/ too
+npm test      # runs both suites
 ```
 
 Backend tests need no database (they use `mongodb-memory-server`). To run the
