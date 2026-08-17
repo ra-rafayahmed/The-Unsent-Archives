@@ -6,6 +6,74 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.1.0] — 2026-08-17
+
+Test breadth, observability, boundary validation, and a batch of bug fixes
+found by writing the tests.
+
+### Added
+
+- Test suites for every previously untested module: backend user/tag/search,
+  report/admin/analytics/upload, boundary validation, metrics, error reporter
+  and pagination; frontend auth pages, axios client, route guard, layout
+  chrome, library pages, HomePage, AnalyticsDashboard, AdminDashboard and the
+  note editor. **210 backend + 271 frontend tests** (was 57 + 31).
+- `GET /api/metrics` — dependency-free Prometheus exposition with request and
+  error counters, a latency histogram with normalised route labels, and
+  process uptime/memory gauges.
+- `utils/errorReporter.js` — every unexpected 5xx and both process crash
+  handlers funnel through one seam that logs with context, counts the error,
+  and optionally forwards sanitised JSON to `ERROR_WEBHOOK_URL`.
+- Frontend `ErrorBoundary` around the router, plus `utils/apiError.js`
+  (`toUserMessage`) replacing 18 hand-rolled `err?.response?.data?.message`
+  chains with status-aware messages.
+- Joi validation on every mutating boundary that previously validated ad-hoc
+  or not at all: reactions, comments, follows, reports, analytics events and
+  the admin role/suspend routes.
+- Custom hooks `useUserProfile`, `useNoteEditor`, `useAdminDashboard`
+  (alongside the existing `usePost`), and `utils/color.js`, extracted from the
+  four largest page components.
+- CI job **Clean clone**, proving the documented two-command setup
+  (`npm ci && npm test`) on a runner with no cache.
+
+### Fixed
+
+- **Pagination:** `?page=-5` produced a negative `skip`, which MongoDB
+  rejects — a 500 on every paginated endpoint. Page and limit are clamped.
+- **Search regex injection:** `?user=.*` matched every author and returned all
+  public posts; `?q=(` made MongoDB reject the query and returned 500. Both
+  inputs are escaped.
+- **Suspensions:** `PUT /admin/users/:id/suspend` read `Boolean(body.suspended)`,
+  so an empty body or a typo silently _lifted_ an active suspension.
+- **Profile leak:** `GET /users/:id` exposed `role`, `reportCount` and
+  `isSuspended`; the response is now an explicit allowlist.
+- **Analytics abuse:** `POST /events` accepted unauthenticated writes for
+  arbitrary post ids without checking the post existed.
+- **Tag casing:** `/api/tags/Grief/posts` returned nothing because stored slugs
+  are lowercase.
+- **Silent failures:** failed loads on the feed, collections board, collection
+  detail and note editor showed empty states indistinguishable from "you have
+  nothing" (and escaped as unhandled rejections). All now report and retry.
+- **Moderation:** admin actions had no error handling, so a 403 vanished
+  silently; and declining the "Delete this post?" confirm still closed the
+  report while leaving the note in place.
+- **Analytics dashboard** painted zeros and three empty states before its
+  requests resolved.
+- Route-change scrolling never used the instant path (`"instant" in window` is
+  always false), and MobileNav icon ligatures leaked into accessible names.
+
+### Changed
+
+- **Repository is now an npm workspaces monorepo** with a single root lockfile;
+  `npm ci && npm test` at the root installs and tests everything. Dockerfiles
+  build from the repo root, and Dependabot watches `/` for npm.
+- Coverage gates raised from 60/40/50/60 and 44/37/38/44 to **84/71/80/86**
+  (backend) and **85/79/80/86** (frontend).
+- Test fixtures generate their passwords instead of using a literal.
+- Backend test suite awaits index builds, removing `$text` search flakiness;
+  Vitest worker options migrated to the Vitest 4 top-level form (the previous
+  `poolOptions` block was silently ignored).
+
 ## [1.0.0] — 2026-08-16
 
 First tagged release: the full app plus the engineering baseline that makes it
@@ -41,5 +109,6 @@ buildable and testable from a fresh clone.
 - Stale `backend/uploads/` images removed from git (media lives in MongoDB).
 - `npm audit fix` applied in both packages (0 known vulnerabilities).
 
-[Unreleased]: https://github.com/ra-rafayahmed/The-Unsent-Archives/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/ra-rafayahmed/The-Unsent-Archives/releases/tag/v1.0.0
+[Unreleased]: https://github.com/ra-rafayahmed/The-Unsent-Archives/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/ra-rafayahmed/The-Unsent-Archives/compare/v1.0.0...v1.1.0

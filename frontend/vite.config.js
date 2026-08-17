@@ -32,7 +32,7 @@ export default defineConfig({
       include: ["src/**/*.{js,jsx}"],
       exclude: ["src/main.jsx", "src/test/**"],
       // Ratchet: raise these as coverage grows; CI fails below them.
-      thresholds: { statements: 44, branches: 37, functions: 38, lines: 44 },
+      thresholds: { statements: 85, branches: 79, functions: 80, lines: 86 },
     },
   },
 });

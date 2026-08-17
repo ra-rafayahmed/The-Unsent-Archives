@@ -115,9 +115,9 @@ run downloads a MongoDB binary, ~100 MB, cached afterwards.)
 
 **Coverage is gated.** `npm run test:coverage` exits non-zero below the floors
 configured in [`backend/jest.config.js`](backend/jest.config.js)
-(`coverageThreshold`: 60% statements / 40% branches / 50% functions / 60% lines)
+(`coverageThreshold`: 84% statements / 71% branches / 80% functions / 86% lines)
 and [`frontend/vite.config.js`](frontend/vite.config.js)
-(`coverage.thresholds`: 44 / 37 / 38 / 44). CI runs it on every push, so
+(`coverage.thresholds`: 85 / 79 / 80 / 86). CI runs it on every push, so
 coverage cannot silently regress. The floors are ratchets — raise them as
 suites grow, never lower them.
 

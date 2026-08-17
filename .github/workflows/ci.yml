@@ -35,7 +35,7 @@ jobs:
       - run: npm run lint --workspace backend
       - run: npm run format:check --workspace backend
       # Fails the build below the coverageThreshold in backend/jest.config.js
-      # (statements 60 / branches 40 / functions 50 / lines 60).
+      # (statements 84 / branches 71 / functions 80 / lines 86).
       - name: Tests + coverage gate
         run: npm run test:coverage --workspace backend
         env:
@@ -65,7 +65,7 @@ jobs:
       - run: npm run lint --workspace frontend
       - run: npm run format:check --workspace frontend
       # Fails the build below coverage.thresholds in frontend/vite.config.js
-      # (statements 44 / branches 37 / functions 38 / lines 44).
+      # (statements 85 / branches 79 / functions 80 / lines 86).
       - name: Tests + coverage gate
         run: npm run test:coverage --workspace frontend
       - uses: actions/upload-artifact@v4

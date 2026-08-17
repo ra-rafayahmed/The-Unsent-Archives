@@ -10,7 +10,7 @@ module.exports = {
   coverageReporters: ["text", "text-summary", "lcov"],
   // Ratchet: raise these as coverage grows; CI fails below them.
   coverageThreshold: {
-    global: { statements: 60, branches: 40, functions: 50, lines: 60 },
+    global: { statements: 84, branches: 71, functions: 80, lines: 86 },
   },
   collectCoverageFrom: [
     "controllers/**/*.js",
