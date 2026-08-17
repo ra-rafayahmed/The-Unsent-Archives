@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import DoodleBackdrop from "../../components/decor/Doodles";
+import { toUserMessage } from "../../utils/apiError";
 
 const Login = () => {
   const { login } = useAuth();
@@ -21,7 +22,7 @@ const Login = () => {
       const redirectPath = location.state?.from?.pathname || "/";
       navigate(redirectPath, { replace: true });
     } catch (err) {
-      setError(err?.response?.data?.message || "Login failed");
+      setError(toUserMessage(err, "Login failed"));
     } finally {
       setLoading(false);
     }

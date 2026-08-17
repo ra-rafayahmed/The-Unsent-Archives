@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import DoodleBackdrop from "../../components/decor/Doodles";
+import { toUserMessage } from "../../utils/apiError";
 
 const Register = () => {
   const { register } = useAuth();
@@ -25,7 +26,7 @@ const Register = () => {
         navigate("/");
       }
     } catch (err) {
-      setError(err?.response?.data?.message || "Registration failed");
+      setError(toUserMessage(err, "Registration failed"));
     } finally {
       setLoading(false);
     }

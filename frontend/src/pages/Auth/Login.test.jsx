@@ -89,8 +89,16 @@ describe("Login page", () => {
     expect(screen.queryByText("Home page")).not.toBeInTheDocument();
   });
 
-  it("falls back to a generic error when the failure has no message", async () => {
+  it("says the server is unreachable when the request never got a response", async () => {
     login.mockRejectedValueOnce(new Error("network"));
+    renderLogin();
+    fill();
+    fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
+    expect(await screen.findByText(/Cannot reach the server/)).toBeInTheDocument();
+  });
+
+  it("falls back to a generic error when an HTTP failure carries no message", async () => {
+    login.mockRejectedValueOnce({ response: { status: 400, data: {} } });
     renderLogin();
     fill();
     fireEvent.click(screen.getByRole("button", { name: "Sign in" }));

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../../api/axios";
 import DoodleBackdrop from "../../components/decor/Doodles";
+import { toUserMessage } from "../../utils/apiError";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -22,7 +23,7 @@ const ForgotPassword = () => {
         setDevToken(data.resetToken);
       }
     } catch (err) {
-      setError(err?.response?.data?.message || "Could not start password reset");
+      setError(toUserMessage(err, "Could not start password reset"));
     } finally {
       setLoading(false);
     }

@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import DoodleBackdrop from "../../components/decor/Doodles";
+import { toUserMessage } from "../../utils/apiError";
 
 const RecoverWithCode = () => {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ const RecoverWithCode = () => {
       }
       navigate("/", { replace: true });
     } catch (err) {
-      setError(err?.response?.data?.message || "Recovery failed");
+      setError(toUserMessage(err, "Recovery failed"));
     } finally {
       setLoading(false);
     }

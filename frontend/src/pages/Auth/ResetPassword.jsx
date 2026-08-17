@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import DoodleBackdrop from "../../components/decor/Doodles";
+import { toUserMessage } from "../../utils/apiError";
 
 const ResetPassword = () => {
   const [searchParams] = useSearchParams();
@@ -42,7 +43,7 @@ const ResetPassword = () => {
       }
       navigate("/", { replace: true });
     } catch (err) {
-      setError(err?.response?.data?.message || "Could not reset password");
+      setError(toUserMessage(err, "Could not reset password"));
     } finally {
       setLoading(false);
     }

@@ -65,8 +65,16 @@ describe("ForgotPassword page", () => {
     expect(screen.getByRole("button", { name: "Send reset link" })).toBeEnabled();
   });
 
-  it("falls back to a generic error when the failure carries no message", async () => {
+  it("says the server is unreachable when the request never got a response", async () => {
     api.post.mockRejectedValueOnce(new Error("network"));
+    renderPage();
+    typeEmail();
+    submit();
+    expect(await screen.findByText(/Cannot reach the server/)).toBeInTheDocument();
+  });
+
+  it("falls back to a generic error when an HTTP failure carries no message", async () => {
+    api.post.mockRejectedValueOnce({ response: { status: 400, data: {} } });
     renderPage();
     typeEmail();
     submit();
