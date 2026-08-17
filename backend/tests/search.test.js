@@ -175,28 +175,28 @@ describe("GET /api/search", () => {
     expect(res.body.total).toBe(1);
   });
 
-  // NOTE: the `user` filter interpolates the raw query value into
-  // `new RegExp("^" + user + "$", "i")` (searchController.js:27) without escaping it,
-  // so regex metacharacters act as a pattern instead of matching literally.
-  // Asserting today's behaviour rather than the safer literal match.
-  it("treats regex metacharacters in the user filter as a pattern", async () => {
+  it("treats regex metacharacters in the user filter literally, not as a pattern", async () => {
     const a = await registerUser();
     const b = await registerUser();
     await publishPost(a.token, { content: "mine" });
     await publishPost(b.token, { content: "theirs" });
 
+    // A wildcard must not enumerate every public post.
     const res = await request(app).get("/api/search").query({ user: ".*" });
     expect(res.status).toBe(200);
-    expect(res.body.total).toBe(2);
+    expect(res.body.total).toBe(0);
+
+    // The exact username still matches.
+    const exact = await request(app).get("/api/search").query({ user: a.user.username });
+    expect(exact.body.total).toBe(1);
   });
 
-  // NOTE: the tag lookup passes the search term straight into `$regex`
-  // (searchController.js:84-86) without escaping, so a query containing an unbalanced
-  // regex construct makes MongoDB reject it and the request 500s.
-  it("fails with 500 when the query contains an invalid regular expression", async () => {
-    const res = await request(app).get("/api/search").query({ q: "(" });
-    expect(res.status).toBe(500);
-    expect(res.body.message).toMatch(/Regular expression is invalid/);
+  it("survives a query containing an invalid regular expression", async () => {
+    for (const q of ["(", "[", "*", "a\\", "?"]) {
+      const res = await request(app).get("/api/search").query({ q });
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.tags)).toBe(true);
+    }
   });
 
   it("ignores an invalid token instead of rejecting the request", async () => {

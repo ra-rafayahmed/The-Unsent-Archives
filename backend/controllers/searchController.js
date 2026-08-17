@@ -1,6 +1,7 @@
 const { SearchIndex, Post, User, Tag } = require("../models");
 const asyncHandler = require("../utils/asyncHandler");
 const { getPagination } = require("../utils/pagination");
+const { escapeRegex } = require("../utils/escapeRegex");
 
 // @desc    Full-text search across posts
 // @route   GET /api/search
@@ -24,7 +25,9 @@ const search = asyncHandler(async (req, res, next) => {
   }
 
   if (user) {
-    query.authorUsername = new RegExp(`^${user}$`, "i");
+    // Anchored exact match on the author name; escaped so `?user=.*` cannot
+    // turn into a wildcard that returns every public post.
+    query.authorUsername = new RegExp(`^${escapeRegex(user)}$`, "i");
   }
 
   // Find in SearchIndex
@@ -66,7 +69,7 @@ const search = asyncHandler(async (req, res, next) => {
   const userQuery = {};
   const userSearchTerm = user || q;
   if (userSearchTerm) {
-    const escaped = userSearchTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const escaped = escapeRegex(userSearchTerm);
     userQuery.$or = [
       { username: { $regex: escaped, $options: "i" } },
       { "profile.displayName": { $regex: escaped, $options: "i" } },
@@ -78,11 +81,12 @@ const search = asyncHandler(async (req, res, next) => {
     : [];
 
   const tagSearchTerm = tag || q;
+  const escapedTagTerm = escapeRegex(tagSearchTerm);
   const tags = tagSearchTerm
     ? await Tag.find({
         $or: [
-          { slug: { $regex: tagSearchTerm, $options: "i" } },
-          { name: { $regex: tagSearchTerm, $options: "i" } },
+          { slug: { $regex: escapedTagTerm, $options: "i" } },
+          { name: { $regex: escapedTagTerm, $options: "i" } },
         ],
       })
         .sort({ usageCount: -1 })
