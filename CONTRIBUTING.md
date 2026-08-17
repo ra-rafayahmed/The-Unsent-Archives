@@ -19,6 +19,7 @@ Run in **both** `backend/` and `frontend/`:
 ```bash
 npm run lint
 npm run format:check   # or `npm run format` to fix
+npm run typecheck      # backend: tsc --noEmit over @ts-check'd files
 npm test
 ```
 
@@ -53,6 +54,29 @@ search tests`, `ci: cache npm`), then a blank line and a short body
 | add a page or component          | `frontend/src/pages/*` or `src/components/*` plus a `*.test.jsx` next to it                                                                          |
 | add an env var                   | `backend/config/index.js`, `backend/.env.example`, README table, `docker-compose.yml`                                                                |
 | add a dependency                 | `npm install` in the right package and commit the lockfile — then run `npx -y npm@10 install --package-lock-only` before committing (see note below) |
+
+## Type checking
+
+The backend runs `tsc --noEmit` in CI, but checking is **opt-in per file**: a
+module is only checked once it carries a `// @ts-check` pragma and JSDoc types
+(see `backend/utils/*.js`). This is a ratchet — when you touch a file, add the
+pragma and its `@param`/`@returns` annotations, and it stays checked from then
+on. Do not remove a pragma to make an error go away.
+
+Currently checked: `backend/utils/**`. Models and services still need Mongoose
+document typings that are awkward to express in JSDoc; those come later.
+
+## Coverage baseline
+
+As of v1.2.0 (`npm run test:coverage` at the root):
+
+| Package  | Statements | Branches | Functions | Lines |
+| -------- | ---------- | -------- | --------- | ----- |
+| backend  | 86.8%      | 74.4%    | 83.3%     | 89.1% |
+| frontend | 88.3%      | 82.7%    | 82.9%     | 89.8% |
+
+The gates in `backend/jest.config.js` and `frontend/vite.config.js` sit just
+below these. Raise them when you push coverage meaningfully higher.
 
 ## Workspaces and the lockfile
 

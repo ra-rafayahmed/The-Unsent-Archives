@@ -1,3 +1,4 @@
+// @ts-check
 // Reusable pagination logic.
 //
 // Query strings are untrusted: `?page=-5` previously produced a negative skip,
@@ -12,8 +13,15 @@
  * @returns {{page: number, limit: number, skip: number}}
  */
 const getPagination = (pageStr, limitStr, defaultLimit = 20, maxLimit = 100) => {
+  /**
+   * @param {string|number|undefined} value
+   * @param {number} fallback
+   * @returns {number}
+   */
   const parse = (value, fallback) => {
-    const n = Number.parseInt(value, 10);
+    // String() first: the query value may already be a number, and parseInt is
+    // typed for strings only.
+    const n = Number.parseInt(String(value), 10);
     return Number.isFinite(n) ? n : fallback;
   };
 

@@ -1,0 +1,21 @@
+{
+  // Type checking is opt-in per file: a module is checked only once it carries
+  // a `// @ts-check` pragma. That lets the gate ratchet outward file by file
+  // without a big-bang TypeScript migration, and keeps Mongoose's document
+  // typings (which need real .ts to model well) out of scope for now.
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "node16",
+    "moduleResolution": "node16",
+    "lib": ["ES2022"],
+    "allowJs": true,
+    "checkJs": false,
+    "noEmit": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "types": ["node", "jest"]
+  },
+  "include": ["**/*.js"],
+  "exclude": ["node_modules", "coverage", "tests"]
+}

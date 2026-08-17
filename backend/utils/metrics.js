@@ -1,3 +1,4 @@
+// @ts-check
 // Minimal, dependency-free metrics registry with Prometheus text exposition.
 //
 // Deliberately small: this service needs request/error counters and latency
@@ -7,6 +8,10 @@
 const DURATION_BUCKETS_MS = [5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000];
 
 /** Serialise a label object into Prometheus `{a="1",b="2"}` form. */
+/**
+ * @param {Record<string, unknown>} labels
+ * @returns {string}
+ */
 const formatLabels = (labels) => {
   const entries = Object.entries(labels).filter(([, v]) => v !== undefined && v !== null);
   if (entries.length === 0) return "";
@@ -17,6 +22,10 @@ const formatLabels = (labels) => {
 };
 
 /** Stable key for a label set so the same labels always hit the same series. */
+/**
+ * @param {Record<string, unknown>} labels
+ * @returns {string}
+ */
 const labelKey = (labels) =>
   JSON.stringify(
     Object.keys(labels)
@@ -25,6 +34,10 @@ const labelKey = (labels) =>
   );
 
 class Counter {
+  /**
+   * @param {string} name
+   * @param {string} help
+   */
   constructor(name, help) {
     this.name = name;
     this.help = help;
@@ -51,6 +64,11 @@ class Counter {
 }
 
 class Histogram {
+  /**
+   * @param {string} name
+   * @param {string} help
+   * @param {number[]} [buckets]
+   */
   constructor(name, help, buckets = DURATION_BUCKETS_MS) {
     this.name = name;
     this.help = help;
@@ -101,11 +119,22 @@ class Registry {
     this.metrics = new Map();
   }
 
+  /**
+   * @param {string} name
+   * @param {string} help
+   * @returns {Counter}
+   */
   counter(name, help) {
     if (!this.metrics.has(name)) this.metrics.set(name, new Counter(name, help));
     return this.metrics.get(name);
   }
 
+  /**
+   * @param {string} name
+   * @param {string} help
+   * @param {number[]} [buckets]
+   * @returns {Histogram}
+   */
   histogram(name, help, buckets) {
     if (!this.metrics.has(name)) this.metrics.set(name, new Histogram(name, help, buckets));
     return this.metrics.get(name);
@@ -153,6 +182,10 @@ const unhandledErrorsTotal = registry.counter(
 /**
  * Collapse a request path into a low-cardinality route label. Mongo ObjectIds
  * and other long ids become `:id` so the metric does not explode per resource.
+ */
+/**
+ * @param {{ route?: { path?: string }, baseUrl?: string, path?: string }} req
+ * @returns {string}
  */
 const normalizeRoute = (req) => {
   const raw = req.route?.path && req.baseUrl ? `${req.baseUrl}${req.route.path}` : req.path || "/";

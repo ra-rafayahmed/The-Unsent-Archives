@@ -1,3 +1,4 @@
+// @ts-check
 // Centralised error reporting seam.
 //
 // Every unexpected error funnels through captureException(), which logs it with
@@ -34,7 +35,10 @@ const sanitizeContext = (context = {}) => {
   );
 };
 
-/** Fire-and-forget forward; never blocks or throws into the request path. */
+/**
+ * Fire-and-forget forward; never blocks or throws into the request path.
+ * @param {Record<string, unknown>} payload
+ */
 const forward = (payload) => {
   if (!WEBHOOK_URL || typeof fetch !== "function") return;
 

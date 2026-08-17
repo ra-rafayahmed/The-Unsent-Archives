@@ -34,6 +34,9 @@ jobs:
       - run: npm audit --audit-level=high
       - run: npm run lint --workspace backend
       - run: npm run format:check --workspace backend
+      # JSDoc-based checking: files opt in with `// @ts-check`, so the gate can
+      # ratchet outward without a big-bang TypeScript migration.
+      - run: npm run typecheck --workspace backend
       # Fails the build below the coverageThreshold in backend/jest.config.js
       # (statements 84 / branches 71 / functions 80 / lines 86).
       - name: Tests + coverage gate
