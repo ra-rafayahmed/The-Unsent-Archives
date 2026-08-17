@@ -1,11 +1,17 @@
 const { app, request, registerUser, authHeader, User } = require("./helpers/factories");
+const {
+  TEST_PASSWORD,
+  NEW_PASSWORD,
+  OTHER_PASSWORD,
+  WRONG_PASSWORD,
+} = require("./helpers/constants");
 
 describe("POST /api/auth/register", () => {
   it("creates a user, returns a JWT and one-time backup codes", async () => {
     const res = await request(app).post("/api/auth/register").send({
       username: "alice",
       email: "Alice@Example.com",
-      password: "password123",
+      password: TEST_PASSWORD,
     });
 
     expect(res.status).toBe(201);
@@ -21,15 +27,15 @@ describe("POST /api/auth/register", () => {
 
     // Password must be stored hashed, never in plaintext.
     const stored = await User.findOne({ email: "alice@example.com" }).select("+passwordHash");
-    expect(stored.passwordHash).not.toBe("password123");
-    expect(await stored.comparePassword("password123")).toBe(true);
+    expect(stored.passwordHash).not.toBe(TEST_PASSWORD);
+    expect(await stored.comparePassword(TEST_PASSWORD)).toBe(true);
   });
 
   it("grants the admin role to emails listed in ADMIN_EMAILS", async () => {
     const res = await request(app).post("/api/auth/register").send({
       username: "root",
       email: "admin@example.com",
-      password: "password123",
+      password: TEST_PASSWORD,
     });
     expect(res.status).toBe(201);
     expect(res.body.user.role).toBe("admin");
@@ -51,13 +57,13 @@ describe("POST /api/auth/register", () => {
 
     const dupEmail = await request(app)
       .post("/api/auth/register")
-      .send({ username: "bob2", email: "BOB@example.com", password: "password123" });
+      .send({ username: "bob2", email: "BOB@example.com", password: TEST_PASSWORD });
     expect(dupEmail.status).toBe(409);
     expect(dupEmail.body.message).toMatch(/Email/);
 
     const dupUsername = await request(app)
       .post("/api/auth/register")
-      .send({ username: "bob", email: "other@example.com", password: "password123" });
+      .send({ username: "bob", email: "other@example.com", password: TEST_PASSWORD });
     expect(dupUsername.status).toBe(409);
     expect(dupUsername.body.message).toMatch(/Username/);
   });
@@ -76,12 +82,12 @@ describe("POST /api/auth/login", () => {
     const { user } = await registerUser();
     const wrong = await request(app)
       .post("/api/auth/login")
-      .send({ email: user.email, password: "nope-nope" });
+      .send({ email: user.email, password: WRONG_PASSWORD });
     expect(wrong.status).toBe(401);
 
     const unknown = await request(app)
       .post("/api/auth/login")
-      .send({ email: "ghost@example.com", password: "password123" });
+      .send({ email: "ghost@example.com", password: TEST_PASSWORD });
     expect(unknown.status).toBe(401);
   });
 
@@ -119,13 +125,13 @@ describe("password reset flow", () => {
 
     const reset = await request(app)
       .post("/api/auth/reset-password")
-      .send({ token: forgot.body.resetToken, password: "newpassword456" });
+      .send({ token: forgot.body.resetToken, password: NEW_PASSWORD });
     expect(reset.status).toBe(200);
     expect(typeof reset.body.token).toBe("string");
 
     const login = await request(app)
       .post("/api/auth/login")
-      .send({ email: user.email, password: "newpassword456" });
+      .send({ email: user.email, password: NEW_PASSWORD });
     expect(login.status).toBe(200);
   });
 
@@ -140,7 +146,7 @@ describe("password reset flow", () => {
   it("rejects an invalid reset token", async () => {
     const res = await request(app)
       .post("/api/auth/reset-password")
-      .send({ token: "x".repeat(40), password: "newpassword456" });
+      .send({ token: "x".repeat(40), password: NEW_PASSWORD });
     expect(res.status).toBe(400);
   });
 });
@@ -149,12 +155,12 @@ describe("backup code recovery", () => {
   it("recovers an account with an unused code, and refuses to reuse it", async () => {
     const reg = await request(app)
       .post("/api/auth/register")
-      .send({ username: "carol", email: "carol@example.com", password: "password123" });
+      .send({ username: "carol", email: "carol@example.com", password: TEST_PASSWORD });
     const [code] = reg.body.backupCodes;
 
     const ok = await request(app)
       .post("/api/auth/recover")
-      .send({ email: "carol@example.com", code, password: "recovered789" });
+      .send({ email: "carol@example.com", code, password: NEW_PASSWORD });
     expect(ok.status).toBe(200);
     expect(typeof ok.body.token).toBe("string");
 
@@ -163,7 +169,7 @@ describe("backup code recovery", () => {
 
     const reuse = await request(app)
       .post("/api/auth/recover")
-      .send({ email: "carol@example.com", code, password: "another000" });
+      .send({ email: "carol@example.com", code, password: OTHER_PASSWORD });
     expect(reuse.status).toBe(400);
   });
 });

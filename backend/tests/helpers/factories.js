@@ -2,6 +2,7 @@
 const request = require("supertest");
 const app = require("../../app");
 const { User, Post } = require("../../models");
+const { TEST_PASSWORD } = require("./constants");
 
 let counter = 0;
 const uniq = () => `${Date.now().toString(36)}${(counter++).toString(36)}`;
@@ -12,7 +13,7 @@ async function registerUser(overrides = {}) {
   const body = {
     username: `user_${suffix}`,
     email: `user_${suffix}@example.com`,
-    password: "password123",
+    password: TEST_PASSWORD,
     ...overrides,
   };
   const res = await request(app).post("/api/auth/register").send(body);
