@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
+import useAdminDashboard from "../../hooks/useAdminDashboard";
 
 const TABS = [
   { id: "reports", label: "Reports", glyph: "⚑" },
@@ -11,38 +10,28 @@ const TABS = [
 
 const AdminDashboard = () => {
   const { isAdmin } = useAuth();
-  const [tab, setTab] = useState("reports");
-  const [users, setUsers] = useState([]);
-  const [posts, setPosts] = useState([]);
-  const [reports, setReports] = useState([]);
-  const [reportFilter, setReportFilter] = useState("open");
-  const [sort, setSort] = useState("recent");
-  const [error, setError] = useState("");
-  const [flash, setFlash] = useState("");
-  const [issued, setIssued] = useState(null);
 
-  const refresh = async () => {
-    setError("");
-    try {
-      if (tab === "users") {
-        const { data } = await api.get(`/admin/users`, { params: { sort } });
-        setUsers(data.users || []);
-      } else if (tab === "posts") {
-        const { data } = await api.get(`/admin/posts`, { params: { sort } });
-        setPosts(data.posts || []);
-      } else if (tab === "reports") {
-        const { data } = await api.get(`/admin/reports`, { params: { status: reportFilter } });
-        setReports(data.reports || []);
-      }
-    } catch (err) {
-      setError(err?.response?.data?.message || "Failed to load");
-    }
-  };
-
-  useEffect(() => {
-    if (!isAdmin) return;
-    refresh();
-  }, [isAdmin, tab, sort, reportFilter]);
+  const {
+    tab,
+    setTab,
+    users,
+    posts,
+    reports,
+    reportFilter,
+    setReportFilter,
+    sort,
+    setSort,
+    error,
+    flash,
+    issued,
+    setIssued,
+    deleteUser: deleteUserById,
+    deletePost: deletePostById,
+    toggleRole,
+    toggleSuspend,
+    issueResetForUser,
+    resolveReport,
+  } = useAdminDashboard({ enabled: isAdmin });
 
   if (!isAdmin) {
     return <div className="panel">Admin access only.</div>;
@@ -50,45 +39,12 @@ const AdminDashboard = () => {
 
   const deleteUser = async (id) => {
     if (!window.confirm("Delete this account and all related data?")) return;
-    await api.delete(`/admin/users/${id}`);
-    setFlash("User deleted");
-    refresh();
+    await deleteUserById(id);
   };
 
   const deletePost = async (id) => {
     if (!window.confirm("Delete this post?")) return;
-    await api.delete(`/admin/posts/${id}`);
-    setFlash("Post deleted");
-    refresh();
-  };
-
-  const toggleRole = async (id, currentRole) => {
-    const nextRole = currentRole === "admin" ? "user" : "admin";
-    await api.put(`/admin/users/${id}/role`, { role: nextRole });
-    refresh();
-  };
-
-  const toggleSuspend = async (id, currentlySuspended) => {
-    await api.put(`/admin/users/${id}/suspend`, { suspended: !currentlySuspended });
-    setFlash(currentlySuspended ? "User unsuspended" : "User suspended");
-    refresh();
-  };
-
-  const issueResetForUser = async (u) => {
-    setFlash("");
-    setError("");
-    try {
-      const { data } = await api.post(`/admin/users/${u._id}/issue-reset`);
-      setIssued({ user: u, ...data });
-    } catch (err) {
-      setError(err?.response?.data?.message || "Could not issue reset");
-    }
-  };
-
-  const resolveReport = async (id, action) => {
-    await api.put(`/admin/reports/${id}/resolve`, { action });
-    setFlash(`Report ${action}`);
-    refresh();
+    await deletePostById(id);
   };
 
   return (
