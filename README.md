@@ -91,12 +91,29 @@ All backend settings come from environment variables (see
 From the **repo root** (fans out to both packages):
 
 ```bash
-npm ci                # one install for both workspaces
-npm test              # backend Jest suite, then frontend Vitest suite
-npm run test:coverage # both suites with the coverage gate
-npm run lint          # ESLint both
-npm run build         # vite build -> frontend/dist
+npm ci                 # one install, both workspaces (single root lockfile)
+npm test               # Jest (backend) then Vitest (frontend) — 512 tests
+npm run test:backend   # Jest only
+npm run test:frontend  # Vitest only
+npm run test:coverage  # both suites with the coverage gate
+npm run lint           # ESLint both
+npm run typecheck      # tsc --noEmit over @ts-check'd files
+npm run build          # vite build -> frontend/dist
 ```
+
+The root scripts invoke the runners directly (`jest`, `vitest`), so the whole
+project installs and tests with **two commands and no per-package steps**:
+
+```bash
+git clone https://github.com/ra-rafayahmed/The-Unsent-Archives.git
+cd The-Unsent-Archives
+npm ci && npm test
+```
+
+No database, no services, no credentials: the backend suite starts an in-memory
+MongoDB (the binary is downloaded once, ~100 MB, then cached) and the frontend
+suite runs in jsdom. CI runs this exact two-command path on every push in a
+job called **Clean clone**, on a runner with no cache.
 
 So the whole project installs and tests from a clean clone with just
 `npm ci && npm test` at the root — no per-package steps required.

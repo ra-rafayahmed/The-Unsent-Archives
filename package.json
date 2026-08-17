@@ -11,16 +11,18 @@
     "frontend"
   ],
   "scripts": {
-    "test": "npm run test --workspaces --if-present",
-    "test:coverage": "npm run test:coverage --workspaces --if-present",
+    "test": "npm run test:backend && npm run test:frontend",
+    "test:backend": "cross-env NODE_ENV=test jest --config backend/jest.config.js --rootDir backend --runInBand",
+    "test:frontend": "vitest run --root frontend",
+    "test:coverage": "cross-env NODE_ENV=test jest --config backend/jest.config.js --rootDir backend --runInBand --coverage && vitest run --root frontend --coverage",
     "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
     "format": "prettier --write \"*.{json,md,yml,yaml}\" \".github/**/*.{yml,yaml}\" && npm run format --workspaces --if-present",
     "format:check": "prettier --check \"*.{json,md,yml,yaml}\" \".github/**/*.{yml,yaml}\" && npm run format:check --workspaces --if-present",
     "build": "npm run build --workspace frontend",
     "start": "npm run start --workspace backend",
     "dev:backend": "npm run dev --workspace backend",
-    "dev:frontend": "npm run dev --workspace frontend",
-    "typecheck": "npm run typecheck --workspaces --if-present"
+    "dev:frontend": "npm run dev --workspace frontend"
   },
   "devDependencies": {
     "prettier": "^3.9.6"

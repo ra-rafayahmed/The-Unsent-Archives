@@ -15,7 +15,7 @@ const listTags = asyncHandler(async (req, res, next) => {
   }
 
   const [tags, total] = await Promise.all([
-    Tag.find(query).sort({ name: 1 }).skip(skip).limit(limit),
+    Tag.find(query).sort({ name: 1, _id: 1 }).skip(skip).limit(limit),
     Tag.countDocuments(query),
   ]);
 
@@ -56,7 +56,7 @@ const getPostsByTag = asyncHandler(async (req, res, next) => {
 
   const [posts, total] = await Promise.all([
     Post.find(query)
-      .sort({ createdAt: -1 })
+      .sort({ createdAt: -1, _id: -1 })
       .skip(skip)
       .limit(limit)
       .populate("authorId", "username avatarUrl"),

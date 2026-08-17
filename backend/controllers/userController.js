@@ -86,7 +86,7 @@ const getUserPosts = asyncHandler(async (req, res, next) => {
 
   const [posts, total] = await Promise.all([
     Post.find(query)
-      .sort({ createdAt: -1 })
+      .sort({ createdAt: -1, _id: -1 })
       .skip(skip)
       .limit(limit)
       .populate("authorId", "username avatarUrl")
@@ -128,7 +128,7 @@ const getUserCollections = asyncHandler(async (req, res, next) => {
 
   const [collections, total] = await Promise.all([
     Collection.find(query)
-      .sort({ createdAt: -1 })
+      .sort({ createdAt: -1, _id: -1 })
       .skip(skip)
       .limit(limit)
       .populate({

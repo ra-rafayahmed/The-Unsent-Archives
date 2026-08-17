@@ -166,7 +166,7 @@ const listReports = asyncHandler(async (req, res) => {
   const query = status === "all" ? {} : { status };
 
   const reports = await Report.find(query)
-    .sort({ createdAt: -1 })
+    .sort({ createdAt: -1, _id: -1 })
     .limit(200)
     .populate("reporterId", "username")
     .populate("resolvedBy", "username");

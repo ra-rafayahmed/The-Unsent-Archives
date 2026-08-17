@@ -10,8 +10,11 @@ const getExplore = asyncHandler(async (req, res, next) => {
   const { page, limit, skip } = getPagination(req.query.page, req.query.limit);
 
   const query = { visibility: "public" };
+  // _id last so paging is stable when the leading keys tie.
   const sortCriteria =
-    sort === "popular" ? { reactionCount: -1, viewCount: -1, createdAt: -1 } : { createdAt: -1 };
+    sort === "popular"
+      ? { reactionCount: -1, viewCount: -1, createdAt: -1, _id: -1 }
+      : { createdAt: -1, _id: -1 };
 
   const [posts, total] = await Promise.all([
     Post.find(query)
@@ -62,7 +65,7 @@ const getFollowingFeed = asyncHandler(async (req, res, next) => {
 
   const [posts, total] = await Promise.all([
     Post.find(query)
-      .sort({ createdAt: -1 })
+      .sort({ createdAt: -1, _id: -1 })
       .skip(skip)
       .limit(limit)
       .populate("authorId", "username avatarUrl")

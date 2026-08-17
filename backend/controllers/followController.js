@@ -76,7 +76,7 @@ const getFollowers = asyncHandler(async (req, res, next) => {
 
   const [follows, total] = await Promise.all([
     Follow.find({ followeeId: id })
-      .sort({ followedAt: -1 })
+      .sort({ followedAt: -1, _id: -1 })
       .skip(skip)
       .limit(limit)
       .populate("followerId", "username avatarUrl profile.displayName"),
@@ -105,7 +105,7 @@ const getFollowing = asyncHandler(async (req, res, next) => {
 
   const [follows, total] = await Promise.all([
     Follow.find({ followerId: id })
-      .sort({ followedAt: -1 })
+      .sort({ followedAt: -1, _id: -1 })
       .skip(skip)
       .limit(limit)
       .populate("followeeId", "username avatarUrl profile.displayName"),

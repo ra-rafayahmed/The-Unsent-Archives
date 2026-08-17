@@ -161,6 +161,23 @@ describe("GET /api/search", () => {
     expect(seen).toEqual(["lighthouse one", "lighthouse three", "lighthouse two"]);
   });
 
+  it("pages a tied-score result set without repeating or dropping a hit", async () => {
+    const { token } = await registerUser();
+    // Identical term frequency means identical textScore, so the sort ties and
+    // only the _id tiebreaker keeps page boundaries stable.
+    for (let i = 0; i < 6; i++) await publishPost(token, { content: `lighthouse note ${i}` });
+
+    const ids = [];
+    for (let page = 1; page <= 3; page++) {
+      const res = await request(app).get("/api/search").query({ q: "lighthouse", limit: 2, page });
+      expect(res.status).toBe(200);
+      ids.push(...res.body.posts.map((p) => p._id));
+    }
+
+    expect(ids).toHaveLength(6);
+    expect(new Set(ids).size).toBe(6);
+  });
+
   it("skips index entries whose post no longer exists", async () => {
     const { token } = await registerUser();
     await publishPost(token, { content: "orphaned lighthouse" });

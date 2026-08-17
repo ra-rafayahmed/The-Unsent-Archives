@@ -35,10 +35,12 @@ const search = asyncHandler(async (req, res, next) => {
 
   if (q) {
     // Sort by text score if querying by text
-    searchQuery = searchQuery.sort({ score: { $meta: "textScore" } });
+    // _id breaks ties: equal text scores otherwise order arbitrarily, so a
+    // page boundary could repeat one hit and hide another.
+    searchQuery = searchQuery.sort({ score: { $meta: "textScore" }, _id: -1 });
   } else {
     // Otherwise newest first
-    searchQuery = searchQuery.sort({ createdAt: -1 });
+    searchQuery = searchQuery.sort({ createdAt: -1, _id: -1 });
   }
 
   const [indexHits, total] = await Promise.all([searchQuery, SearchIndex.countDocuments(query)]);
