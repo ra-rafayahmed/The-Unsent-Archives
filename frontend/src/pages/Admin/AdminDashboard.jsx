@@ -38,13 +38,14 @@ const AdminDashboard = () => {
   }
 
   const deleteUser = async (id) => {
-    if (!window.confirm("Delete this account and all related data?")) return;
-    await deleteUserById(id);
+    if (!window.confirm("Delete this account and all related data?")) return false;
+    return deleteUserById(id);
   };
 
+  // Returns false when the operator cancels, so callers can skip follow-up work.
   const deletePost = async (id) => {
-    if (!window.confirm("Delete this post?")) return;
-    await deletePostById(id);
+    if (!window.confirm("Delete this post?")) return false;
+    return deletePostById(id);
   };
 
   return (
@@ -172,7 +173,8 @@ const AdminDashboard = () => {
                           type="button"
                           className="ghost-btn small is-danger"
                           onClick={async () => {
-                            await deletePost(r.target._id);
+                            // Only close the report if the note was actually deleted.
+                            if (!(await deletePost(r.target._id))) return;
                             await resolveReport(r._id, "resolved");
                           }}
                         >

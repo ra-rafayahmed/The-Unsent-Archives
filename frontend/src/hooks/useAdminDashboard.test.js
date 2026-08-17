@@ -238,19 +238,35 @@ describe("useAdminDashboard", () => {
     expect(getCalls("/admin/reports")).toBe(2);
   });
 
-  // NOTE: current behaviour — only the loaders and issueResetForUser catch.
-  // A failing moderation action rejects to the caller and sets no `error`
-  // message, so the UI shows nothing. Asserted here to pin the behaviour;
-  // it is a pre-existing gap, not a deliberate design.
-  it("moderation actions reject on failure without setting `error`", async () => {
+  it("reports a failed moderation action instead of rejecting to the caller", async () => {
     const { result } = await mountLoaded();
-    api.put.mockRejectedValueOnce({ response: { data: { message: "nope" } } });
-    await expect(result.current.resolveReport("r1", "resolved")).rejects.toBeTruthy();
-    expect(result.current.error).toBe("");
+
+    api.put.mockRejectedValueOnce({ response: { status: 403, data: { message: "nope" } } });
+    let ok;
+    await act(async () => {
+      ok = await result.current.resolveReport("r1", "resolved");
+    });
+    expect(ok).toBe(false);
+    expect(result.current.error).toBe("nope");
     expect(result.current.flash).toBe("");
 
-    api.delete.mockRejectedValueOnce({ response: { data: { message: "nope" } } });
-    await expect(result.current.deleteUser("u1")).rejects.toBeTruthy();
+    api.delete.mockRejectedValueOnce({ response: { status: 500, data: {} } });
+    await act(async () => {
+      ok = await result.current.deleteUser("u1");
+    });
+    expect(ok).toBe(false);
+    expect(result.current.error).toMatch(/server had a problem/i);
+  });
+
+  it("resolves true and flashes on a successful action", async () => {
+    const { result } = await mountLoaded();
+    api.put.mockResolvedValueOnce({ data: {} });
+    let ok;
+    await act(async () => {
+      ok = await result.current.resolveReport("r1", "dismissed");
+    });
+    expect(ok).toBe(true);
+    expect(result.current.flash).toBe("Report dismissed");
     expect(result.current.error).toBe("");
   });
 });

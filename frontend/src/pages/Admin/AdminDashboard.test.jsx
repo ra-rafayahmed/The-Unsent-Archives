@@ -150,20 +150,18 @@ describe("AdminDashboard", () => {
     );
   });
 
-  // NOTE: pre-existing behaviour — declining the "Delete this post?" confirm
-  // still marks the report resolved, because the combined handler awaits the
-  // (silently cancelled) delete and then resolves unconditionally.
-  it("still resolves the report when the delete confirm is declined", async () => {
+  it("leaves the report open when the delete confirm is declined", async () => {
     window.confirm.mockReturnValue(false);
     render();
     await screen.findByText("spam");
     api.put.mockResolvedValue({ data: {} });
 
     fireEvent.click(screen.getByRole("button", { name: /Delete note/ }));
-    await waitFor(() =>
-      expect(api.put).toHaveBeenCalledWith("/admin/reports/r1/resolve", { action: "resolved" })
-    );
+
+    // Nothing was deleted, so the report must not be marked resolved either.
+    await waitFor(() => expect(window.confirm).toHaveBeenCalled());
     expect(api.delete).not.toHaveBeenCalled();
+    expect(api.put).not.toHaveBeenCalledWith("/admin/reports/r1/resolve", { action: "resolved" });
   });
 
   it("suspends the reported account from a user report, sending an explicit flag", async () => {

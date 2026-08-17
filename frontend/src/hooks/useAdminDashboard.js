@@ -51,33 +51,56 @@ export default function useAdminDashboard({ enabled = true } = {}) {
   }, [enabled, refresh]);
 
   /** Delete an account and everything attached to it (caller confirms first). */
-  const deleteUser = useCallback(
-    async (id) => {
-      await api.delete(`/admin/users/${id}`);
-      setFlash("User deleted");
-      refresh();
+  /**
+   * Run a moderation call, turning a failure into a visible message instead of
+   * an unhandled rejection escaping an onClick handler.
+   * @returns {Promise<boolean>} whether the action succeeded
+   */
+  const runAction = useCallback(
+    async (fn, { success, failure }) => {
+      setError("");
+      setFlash("");
+      try {
+        await fn();
+        if (success) setFlash(success);
+        refresh();
+        return true;
+      } catch (err) {
+        setError(toUserMessage(err, failure));
+        return false;
+      }
     },
     [refresh]
+  );
+
+  const deleteUser = useCallback(
+    (id) =>
+      runAction(() => api.delete(`/admin/users/${id}`), {
+        success: "User deleted",
+        failure: "Could not delete the user",
+      }),
+    [runAction]
   );
 
   /** Delete a note (caller confirms first). */
   const deletePost = useCallback(
-    async (id) => {
-      await api.delete(`/admin/posts/${id}`);
-      setFlash("Post deleted");
-      refresh();
-    },
-    [refresh]
+    (id) =>
+      runAction(() => api.delete(`/admin/posts/${id}`), {
+        success: "Post deleted",
+        failure: "Could not delete the post",
+      }),
+    [runAction]
   );
 
   /** Flip a user between "user" and "admin". */
   const toggleRole = useCallback(
-    async (id, currentRole) => {
+    (id, currentRole) => {
       const nextRole = currentRole === "admin" ? "user" : "admin";
-      await api.put(`/admin/users/${id}/role`, { role: nextRole });
-      refresh();
+      return runAction(() => api.put(`/admin/users/${id}/role`, { role: nextRole }), {
+        failure: "Could not change the role",
+      });
     },
-    [refresh]
+    [runAction]
   );
 
   /**
@@ -86,12 +109,12 @@ export default function useAdminDashboard({ enabled = true } = {}) {
    * as `false` and silently un-suspend).
    */
   const toggleSuspend = useCallback(
-    async (id, currentlySuspended) => {
-      await api.put(`/admin/users/${id}/suspend`, { suspended: !currentlySuspended });
-      setFlash(currentlySuspended ? "User unsuspended" : "User suspended");
-      refresh();
-    },
-    [refresh]
+    (id, currentlySuspended) =>
+      runAction(() => api.put(`/admin/users/${id}/suspend`, { suspended: !currentlySuspended }), {
+        success: currentlySuspended ? "User unsuspended" : "User suspended",
+        failure: "Could not update the suspension",
+      }),
+    [runAction]
   );
 
   /** Mint a one-shot password reset link for `user`; the link lands in `issued`. */
@@ -108,12 +131,12 @@ export default function useAdminDashboard({ enabled = true } = {}) {
 
   /** Close a report: `action` is "resolved" or "dismissed". */
   const resolveReport = useCallback(
-    async (id, action) => {
-      await api.put(`/admin/reports/${id}/resolve`, { action });
-      setFlash(`Report ${action}`);
-      refresh();
-    },
-    [refresh]
+    (id, action) =>
+      runAction(() => api.put(`/admin/reports/${id}/resolve`, { action }), {
+        success: `Report ${action}`,
+        failure: "Could not close the report",
+      }),
+    [runAction]
   );
 
   return {
