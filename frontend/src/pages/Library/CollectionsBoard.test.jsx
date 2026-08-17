@@ -156,7 +156,7 @@ describe("CollectionsBoard", () => {
     expect(api.get).toHaveBeenCalledTimes(1);
   });
 
-  it("falls back to a generic message when the failure carries no detail", async () => {
+  it("says the server is unreachable when the request never got a response", async () => {
     mockCollections([]);
     api.post.mockRejectedValueOnce(new Error("network down"));
     render();
@@ -166,6 +166,34 @@ describe("CollectionsBoard", () => {
     fireEvent.change(screen.getByPlaceholderText(/Collection name/), { target: { value: "x" } });
     fireEvent.click(screen.getByRole("button", { name: "Create" }));
 
+    expect(await screen.findByText(/Cannot reach the server/)).toBeInTheDocument();
+  });
+
+  it("falls back to a generic message when an HTTP failure carries no detail", async () => {
+    mockCollections([]);
+    api.post.mockRejectedValueOnce({ response: { status: 400, data: {} } });
+    render();
+    await screen.findByText("No shelves yet");
+
+    openCreateForm();
+    fireEvent.change(screen.getByPlaceholderText(/Collection name/), { target: { value: "x" } });
+    fireEvent.click(screen.getByRole("button", { name: "Create" }));
+
     expect(await screen.findByText("Failed to create collection")).toBeInTheDocument();
+  });
+
+  it("reports a failed load instead of showing an empty shelf list", async () => {
+    api.get.mockRejectedValue({ response: { status: 500, data: {} } });
+    render();
+
+    expect(await screen.findByRole("alert")).toBeInTheDocument();
+    expect(screen.getByText(/Could not load your shelves/)).toBeInTheDocument();
+    expect(screen.queryByText("No shelves yet")).not.toBeInTheDocument();
+
+    // Retrying re-requests and recovers.
+    mockCollections([{ _id: "c1", name: "Keeps", visibility: "public", postCount: 1 }]);
+    fireEvent.click(screen.getByRole("button", { name: "Try again" }));
+    expect(await screen.findByText("Keeps")).toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 });

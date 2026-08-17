@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
+import { toUserMessage } from "../../utils/apiError";
 
 const CollectionsBoard = () => {
   const { user } = useAuth();
@@ -10,11 +11,20 @@ const CollectionsBoard = () => {
   const [visibility, setVisibility] = useState("private");
   const [error, setError] = useState("");
   const [creating, setCreating] = useState(false);
+  const [loadError, setLoadError] = useState("");
 
   const load = async () => {
     if (!user?.id) return;
-    const { data } = await api.get(`/users/${user.id}/collections`);
-    setCollections(data.collections || []);
+    // Without this catch a failed request left the board showing the "no
+    // shelves yet" empty state, which reads as "you have none" rather than
+    // "we could not load them".
+    try {
+      const { data } = await api.get(`/users/${user.id}/collections`);
+      setCollections(data.collections || []);
+      setLoadError("");
+    } catch (err) {
+      setLoadError(toUserMessage(err, "Could not load your shelves"));
+    }
   };
 
   useEffect(() => {
@@ -31,7 +41,7 @@ const CollectionsBoard = () => {
       setCreating(false);
       await load();
     } catch (err) {
-      setError(err?.response?.data?.message || "Failed to create collection");
+      setError(toUserMessage(err, "Failed to create collection"));
     }
   };
 
@@ -98,6 +108,14 @@ const CollectionsBoard = () => {
               <span className="shelf-corner" aria-hidden="true" />
             </Link>
           ))}
+        </div>
+      ) : loadError ? (
+        <div className="empty-state" role="alert">
+          <h3>Could not load your shelves</h3>
+          <p>{loadError}</p>
+          <button type="button" className="ghost-btn" onClick={load}>
+            Try again
+          </button>
         </div>
       ) : (
         <div className="empty-state">
