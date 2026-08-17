@@ -124,3 +124,21 @@ describe("captureException", () => {
     }
   });
 });
+
+describe("test-environment isolation", () => {
+  it("never forwards a report, because the suite pins ERROR_WEBHOOK_URL empty", async () => {
+    const { isForwardingEnabled, captureException } = require("../utils/errorReporter");
+    expect(process.env.ERROR_WEBHOOK_URL).toBe("");
+    expect(isForwardingEnabled()).toBe(false);
+
+    // Any real network attempt would go through fetch; assert none is made.
+    const fetchSpy = jest.spyOn(global, "fetch");
+    try {
+      captureException(new Error("should stay local"), { userId: "u1" });
+      await new Promise((r) => setTimeout(r, 10));
+      expect(fetchSpy).not.toHaveBeenCalled();
+    } finally {
+      fetchSpy.mockRestore();
+    }
+  });
+});

@@ -4,6 +4,10 @@ process.env.NODE_ENV = "test";
 process.env.JWT_SECRET = "test-jwt-secret-do-not-use-in-prod";
 process.env.JWT_EXPIRES_IN = "1h";
 process.env.ADMIN_EMAILS = "admin@example.com";
+// Blank so errorReporter's forward() short-circuits: if a developer (or CI)
+// happened to export a real ERROR_WEBHOOK_URL, a failing test would otherwise
+// POST an error report to that endpoint. The suite must touch no network.
+process.env.ERROR_WEBHOOK_URL = "";
 // MONGODB_URI is set at runtime by tests/helpers/db.js (in-memory MongoDB).
 
 // Pin where mongodb-memory-server caches the mongod binary. Without this it

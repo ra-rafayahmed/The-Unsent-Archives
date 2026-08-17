@@ -42,6 +42,9 @@ cp .env.example .env      # then edit JWT_SECRET / ADMIN_EMAILS
 docker compose up --build
 ```
 
+Or open the repo in a **devcontainer** (VS Code / GitHub Codespaces): the
+image is Node 22 with Docker-in-Docker, and `npm ci` runs on create.
+
 ### Option B — Local Node
 
 Prerequisites: Node **22+**, npm, and a MongoDB you can reach (local
@@ -145,6 +148,7 @@ frontend/
   src/context/      AuthContext (JWT bootstrap, login/register/logout)
   src/api/axios.js  axios instance with Bearer token interceptor
   src/utils/        postStyle helpers
+DEPENDENCIES.md     direct dependencies, currency and deliberate pins
 docs/               schema design, API endpoint list, recommender design, ERD
 features.md         map of every DB-backed feature and trigger
 ```

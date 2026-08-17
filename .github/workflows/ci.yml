@@ -71,6 +71,8 @@ jobs:
       - run: npm audit --audit-level=high
       - run: npm run lint --workspace frontend
       - run: npm run format:check --workspace frontend
+      # Same opt-in `// @ts-check` ratchet as the backend.
+      - run: npm run typecheck --workspace frontend
       # Fails the build below coverage.thresholds in frontend/vite.config.js
       # (statements 85 / branches 79 / functions 80 / lines 86).
       - name: Tests + coverage gate

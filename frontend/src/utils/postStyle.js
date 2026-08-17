@@ -1,3 +1,4 @@
+// @ts-check
 export const FONT_OPTIONS = [
   { value: "serif", label: "Classic Serif" },
   { value: "sans", label: "Modern Sans" },
@@ -20,6 +21,7 @@ export const BG_PRESETS = [
   "#171717",
 ];
 
+/** @type {Record<string, string>} */
 const fontFamilyMap = {
   monospace: "ui-monospace, SFMono-Regular, Menlo, monospace",
   sans: '"Work Sans", system-ui, sans-serif',
@@ -29,10 +31,22 @@ const fontFamilyMap = {
   serif: '"Newsreader", Georgia, serif',
 };
 
-export const getFontFamily = (fontKey) => {
+/**
+ * @param {string} [fontKey]
+ * @returns {string}
+ */
+export const getFontFamily = (fontKey = "") => {
   return fontFamilyMap[fontKey] || fontFamilyMap.serif;
 };
 
+/**
+ * Build the inline style for a note's body text, clamping every numeric field
+ * to the range the editor allows.
+ * @param {{ textColor?: string, font?: string, fontSize?: number|string,
+ *           lineHeight?: number|string, letterSpacing?: number|string,
+ *           textAlign?: string }} [style]
+ * @returns {Record<string, string|number>}
+ */
 export const getPostTextStyle = (style = {}) => {
   const fontSize = Number(style.fontSize) || 1.15;
   const lineHeight = Number(style.lineHeight) || 1.6;

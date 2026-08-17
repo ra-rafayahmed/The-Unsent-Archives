@@ -63,8 +63,10 @@ module is only checked once it carries a `// @ts-check` pragma and JSDoc types
 pragma and its `@param`/`@returns` annotations, and it stays checked from then
 on. Do not remove a pragma to make an error go away.
 
-Currently checked: `backend/utils/**`. Models and services still need Mongoose
-document typings that are awkward to express in JSDoc; those come later.
+Both workspaces run it (`npm run typecheck` at the root covers both).
+Currently checked: `backend/utils/**` and `frontend/src/utils/**`. Backend
+models/services still need Mongoose document typings that are awkward to
+express in JSDoc, and frontend components need prop typedefs; those come next.
 
 ## Coverage baseline
 

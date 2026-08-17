@@ -1,30 +1,52 @@
+// @ts-check
 // Single place that understands the API's error shape.
 //
 // The backend always answers failures with
 //   { status: "fail" | "error", statusCode, message }
 // so components should not each re-derive `err?.response?.data?.message`.
 
-/** HTTP status of a failed request, or 0 when the request never got a response. */
-export const getStatus = (err) => err?.response?.status ?? 0;
+/**
+ * The shape we care about from an axios rejection.
+ * @typedef {{ response?: { status?: number, data?: { message?: unknown } } }} ApiFailure
+ */
 
-/** True when the request never reached the server (offline, DNS, CORS, abort). */
-export const isNetworkError = (err) => Boolean(err) && !err.response;
+/**
+ * HTTP status of a failed request, or 0 when the request never got a response.
+ * @param {ApiFailure|Error|unknown} err
+ * @returns {number}
+ */
+export const getStatus = (err) => /** @type {ApiFailure} */ (err)?.response?.status ?? 0;
 
+/**
+ * True when the request never reached the server (offline, DNS, CORS, abort).
+ * @param {ApiFailure|Error|unknown} err
+ * @returns {boolean}
+ */
+export const isNetworkError = (err) => Boolean(err) && !(/** @type {ApiFailure} */ (err).response);
+
+/** @param {ApiFailure|Error|unknown} err @returns {boolean} */
 export const isUnauthorized = (err) => getStatus(err) === 401;
+/** @param {ApiFailure|Error|unknown} err @returns {boolean} */
 export const isForbidden = (err) => getStatus(err) === 403;
+/** @param {ApiFailure|Error|unknown} err @returns {boolean} */
 export const isNotFound = (err) => getStatus(err) === 404;
-/** Server-side failure — worth reporting rather than showing as user error. */
+/**
+ * Server-side failure — worth reporting rather than showing as user error.
+ * @param {ApiFailure|Error|unknown} err
+ * @returns {boolean}
+ */
 export const isServerError = (err) => getStatus(err) >= 500;
 
 /**
  * A message safe to render to the user.
  * Prefers the API's own message, then a status-specific default, then `fallback`.
  *
- * @param {unknown} err        the caught error (usually an axios error)
- * @param {string} fallback    what to say when nothing better is available
+ * @param {ApiFailure|Error|unknown} err   the caught error (usually from axios)
+ * @param {string} [fallback]              what to say when nothing better exists
+ * @returns {string}
  */
 export const toUserMessage = (err, fallback = "Something went wrong. Please try again.") => {
-  const apiMessage = err?.response?.data?.message;
+  const apiMessage = /** @type {ApiFailure} */ (err)?.response?.data?.message;
   if (typeof apiMessage === "string" && apiMessage.trim()) return apiMessage.trim();
 
   if (isNetworkError(err)) return "Cannot reach the server. Check your connection and try again.";
@@ -50,6 +72,10 @@ export const toUserMessage = (err, fallback = "Something went wrong. Please try 
 /**
  * Normalised error object for components that want more than a string.
  * @returns {{message: string, status: number, isNetwork: boolean, isServer: boolean}}
+ */
+/**
+ * @param {ApiFailure|Error|unknown} err
+ * @param {string} [fallback]
  */
 export const toApiError = (err, fallback) => ({
   message: toUserMessage(err, fallback),
