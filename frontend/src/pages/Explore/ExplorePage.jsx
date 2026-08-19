@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import Masonry from "react-masonry-css";
 import api from "../../api/axios";
 import NoteCard from "../../components/cards/NoteCard";
+import ExploreSidebar from "../../components/explore/ExploreSidebar";
 
 const SORTS = [
   { id: "trending", label: "Trending" },
@@ -214,87 +215,16 @@ const ExplorePage = () => {
         )}
       </div>
 
-      <aside className="side-stack">
-        <div className="panel side-panel">
-          <h3 className="side-title">Trending tags</h3>
-          {trendingTags.length ? (
-            <div className="chip-row">
-              {trendingTags.map((t) => (
-                <Link
-                  key={t._id}
-                  to={`/explore?q=${encodeURIComponent(t.slug)}`}
-                  className="chip chip-link"
-                  onClick={() => {
-                    setQuery(t.slug);
-                    setActiveQuery(t.slug);
-                  }}
-                >
-                  #{t.slug}
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <p className="muted">No tags trending yet.</p>
-          )}
-        </div>
-
-        {showingSearch && results.users.length > 0 && (
-          <div className="panel side-panel">
-            <h3 className="side-title">Writers</h3>
-            <ul className="writer-list">
-              {results.users.map((u) => (
-                <li key={u._id}>
-                  <Link to={`/profile/${u._id}`} className="writer-row">
-                    {u.avatarUrl ? (
-                      <img src={u.avatarUrl} alt="" className="nav-avatar writer-avatar" />
-                    ) : (
-                      <span className="writer-avatar writer-avatar-fallback">
-                        {(u.username || "?")[0].toUpperCase()}
-                      </span>
-                    )}
-                    <span>
-                      <strong>@{u.username}</strong>
-                      {u.profile?.displayName && (
-                        <span className="muted"> · {u.profile.displayName}</span>
-                      )}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {!showingSearch && topWriters.length > 0 && (
-          <div className="panel side-panel">
-            <h3 className="side-title">Voices to follow</h3>
-            <ul className="writer-list">
-              {topWriters.map((u) => (
-                <li key={u._id}>
-                  <Link to={`/profile/${u._id}`} className="writer-row">
-                    {u.avatarUrl ? (
-                      <img src={u.avatarUrl} alt="" className="nav-avatar writer-avatar" />
-                    ) : (
-                      <span className="writer-avatar writer-avatar-fallback">
-                        {(u.username || "?")[0].toUpperCase()}
-                      </span>
-                    )}
-                    <strong>@{u.username}</strong>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        <div className="panel side-panel quote-panel">
-          <p className="quote-mark">"</p>
-          <p className="quote-body">
-            Some letters were never meant to be sent. They were meant to be kept.
-          </p>
-          <span className="quote-attr">— the archivist</span>
-        </div>
-      </aside>
+      <ExploreSidebar
+        trendingTags={trendingTags}
+        onTagSelect={(slug) => {
+          setQuery(slug);
+          setActiveQuery(slug);
+        }}
+        showingSearch={showingSearch}
+        searchUsers={results.users}
+        topWriters={topWriters}
+      />
     </section>
   );
 };

@@ -4,6 +4,8 @@ import Masonry from "react-masonry-css";
 import { useAuth } from "../../context/AuthContext";
 import NoteCard from "../../components/cards/NoteCard";
 import ReportDialog from "../../components/ReportDialog";
+import ProfileHeader from "../../components/profile/ProfileHeader";
+import ProfileEditForm from "../../components/profile/ProfileEditForm";
 import useUserProfile from "../../hooks/useUserProfile";
 
 const UserProfile = ({ own = false }) => {
@@ -87,127 +89,34 @@ const UserProfile = ({ own = false }) => {
           </div>
 
           <div className="profile-card-body">
-            <div className="profile-identity">
-              {avatar ? (
-                <img src={avatar} alt={displayName} className="profile-avatar profile-avatar-lg" />
-              ) : (
-                <span className="profile-avatar profile-avatar-lg writer-avatar-fallback">
-                  {(displayName || "?")[0].toUpperCase()}
-                </span>
-              )}
-
-              <div className="profile-id-text">
-                <h1 className="profile-name">{displayName}</h1>
-                <p className="profile-handle">@{profile.username}</p>
-              </div>
-
-              <div className="profile-actions">
-                {!own && user?.id && profile?._id !== user.id ? (
-                  <>
-                    <button
-                      type="button"
-                      className={isFollowing ? "ghost-btn" : "primary-btn"}
-                      onClick={toggleFollow}
-                      disabled={isFollowLoading}
-                    >
-                      {isFollowLoading ? "..." : isFollowing ? "Following" : "Follow"}
-                    </button>
-                    <button
-                      type="button"
-                      className="ghost-btn small"
-                      onClick={() => setReporting(true)}
-                    >
-                      ⚑ Report
-                    </button>
-                  </>
-                ) : null}
-                {own && !editing ? (
-                  <button type="button" className="ghost-btn" onClick={() => setEditing(true)}>
-                    ✎ Edit profile
-                  </button>
-                ) : null}
-              </div>
-            </div>
-
-            <p className="profile-bio">
-              {profile.bio ||
-                (own ? "Add a bio so readers know whose pages they're turning." : "No bio yet.")}
-            </p>
-
-            <div className="profile-stats">
-              <div className="profile-stat">
-                <span className="profile-stat-num">{posts.length}</span>
-                <span className="profile-stat-label">Notes</span>
-              </div>
-              <div className="profile-stat">
-                <span className="profile-stat-num">{profile.followerCount || 0}</span>
-                <span className="profile-stat-label">Followers</span>
-              </div>
-              <div className="profile-stat">
-                <span className="profile-stat-num">{profile.followingCount || 0}</span>
-                <span className="profile-stat-label">Following</span>
-              </div>
-            </div>
+            <ProfileHeader
+              profile={profile}
+              displayName={displayName}
+              avatar={avatar}
+              postCount={posts.length}
+              own={own}
+              viewerId={user?.id}
+              editing={editing}
+              isFollowing={isFollowing}
+              isFollowLoading={isFollowLoading}
+              onToggleFollow={toggleFollow}
+              onEdit={() => setEditing(true)}
+              onReport={() => setReporting(true)}
+            />
 
             {own && editing ? (
-              <div className="profile-edit-grid panel profile-edit-panel">
-                <h3 className="side-title">Edit profile</h3>
-
-                <label>
-                  Display name
-                  <input
-                    value={form.displayName}
-                    onChange={(e) => setForm((prev) => ({ ...prev, displayName: e.target.value }))}
-                  />
-                </label>
-
-                <label>
-                  Bio
-                  <textarea
-                    value={form.bio}
-                    onChange={(e) => setForm((prev) => ({ ...prev, bio: e.target.value }))}
-                  />
-                </label>
-
-                <div className="upload-block">
-                  <span className="upload-label">Avatar (JPG / PNG / GIF / WEBP)</span>
-                  {form.avatarUrl ? (
-                    <div className="upload-preview avatar">
-                      <img src={form.avatarUrl} alt="" />
-                      <button
-                        type="button"
-                        className="ghost-btn small upload-clear"
-                        onClick={() => setForm((prev) => ({ ...prev, avatarUrl: "" }))}
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ) : null}
-                  <label className={`dropzone ${isUploadingAvatar ? "is-busy" : ""}`}>
-                    <input type="file" accept="image/*,.gif" onChange={uploadAvatar} hidden />
-                    <span className="dropzone-icon">📷</span>
-                    <span>{isUploadingAvatar ? "Uploading..." : "Drop or pick a portrait"}</span>
-                    <span className="dropzone-hint">stored in the archive (max 15MB)</span>
-                  </label>
-                  <details className="upload-or-url">
-                    <summary>or paste a URL</summary>
-                    <input
-                      type="url"
-                      value={form.avatarUrl}
-                      onChange={(e) => setForm((prev) => ({ ...prev, avatarUrl: e.target.value }))}
-                    />
-                  </details>
-                </div>
-
-                <div className="row-inline profile-edit-actions">
-                  <button type="button" className="primary-btn" onClick={saveProfile}>
-                    Save profile
-                  </button>
-                  <button type="button" className="ghost-btn" onClick={cancelEdit}>
-                    Cancel
-                  </button>
-                </div>
-              </div>
+              <ProfileEditForm
+                form={form}
+                isUploadingAvatar={isUploadingAvatar}
+                onDisplayNameChange={(value) =>
+                  setForm((prev) => ({ ...prev, displayName: value }))
+                }
+                onBioChange={(value) => setForm((prev) => ({ ...prev, bio: value }))}
+                onAvatarUrlChange={(value) => setForm((prev) => ({ ...prev, avatarUrl: value }))}
+                onAvatarFileChange={uploadAvatar}
+                onSave={saveProfile}
+                onCancel={cancelEdit}
+              />
             ) : null}
 
             {status ? <p className="manuscript-flash">{status}</p> : null}
