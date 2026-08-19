@@ -17,6 +17,37 @@ recommender that keeps per-user affinity profiles.
 
 ---
 
+## Verification at a glance
+
+Everything below is reproducible with the command next to it — no setup beyond
+`npm ci`. Figures are from the latest run on a clean clone.
+
+| Claim                       | Command                     | Result                                             |
+| --------------------------- | --------------------------- | -------------------------------------------------- |
+| Installs from a clean clone | `npm ci`                    | exit 0, one root lockfile, both workspaces         |
+| Test suite runs             | `npm test`                  | **666 tests** pass (231 backend + 435 frontend)    |
+| Coverage gates hold         | `npm run test:coverage`     | backend 87% / frontend 88% statements, gated in CI |
+| Lint is clean               | `npm run lint`              | 0 errors, 0 warnings                               |
+| Types are checked           | `npm run typecheck`         | `tsc --noEmit`, 0 errors                           |
+| Formatting is enforced      | `npm run format:check`      | clean across root + both workspaces                |
+| Web bundle builds           | `npm run build`             | no chunk over the 500 kB warning threshold         |
+| Whole stack boots           | `docker compose up --build` | API answers `GET /api/health` with 200             |
+
+CI (`.github/workflows/ci.yml`) runs every one of these on each push across six
+jobs — **Backend**, **Frontend**, **Clean clone**, **Docker**, **Preview** —
+including a job that does nothing but `npm ci && npm test` on a runner with no
+cache, so the first two rows cannot silently rot.
+
+Deeper evidence lives in:
+
+- [`docs/VALIDATION.md`](docs/VALIDATION.md) — every mutating route mapped to
+  its Joi schema, with the five body-less exceptions justified
+- [`docs/ERROR-REPORTING.md`](docs/ERROR-REPORTING.md) — the exact payload an
+  operator receives, and how to point it at Sentry/Slack
+- [`DEPENDENCIES.md`](DEPENDENCIES.md) — direct dependencies per workspace and
+  currency
+- [`CONTRIBUTING.md`](CONTRIBUTING.md) — coverage baseline and the typecheck ratchet
+
 ## Quick start
 
 ### Option A — Docker (nothing to install but Docker)
@@ -92,7 +123,7 @@ npm ci && npm test
 
 | Command                 | Runs                                   |
 | ----------------------- | -------------------------------------- |
-| `npm test`              | both suites (512 tests)                |
+| `npm test`              | both suites (666 tests)                |
 | `npm run test:backend`  | Jest only                              |
 | `npm run test:frontend` | Vitest only                            |
 | `npm run test:coverage` | both, failing below the coverage gates |
@@ -118,6 +149,14 @@ All backend settings come from environment variables (see
 | `LOG_LEVEL`         | no       | by env        | pino level override                                              |
 | `ERROR_WEBHOOK_URL` | no       | —             | if set, 5xx/crash reports are POSTed here as sanitised JSON      |
 
+The frontend has its own build-time variables (Vite inlines any `VITE_`-prefixed
+value at `npm run build`, so they live in `frontend/.env`, not `backend/.env`):
+
+| Variable              | Required | Default                     | Purpose                                                                        |
+| --------------------- | -------- | --------------------------- | ------------------------------------------------------------------------------ |
+| `VITE_API_BASE_URL`   | no       | `http://localhost:5000/api` | API origin the browser talks to                                                |
+| `VITE_ERROR_ENDPOINT` | no       | —                           | if set, client crashes are POSTed here as sanitised JSON (console-only if not) |
+
 ---
 
 ## Scripts
@@ -126,7 +165,7 @@ From the **repo root** (fans out to both packages):
 
 ```bash
 npm ci                 # one install, both workspaces (single root lockfile)
-npm test               # Jest (backend) then Vitest (frontend) — 512 tests
+npm test               # Jest (backend) then Vitest (frontend) — 666 tests
 npm run test:backend   # Jest only
 npm run test:frontend  # Vitest only
 npm run test:coverage  # both suites with the coverage gate
