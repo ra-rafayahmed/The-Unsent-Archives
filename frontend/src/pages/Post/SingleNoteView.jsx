@@ -1,10 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import { getPostTextStyle } from "../../utils/postStyle";
 import ReportDialog from "../../components/ReportDialog";
 import NoteComments from "../../components/post/NoteComments";
+import NoteHeader from "../../components/post/NoteHeader";
+import NoteReactions from "../../components/post/NoteReactions";
+import NoteToolbar from "../../components/post/NoteToolbar";
 import { buildNoteTheme } from "../../utils/color";
 import usePost from "../../hooks/usePost";
 import { toUserMessage } from "../../utils/apiError";
@@ -184,35 +187,14 @@ const SingleNoteView = () => {
       style={themeVars}
     >
       <article className={`note-manuscript ${isDarkTheme ? "note-theme-dark" : ""}`}>
-        <header className="manuscript-head">
-          <span className="manuscript-flourish" aria-hidden="true">
-            ❦
-          </span>
-          <div className="manuscript-author">
-            {visibleAuthorId ? (
-              <>
-                <Link to={`/profile/${visibleAuthorId}`} className="manuscript-author-link">
-                  @{visibleAuthorName}
-                </Link>
-                {user?.id && visibleAuthorId !== user.id ? (
-                  <button
-                    type="button"
-                    className="ghost-btn small"
-                    onClick={toggleFollow}
-                    disabled={isFollowLoading}
-                  >
-                    {isFollowLoading ? "..." : isFollowing ? "Following" : "Follow"}
-                  </button>
-                ) : null}
-              </>
-            ) : (
-              <span className="manuscript-author-link">{visibleAuthorName || "Writer"}</span>
-            )}
-          </div>
-          <span className="manuscript-flourish" aria-hidden="true">
-            ❦
-          </span>
-        </header>
+        <NoteHeader
+          authorId={visibleAuthorId}
+          authorName={visibleAuthorName}
+          viewerId={user?.id}
+          isFollowing={isFollowing}
+          isFollowLoading={isFollowLoading}
+          onToggleFollow={toggleFollow}
+        />
 
         {image ? (
           <figure className="manuscript-image">
@@ -254,68 +236,20 @@ const SingleNoteView = () => {
 
         <div className="manuscript-rule" aria-hidden="true" />
 
-        <div className="reaction-strip manuscript-reactions">
-          {[
-            ["like", "❤", "Love"],
-            ["love", "🫂", "Felt"],
-            ["sad", "💧", "Cried"],
-            ["wow", "✨", "Wow"],
-          ].map(([type, glyph, label]) => (
-            <button key={type} type="button" className="reaction-chip" onClick={() => react(type)}>
-              <span className="reaction-glyph" aria-hidden="true">
-                {glyph}
-              </span>
-              <span>{label}</span>
-              <span className="reaction-count">{reactions[type] || 0}</span>
-            </button>
-          ))}
-        </div>
+        <NoteReactions reactions={reactions} onReact={react} />
 
-        {(canEdit || canDelete || isAuthenticated) && (
-          <div className="manuscript-toolbar">
-            {isAuthenticated && collections.length > 0 ? (
-              <>
-                <select
-                  value={selectedCollectionId}
-                  onChange={(e) => setSelectedCollectionId(e.target.value)}
-                  className="manuscript-select"
-                >
-                  {collections.map((c) => (
-                    <option key={c._id} value={c._id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
-                <button type="button" className="manuscript-toolbar-btn" onClick={saveToCollection}>
-                  ✦ Save
-                </button>
-              </>
-            ) : null}
-            {canEdit ? (
-              <Link to={`/write/${post._id}`} className="manuscript-toolbar-btn">
-                ✎ Edit
-              </Link>
-            ) : null}
-            {canDelete ? (
-              <button
-                type="button"
-                className="manuscript-toolbar-btn is-danger"
-                onClick={deletePost}
-              >
-                🗑 Delete
-              </button>
-            ) : null}
-            {isAuthenticated && !canEdit ? (
-              <button
-                type="button"
-                className="manuscript-toolbar-btn"
-                onClick={() => setReporting(true)}
-              >
-                ⚑ Report
-              </button>
-            ) : null}
-          </div>
-        )}
+        <NoteToolbar
+          postId={post._id}
+          isAuthenticated={isAuthenticated}
+          canEdit={canEdit}
+          canDelete={canDelete}
+          collections={collections}
+          selectedCollectionId={selectedCollectionId}
+          onSelectCollection={setSelectedCollectionId}
+          onSave={saveToCollection}
+          onDelete={deletePost}
+          onReport={() => setReporting(true)}
+        />
 
         {status ? <p className="manuscript-flash">{status}</p> : null}
         {error ? <p className="error">{error}</p> : null}
