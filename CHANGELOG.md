@@ -6,6 +6,29 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.5.0] — 2026-08-19
+
+### Added
+
+- CI job **Preview · build artifacts**: publishes the web bundle and a saved
+  API image as 30-day artifacts and writes bundle sizes into the run summary.
+  README gains a **Releasing** section with the manual promotion steps — the
+  project has no hosting target, so promotion stays deliberate.
+- 87 component tests alongside the extractions below (frontend: 42 files,
+  376 tests).
+
+### Changed
+
+- Large page components split into prop-driven presentational pieces:
+  AdminDashboard 344 -> 143 (`components/admin/{Reports,Users,Posts}Panel`),
+  SingleNoteView 348 -> 282 (`NoteHeader`, `NoteReactions`, `NoteToolbar`),
+  UserProfile 339 -> 248 (`ProfileHeader`, `ProfileEditForm`) and ExplorePage
+  302 -> 232 (`ExploreSidebar`). Every existing page test passed untouched
+  through the moves, so behaviour and markup are unchanged. No frontend source
+  file now exceeds 285 LOC.
+
+[1.5.0]: https://github.com/ra-rafayahmed/The-Unsent-Archives/compare/v1.4.1...v1.5.0
+
 ## [1.4.1] — 2026-08-18
 
 ### Fixed
@@ -211,5 +234,5 @@ buildable and testable from a fresh clone.
 - `npm audit fix` applied in both packages (0 known vulnerabilities).
 
 [1.0.0]: https://github.com/ra-rafayahmed/The-Unsent-Archives/releases/tag/v1.0.0
-[Unreleased]: https://github.com/ra-rafayahmed/The-Unsent-Archives/compare/v1.4.1...HEAD
+[Unreleased]: https://github.com/ra-rafayahmed/The-Unsent-Archives/compare/v1.5.0...HEAD
 [1.1.0]: https://github.com/ra-rafayahmed/The-Unsent-Archives/compare/v1.0.0...v1.1.0
