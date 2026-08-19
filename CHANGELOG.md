@@ -6,6 +6,37 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.6.0] — 2026-08-19
+
+### Added
+
+- **Client-side error reporting** (`frontend/src/utils/reportError.js`): render
+  crashes, `window` error events and unhandled rejections are normalised,
+  redacted and — when `VITE_ERROR_ENDPOINT` is set — POSTed to a collector.
+  Mirrors the backend seam; no SDK, no new dependency. 17 tests.
+- **Client-side form validation** (`frontend/src/utils/validation.js`) mirroring
+  the backend Joi rules, wired into Register, ResetPassword, RecoverWithCode
+  and the note editor. An invalid field now shows inline and no request is
+  sent. 30 unit tests plus per-page cases.
+- `backend/tests/errorHandler.test.js` — proves the 500 -> sanitised webhook
+  path end to end, that expected 4xx answers report nothing, that a failing
+  webhook does not alter the client response, and that
+  `unhandled_errors_total` increments.
+- `docs/VALIDATION.md` — all 26 mutating routes mapped to their Joi schema,
+  the five body-less exceptions justified, and the frontend parity table.
+- `docs/ERROR-REPORTING.md` — the exact payload for both reporters, the
+  redaction list, and how to point it at Sentry or Slack.
+- README **Verification at a glance**: each claim paired with the command that
+  reproduces it.
+
+### Changed
+
+- DEPENDENCIES.md explains why a workspaces root declares no runtime
+  dependencies, and reproduces both manifests' dependency tables.
+- 666 tests total (231 backend + 435 frontend).
+
+[1.6.0]: https://github.com/ra-rafayahmed/The-Unsent-Archives/compare/v1.5.0...v1.6.0
+
 ## [1.5.0] — 2026-08-19
 
 ### Added
@@ -234,5 +265,5 @@ buildable and testable from a fresh clone.
 - `npm audit fix` applied in both packages (0 known vulnerabilities).
 
 [1.0.0]: https://github.com/ra-rafayahmed/The-Unsent-Archives/releases/tag/v1.0.0
-[Unreleased]: https://github.com/ra-rafayahmed/The-Unsent-Archives/compare/v1.5.0...HEAD
+[Unreleased]: https://github.com/ra-rafayahmed/The-Unsent-Archives/compare/v1.6.0...HEAD
 [1.1.0]: https://github.com/ra-rafayahmed/The-Unsent-Archives/compare/v1.0.0...v1.1.0
