@@ -209,6 +209,37 @@ Everything is under `/api`. Full list: [`docs/api-endpoints.md`](docs/api-endpoi
 
 Errors are always JSON: `{ status: "fail" | "error", statusCode, message }`.
 
+## Releasing
+
+There is no hosting target wired up, so nothing deploys automatically — CI
+stops at producing the artifacts a maintainer needs, and promotion is a
+deliberate manual step.
+
+On every push to `main`, the **Preview · build artifacts** job publishes:
+
+| Artifact           | What it is                                          |
+| ------------------ | --------------------------------------------------- |
+| `web-bundle-<sha>` | `frontend/dist`, ready to serve as static files     |
+| `api-image-<sha>`  | the API container image, `docker save`d and gzipped |
+
+It also writes the bundle sizes into the job summary, so a size regression is
+visible on the run without downloading anything.
+
+To promote a green `main`:
+
+1. Check the run is green — all six jobs, including **Clean clone** and
+   **Docker · compose build**.
+2. Download `web-bundle-<sha>` and upload it to your static host (or serve it
+   with the bundled nginx image), and `docker load < api-image.tar.gz` on the
+   API host.
+3. Set the real environment on the API host — at minimum `MONGODB_URI` and a
+   strong `JWT_SECRET`; see [Configuration](#configuration). Point
+   `ERROR_WEBHOOK_URL` at your collector if you want error reports forwarded.
+4. Confirm `GET /api/health` returns 200 with `db.connected: true`, then watch
+   `GET /api/metrics` for error-rate and latency.
+5. Tag the release (`git tag -a vX.Y.Z`) and add its entry to
+   [CHANGELOG.md](CHANGELOG.md).
+
 ## Observability
 
 - `GET /api/health` — liveness/readiness with the mongoose connection state
