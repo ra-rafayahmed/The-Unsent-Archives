@@ -1,4 +1,6 @@
-import { Link } from "react-router-dom";
+import PostsPanel from "../../components/admin/PostsPanel";
+import ReportsPanel from "../../components/admin/ReportsPanel";
+import UsersPanel from "../../components/admin/UsersPanel";
 import { useAuth } from "../../context/AuthContext";
 import useAdminDashboard from "../../hooks/useAdminDashboard";
 
@@ -78,233 +80,30 @@ const AdminDashboard = () => {
       {error ? <p className="error">{error}</p> : null}
 
       {tab === "reports" && (
-        <div className="panel admin-pane">
-          <div className="row-between admin-toolbar">
-            <h3 className="side-title">
-              {reportFilter === "all" ? "All reports" : `${reportFilter} reports`}
-            </h3>
-            <div className="row-inline">
-              {["open", "resolved", "dismissed", "all"].map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  className={s === reportFilter ? "pill active" : "pill"}
-                  onClick={() => setReportFilter(s)}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {reports.length === 0 ? (
-            <p className="muted">No reports here. The archive is calm.</p>
-          ) : (
-            <ul className="report-list">
-              {reports.map((r) => (
-                <li key={r._id} className="report-card">
-                  <div className="report-card-head">
-                    <span className={`report-pill report-pill-${r.reason}`}>{r.reason}</span>
-                    <span className="report-meta">
-                      {r.targetType === "user" ? "Account" : "Note"} · filed by{" "}
-                      {r.reporterId ? (
-                        <Link
-                          to={`/profile/${r.reporterId._id}`}
-                          className="manuscript-author-link"
-                        >
-                          @{r.reporterId.username}
-                        </Link>
-                      ) : (
-                        "anon"
-                      )}
-                    </span>
-                    <span className={`report-status status-${r.status}`}>{r.status}</span>
-                  </div>
-
-                  {r.note ? <p className="report-note">"{r.note}"</p> : null}
-
-                  <div className="report-target">
-                    {r.targetType === "user" ? (
-                      r.target ? (
-                        <Link to={`/profile/${r.target._id}`} className="report-target-row">
-                          <span className="writer-avatar writer-avatar-fallback">
-                            {(r.target.username || "?")[0].toUpperCase()}
-                          </span>
-                          <span>
-                            <strong>@{r.target.username}</strong>{" "}
-                            <span className="muted">· {r.target.reportCount || 0} report(s)</span>
-                          </span>
-                        </Link>
-                      ) : (
-                        <span className="muted">User no longer exists</span>
-                      )
-                    ) : r.target ? (
-                      <Link to={`/posts/${r.target._id}`} className="report-target-row">
-                        <span className="report-snippet">
-                          "{(r.target.content || "").slice(0, 120)}"
-                        </span>
-                        <span className="muted">
-                          by @{r.target.authorId?.username || "unknown"}
-                        </span>
-                      </Link>
-                    ) : (
-                      <span className="muted">Post no longer exists</span>
-                    )}
-                  </div>
-
-                  {r.status === "open" && (
-                    <div className="report-actions">
-                      <button
-                        type="button"
-                        className="ghost-btn small"
-                        onClick={() => resolveReport(r._id, "resolved")}
-                      >
-                        ✓ Mark resolved
-                      </button>
-                      <button
-                        type="button"
-                        className="ghost-btn small"
-                        onClick={() => resolveReport(r._id, "dismissed")}
-                      >
-                        ✕ Dismiss
-                      </button>
-                      {r.targetType === "post" && r.target ? (
-                        <button
-                          type="button"
-                          className="ghost-btn small is-danger"
-                          onClick={async () => {
-                            // Only close the report if the note was actually deleted.
-                            if (!(await deletePost(r.target._id))) return;
-                            await resolveReport(r._id, "resolved");
-                          }}
-                        >
-                          🗑 Delete note
-                        </button>
-                      ) : null}
-                      {r.targetType === "user" && r.target ? (
-                        <button
-                          type="button"
-                          className="ghost-btn small is-danger"
-                          onClick={() => toggleSuspend(r.target._id, r.target.isSuspended)}
-                        >
-                          {r.target.isSuspended ? "Unsuspend user" : "Suspend user"}
-                        </button>
-                      ) : null}
-                    </div>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        <ReportsPanel
+          reports={reports}
+          reportFilter={reportFilter}
+          onFilterChange={setReportFilter}
+          onResolve={resolveReport}
+          onDeletePost={deletePost}
+          onToggleSuspend={toggleSuspend}
+        />
       )}
 
       {tab === "users" && (
-        <div className="panel admin-pane">
-          <div className="row-between admin-toolbar">
-            <h3 className="side-title">Users</h3>
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value)}
-              className="analytics-post-select"
-            >
-              <option value="recent">Sort: recent</option>
-              <option value="reports">Sort: most reported</option>
-            </select>
-          </div>
-
-          <div className="admin-table">
-            {users.map((u) => (
-              <div key={u._id} className="admin-row admin-row-v2">
-                <div className="admin-row-main">
-                  <Link to={`/profile/${u._id}`} className="manuscript-author-link">
-                    @{u.username}
-                  </Link>
-                  <span className="muted">{u.email}</span>
-                  <div className="row-inline">
-                    <span className={`pill ${u.role === "admin" ? "active" : ""}`}>{u.role}</span>
-                    {u.isSuspended ? <span className="pill is-warn">suspended</span> : null}
-                    {u.reportCount ? <span className="pill is-warn">⚑ {u.reportCount}</span> : null}
-                  </div>
-                </div>
-                <div className="row-inline">
-                  <button
-                    type="button"
-                    className="ghost-btn small"
-                    onClick={() => issueResetForUser(u)}
-                  >
-                    Issue reset
-                  </button>
-                  <button
-                    type="button"
-                    className="ghost-btn small"
-                    onClick={() => toggleRole(u._id, u.role)}
-                  >
-                    Make {u.role === "admin" ? "user" : "admin"}
-                  </button>
-                  <button
-                    type="button"
-                    className="ghost-btn small"
-                    onClick={() => toggleSuspend(u._id, u.isSuspended)}
-                  >
-                    {u.isSuspended ? "Unsuspend" : "Suspend"}
-                  </button>
-                  <button
-                    type="button"
-                    className="ghost-btn small is-danger"
-                    onClick={() => deleteUser(u._id)}
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <UsersPanel
+          users={users}
+          sort={sort}
+          onSortChange={setSort}
+          onIssueReset={issueResetForUser}
+          onToggleRole={toggleRole}
+          onToggleSuspend={toggleSuspend}
+          onDelete={deleteUser}
+        />
       )}
 
       {tab === "posts" && (
-        <div className="panel admin-pane">
-          <div className="row-between admin-toolbar">
-            <h3 className="side-title">Notes</h3>
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value)}
-              className="analytics-post-select"
-            >
-              <option value="recent">Sort: recent</option>
-              <option value="reports">Sort: most reported</option>
-            </select>
-          </div>
-
-          <div className="admin-table">
-            {posts.map((p) => (
-              <div key={p._id} className="admin-row admin-row-v2">
-                <div className="admin-row-main">
-                  <Link to={`/posts/${p._id}`} className="manuscript-author-link">
-                    {(p.content || "").slice(0, 80) || "Untitled"}
-                  </Link>
-                  <span className="muted">
-                    by @{p.authorId?.username || "unknown"} · {p.visibility}
-                  </span>
-                  <div className="row-inline">
-                    {p.reportCount ? <span className="pill is-warn">⚑ {p.reportCount}</span> : null}
-                    <span className="muted small-meta">
-                      {p.viewCount || 0} reads · {p.reactionCount || 0} hearts
-                    </span>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  className="ghost-btn small is-danger"
-                  onClick={() => deletePost(p._id)}
-                >
-                  Delete
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
+        <PostsPanel posts={posts} sort={sort} onSortChange={setSort} onDelete={deletePost} />
       )}
 
       {issued && (
