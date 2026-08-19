@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import RootLayout from "./components/layout/RootLayout";
 import ErrorBoundary from "./components/ErrorBoundary";
 import ProtectedRoute from "./components/layout/ProtectedRoute";
+import { reportError } from "./utils/reportError";
 
 // Eager: the two routes a visitor is most likely to land on first, so the
 // initial paint needs no extra round trip.
@@ -28,9 +29,9 @@ const AdminDashboard = lazy(() => import("./pages/Admin/AdminDashboard"));
 const RouteFallback = () => <div className="panel">Turning the page...</div>;
 
 const reportRenderError = (error, info) => {
-  // Kept deliberately simple: a render crash is worth a console record even in
-  // production, where source maps make the component stack useful.
-  console.error("Render error:", error, info?.componentStack);
+  // Funnel render crashes through the shared reporting seam: it always logs and,
+  // when VITE_ERROR_ENDPOINT is configured, forwards a sanitised report.
+  reportError(error, { source: "render", componentStack: info?.componentStack });
 };
 
 const App = () => {
