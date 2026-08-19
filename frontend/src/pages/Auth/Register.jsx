@@ -3,12 +3,19 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import DoodleBackdrop from "../../components/decor/Doodles";
 import { toUserMessage } from "../../utils/apiError";
+import {
+  validateForm,
+  validateUsername,
+  validateEmail,
+  validatePassword,
+} from "../../utils/validation";
 
 const Register = () => {
   const { register } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ username: "", email: "", password: "" });
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [backupCodes, setBackupCodes] = useState(null);
   const [acknowledged, setAcknowledged] = useState(false);
@@ -16,6 +23,15 @@ const Register = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
+    const errors = validateForm(form, {
+      username: validateUsername,
+      email: validateEmail,
+      password: validatePassword,
+    });
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+
     setLoading(true);
 
     try {
@@ -133,6 +149,7 @@ const Register = () => {
             placeholder="e.g. midnight_pen"
           />
         </label>
+        {fieldErrors.username && <p className="error">{fieldErrors.username}</p>}
 
         <label>
           Email
@@ -144,6 +161,7 @@ const Register = () => {
             placeholder="you@example.com"
           />
         </label>
+        {fieldErrors.email && <p className="error">{fieldErrors.email}</p>}
 
         <label>
           Password
@@ -155,6 +173,7 @@ const Register = () => {
             placeholder="At least 6 characters"
           />
         </label>
+        {fieldErrors.password && <p className="error">{fieldErrors.password}</p>}
 
         {error && <p className="error">{error}</p>}
 

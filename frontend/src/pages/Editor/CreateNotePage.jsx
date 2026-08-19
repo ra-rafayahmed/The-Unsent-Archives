@@ -1,7 +1,8 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useNoteEditor from "../../hooks/useNoteEditor";
 import { BG_PRESETS, FONT_OPTIONS, getFontFamily, getPostTextStyle } from "../../utils/postStyle";
+import { validateNoteContent, validateTags } from "../../utils/validation";
 
 const CreateNotePage = () => {
   const navigate = useNavigate();
@@ -29,8 +30,23 @@ const CreateNotePage = () => {
   } = useNoteEditor(id);
 
   const charCount = useMemo(() => form.content.length, [form.content]);
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const save = async () => {
+    // Catch what the server would reject anyway, before spending a round trip.
+    const tags = tagsInput
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean);
+    const errors = {};
+    const contentError = validateNoteContent(form.content);
+    if (contentError) errors.content = contentError;
+    const tagsError = validateTags(tags);
+    if (tagsError) errors.tags = tagsError;
+
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+
     if (await saveNote()) navigate("/");
   };
 
@@ -228,6 +244,7 @@ const CreateNotePage = () => {
         <label>
           Tags (comma separated)
           <input value={tagsInput} onChange={(e) => setTagsInput(e.target.value)} />
+          {fieldErrors.tags ? <p className="error">{fieldErrors.tags}</p> : null}
         </label>
 
         <button type="button" className="primary-btn" onClick={save}>
@@ -260,6 +277,11 @@ const CreateNotePage = () => {
           placeholder="Write your unsent archive..."
           maxLength={5000}
         />
+        {fieldErrors.content ? (
+          <p className="error" role="alert">
+            {fieldErrors.content}
+          </p>
+        ) : null}
         <div className="note-meta">
           <span>{charCount}/5000</span>
           <span>{form.visibility}</span>

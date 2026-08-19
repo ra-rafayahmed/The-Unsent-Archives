@@ -4,26 +4,30 @@ import api from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import DoodleBackdrop from "../../components/decor/Doodles";
 import { toUserMessage } from "../../utils/apiError";
+import {
+  validateForm,
+  validatePassword,
+  validatePasswordConfirmation,
+} from "../../utils/validation";
 
 const RecoverWithCode = () => {
   const navigate = useNavigate();
   const { updateCurrentUser } = useAuth();
   const [form, setForm] = useState({ email: "", code: "", password: "", confirm: "" });
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
   const onSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    if (form.password.length < 6) {
-      setError("Password must be at least 6 characters");
-      return;
-    }
-    if (form.password !== form.confirm) {
-      setError("Passwords do not match");
-      return;
-    }
+    const errors = validateForm(form, {
+      password: validatePassword,
+      confirm: (value, values) => validatePasswordConfirmation(values.password, value),
+    });
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) return;
 
     setLoading(true);
     try {
@@ -90,6 +94,7 @@ const RecoverWithCode = () => {
             placeholder="At least 6 characters"
           />
         </label>
+        {fieldErrors.password && <p className="error">{fieldErrors.password}</p>}
 
         <label>
           Confirm password
@@ -100,6 +105,7 @@ const RecoverWithCode = () => {
             onChange={(e) => setForm((f) => ({ ...f, confirm: e.target.value }))}
           />
         </label>
+        {fieldErrors.confirm && <p className="error">{fieldErrors.confirm}</p>}
 
         {error && <p className="error">{error}</p>}
 

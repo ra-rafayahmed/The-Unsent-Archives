@@ -134,10 +134,34 @@ describe("CreateNotePage", () => {
     });
   });
 
+  it("refuses to publish an empty note without calling the API", async () => {
+    renderWithHome();
+
+    fireEvent.click(screen.getByRole("button", { name: "Publish" }));
+
+    expect(await screen.findByText("Write something before you archive it")).toBeInTheDocument();
+    expect(api.post).not.toHaveBeenCalled();
+    expect(screen.queryByText("Home page")).not.toBeInTheDocument();
+  });
+
+  it("refuses to publish malformed tags without calling the API", async () => {
+    renderWithHome();
+
+    write("a real note");
+    fireEvent.change(tagsField(), { target: { value: "bad tag!" } });
+    fireEvent.click(screen.getByRole("button", { name: "Publish" }));
+
+    expect(
+      await screen.findByText(/Tags can only contain alphanumeric characters and hyphens/)
+    ).toBeInTheDocument();
+    expect(api.post).not.toHaveBeenCalled();
+  });
+
   it("shows the API error and stays on the page when saving fails", async () => {
     api.post.mockRejectedValueOnce({ response: { data: { message: "Content is required" } } });
     renderWithHome();
 
+    write("a note the server rejects");
     fireEvent.click(screen.getByRole("button", { name: "Publish" }));
 
     expect(await screen.findByText("Content is required")).toBeInTheDocument();

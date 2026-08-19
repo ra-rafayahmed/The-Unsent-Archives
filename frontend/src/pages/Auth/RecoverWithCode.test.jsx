@@ -61,6 +61,15 @@ describe("RecoverWithCode page", () => {
     expect(api.post).not.toHaveBeenCalled();
   });
 
+  it("rejects a whitespace-only password without calling the API", async () => {
+    renderPage();
+    fill({ password: "        ", confirm: "        " });
+    submit();
+
+    expect(await screen.findByText("Password is required")).toBeInTheDocument();
+    expect(api.post).not.toHaveBeenCalled();
+  });
+
   it("rejects mismatched passwords without calling the API", async () => {
     renderPage();
     fill({ confirm: "hunter23" });
@@ -68,6 +77,22 @@ describe("RecoverWithCode page", () => {
 
     expect(await screen.findByText("Passwords do not match")).toBeInTheDocument();
     expect(api.post).not.toHaveBeenCalled();
+  });
+
+  it("clears the validation message once the form is corrected", async () => {
+    api.post.mockResolvedValueOnce({ data: {} });
+    renderPage();
+    fill({ confirm: "hunter23" });
+    submit();
+
+    expect(await screen.findByText("Passwords do not match")).toBeInTheDocument();
+    expect(api.post).not.toHaveBeenCalled();
+
+    fill();
+    submit();
+
+    await waitFor(() => expect(api.post).toHaveBeenCalledTimes(1));
+    expect(screen.queryByText("Passwords do not match")).not.toBeInTheDocument();
   });
 
   it("redeems the code, signs the user in and lands on the home page", async () => {
