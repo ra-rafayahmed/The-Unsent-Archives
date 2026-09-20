@@ -1,13 +1,13 @@
 # syntax=docker/dockerfile:1
 # Build context is the REPO ROOT (see docker-compose.yml): this is an npm
 # workspaces monorepo, so the single root lockfile is what `npm ci` needs.
-FROM node:22-alpine AS deps
+FROM node:25-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 COPY backend/package.json ./backend/
 RUN npm ci --omit=dev --workspace backend
 
-FROM node:22-alpine
+FROM node:25-alpine
 ENV NODE_ENV=production
 WORKDIR /app
 RUN addgroup -S app && adduser -S app -G app
