@@ -25,6 +25,6 @@
     "dev:frontend": "npm run dev --workspace frontend"
   },
   "devDependencies": {
-    "prettier": "^3.9.6"
+    "prettier": "^3.9.7"
   }
 }
